@@ -63,4 +63,17 @@ public class PlayerItem : MonoBehaviour
 
         return droppedItem;
     }
+
+    public void PickUpItem(ItemData item)
+    {
+        if (item == null)
+            return;
+
+        if (currentItem != null)
+        {
+            Debug.Log("Replaced: " + currentItem.ItemName);
+        }
+
+        EquipItem(item);
+    }
 }
