@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 92ebf8d504faf1d44927da6213440cb3, type: 3}
-  m_Name: Frying Pan
+  m_Name: Baguette
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Frying Pan
-  itemSprite: {fileID: -2996719189407371719, guid: cf930453462b529458574009e915a48b, type: 3}
+  itemName: Baguette
+  itemSprite: {fileID: 1384307969618782483, guid: c86c182db269bf94cbce00151488fbbd, type: 3}
   maxDurability: 10
-  damage: 15
-  cooldown: 1
+  damage: 8
+  cooldown: 0.5
   attackRange: 0.5
   attackRadius: 0.5
   swingAngle: 100

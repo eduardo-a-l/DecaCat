@@ -7,15 +7,27 @@ public class MeleeAttack : MonoBehaviour
     [SerializeField] private Transform weaponPivot;
     [SerializeField] private WeaponAiming weaponAiming;
 
-    [SerializeField] private float attackRange = 0.8f;
-    [SerializeField] private float attackRadius = 0.5f;
-    [SerializeField] private int damage = 1;
-    [SerializeField] private float attackCooldown = 0.5f;
-    [SerializeField] private float swingAngle = 100f;
-    [SerializeField] private float swingDuration = 0.2f;
-
     private float nextAttackTime;
     private Coroutine swingCoroutine;
+
+    public float CooldownRemaining
+    {
+        get
+        {
+            return Mathf.Max(0f, nextAttackTime - Time.time);
+        }
+    }
+
+    public float CurrentCooldown
+    {
+        get
+        {
+            if (playerItem == null || playerItem.CurrentItem == null)
+                return 0f;
+
+            return playerItem.CurrentItem.Cooldown;
+        }
+    }
 
     private void Update()
     {
@@ -32,7 +44,9 @@ public class MeleeAttack : MonoBehaviour
             playerItem.CurrentItem == null)
             return;
 
-        nextAttackTime = Time.time + attackCooldown;
+        ItemData item = playerItem.CurrentItem;
+
+        nextAttackTime = Time.time + item.Cooldown;
 
         Vector3 mousePosition =
             Camera.main.ScreenToWorldPoint(
@@ -58,17 +72,19 @@ public class MeleeAttack : MonoBehaviour
         if (swingCoroutine != null)
             StopCoroutine(swingCoroutine);
 
-        weaponAiming.BeginSwing();
+        if (weaponAiming != null)
+            weaponAiming.BeginSwing();
+
         swingCoroutine = StartCoroutine(
-            Swing(angle)
+            Swing(angle, item.SwingAngle, item.SwingDuration)
         );
 
         Vector2 attackPosition =
             (Vector2)transform.position +
-            direction * attackRange;
+            direction * item.AttackRange;
 
         Collider2D[] hits = Physics2D.OverlapCircleAll(
-            attackPosition, attackRadius
+            attackPosition, item.AttackRadius
         );
 
         foreach (Collider2D hit in hits)
@@ -78,20 +94,22 @@ public class MeleeAttack : MonoBehaviour
 
             if (target != null)
             {
-                target.TakeDamage(damage);
+                target.TakeDamage(item.Damage);
             }
         }
 
         playerItem.UseItem();
     }
 
-    private IEnumerator Swing(float angle)
+    private IEnumerator Swing(
+        float angle, float swingAngle, float swingDuration)
     {
         float elapsed = 0f;
 
         while (elapsed < swingDuration)
         {
             float progress = elapsed / swingDuration;
+
             float currentAngle =
                 angle - swingAngle / 2f +
                 swingAngle * progress;
@@ -106,8 +124,9 @@ public class MeleeAttack : MonoBehaviour
         weaponPivot.rotation =
             Quaternion.Euler(0f, 0f, angle);
 
-        weaponAiming.EndSwing();
-
         swingCoroutine = null;
+
+        if (weaponAiming != null)
+            weaponAiming.EndSwing();
     }
 }
