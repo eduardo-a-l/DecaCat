@@ -5,7 +5,7 @@ public class WeaponAiming : MonoBehaviour
     [SerializeField] private Transform weaponPivot;
     [SerializeField] private Transform weaponVisual;
 
-    private Camera mainCamera;
+    private PlayerInputReader inputReader;
     private Vector3 originalScale;
 
     public float AimAngle { get; private set; }
@@ -13,7 +13,7 @@ public class WeaponAiming : MonoBehaviour
 
     private void Awake()
     {
-        mainCamera = Camera.main;
+        inputReader = GetComponent<PlayerInputReader>();
 
         if (weaponVisual != null)
             originalScale = weaponVisual.localScale;
@@ -21,20 +21,13 @@ public class WeaponAiming : MonoBehaviour
 
     private void Update()
     {
-        if (mainCamera == null || weaponPivot == null)
+        if (inputReader == null || weaponPivot == null)
             return;
 
-        Vector3 mousePosition =
-            mainCamera.ScreenToWorldPoint(
-                new Vector3(
-                    Input.mousePosition.x,
-                    Input.mousePosition.y,
-                    -mainCamera.transform.position.z
-                )
-            );
+        Vector3 aimPosition = inputReader.AimWorldPosition;
 
         Vector2 direction =
-            (Vector2)(mousePosition - weaponPivot.position);
+            (Vector2)(aimPosition - weaponPivot.position);
 
         if (direction.sqrMagnitude < 0.001f)
             return;

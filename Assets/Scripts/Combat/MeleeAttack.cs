@@ -8,6 +8,7 @@ public class MeleeAttack : MonoBehaviour
     [SerializeField] private Transform weaponPivot;
     [SerializeField] private WeaponAiming weaponAiming;
 
+    private PlayerInputReader inputReader;
     private float nextAttackTime;
     private Coroutine swingCoroutine;
 
@@ -30,9 +31,15 @@ public class MeleeAttack : MonoBehaviour
         }
     }
 
+    private void Awake()
+    {
+        inputReader = GetComponent<PlayerInputReader>();
+    }
+
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) &&
+        if (inputReader != null &&
+            inputReader.AttackPressed &&
             Time.time >= nextAttackTime)
         {
             Attack();
@@ -49,17 +56,10 @@ public class MeleeAttack : MonoBehaviour
 
         nextAttackTime = Time.time + item.Cooldown;
 
-        Vector3 mousePosition =
-            Camera.main.ScreenToWorldPoint(
-                new Vector3(
-                    Input.mousePosition.x,
-                    Input.mousePosition.y,
-                    -Camera.main.transform.position.z
-                )
-            );
+        Vector3 aimPosition = inputReader.AimWorldPosition;
 
         Vector2 direction =
-            (Vector2)(mousePosition - transform.position);
+            (Vector2)(aimPosition - transform.position);
 
         if (direction.sqrMagnitude < 0.001f)
             direction = Vector2.right;

@@ -5,9 +5,8 @@ public class PlayerItem : MonoBehaviour
 {
     [SerializeField] private ItemData startingItem;
     [SerializeField] private ItemPickup droppedItemPrefab;
-    [SerializeField] private KeyCode interactKey = KeyCode.E;
-    [SerializeField] private KeyCode dropKey = KeyCode.Q;
 
+    private PlayerInputReader inputReader;
     private ItemData currentItem;
     private int currentDurability;
 
@@ -17,6 +16,11 @@ public class PlayerItem : MonoBehaviour
     public ItemData CurrentItem => currentItem;
     public int CurrentDurability => currentDurability;
 
+    private void Awake()
+    {
+        inputReader = GetComponent<PlayerInputReader>();
+    }
+
     private void Start()
     {
         if (startingItem != null)
@@ -25,10 +29,13 @@ public class PlayerItem : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(interactKey))
+        if (inputReader == null)
+            return;
+
+        if (inputReader.InteractPressed)
             Interact();
 
-        if (Input.GetKeyDown(dropKey))
+        if (inputReader.DropPressed)
             DropCurrentItem();
     }
 

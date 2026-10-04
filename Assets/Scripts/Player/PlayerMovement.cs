@@ -1,23 +1,24 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(PlayerInputReader))]
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 5f;
 
     private Rigidbody2D rb;
+    private PlayerInputReader inputReader;
     private Vector2 movement;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        inputReader = GetComponent<PlayerInputReader>();
     }
 
     private void Update()
     {
-        movement.x = Input.GetAxisRaw("Horizontal");
-        movement.y = Input.GetAxisRaw("Vertical");
-        movement = movement.normalized;
+        movement = inputReader != null ? inputReader.Move : Vector2.zero;
     }
 
     private void FixedUpdate()

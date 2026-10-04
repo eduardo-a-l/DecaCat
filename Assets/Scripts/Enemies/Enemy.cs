@@ -26,6 +26,8 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     protected float moveSpeed;
     protected bool isDead;
 
+    public event System.Action<Enemy> Died;
+
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 
@@ -146,6 +148,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     protected virtual void Die()
     {
         isDead = true;
+        Died?.Invoke(this);
         Destroy(gameObject);
     }
 

@@ -10,6 +10,9 @@ public class PlayerHealth : MonoBehaviour
     private bool isInvulnerable;
     private SpriteRenderer spriteRenderer;
 
+    public event System.Action Died;
+
+    public bool IsDead => currentHealth <= 0;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 
@@ -61,5 +64,6 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         Debug.Log("Player defeated");
+        Died?.Invoke();
     }
 }
