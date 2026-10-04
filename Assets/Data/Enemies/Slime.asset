@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: Slime
   m_EditorClassIdentifier: Assembly-CSharp::SlimeData
   small:
-    sprite: {fileID: 0}
+    sprite: {fileID: 2423678137912557890, guid: 4d7c55f083993e8498f311e3ceb4e07e, type: 3}
     health: 20
     damage: 1
     moveSpeed: 1.2
     scale: 1
     placeholderColor: {r: 0.55, g: 0.9, b: 0.45, a: 1}
   big:
-    sprite: {fileID: 0}
+    sprite: {fileID: 3413403352333689364, guid: 994b768082b2c6943a33fb12dbd51353, type: 3}
     health: 40
     damage: 1
     moveSpeed: 0.7
