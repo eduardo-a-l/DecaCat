@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MeleeAttack : MonoBehaviour
@@ -87,18 +88,21 @@ public class MeleeAttack : MonoBehaviour
             attackPosition, item.AttackRadius
         );
 
+        HashSet<IDamageable> damaged = new HashSet<IDamageable>();
+
         foreach (Collider2D hit in hits)
         {
             IDamageable target =
                 hit.GetComponentInParent<IDamageable>();
 
-            if (target != null)
-            {
-                target.TakeDamage(item.Damage);
-            }
+            if (target == null || !damaged.Add(target))
+                continue;
+
+            target.TakeDamage(item.Damage);
         }
 
-        playerItem.UseItem();
+        if (damaged.Count > 0)
+            playerItem.UseItem();
     }
 
     private IEnumerator Swing(

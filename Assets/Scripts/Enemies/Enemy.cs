@@ -1,15 +1,24 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public abstract class Enemy : MonoBehaviour, IDamageable
 {
+    [Header("Hit Flash")]
+    [SerializeField] private float flashInterval = 0.04f;
+    [SerializeField] private int flashCount = 3;
+
     private const int PlaceholderPixels = 64;
     private const float PlaceholderDiameter = 0.6f;
+    private const float DamageTextGap = 0.15f;
 
     private static Sprite placeholderSprite;
 
     private Rigidbody2D body;
     private Transform target;
+    private SpriteRenderer flashRenderer;
+    private Collider2D bodyCollider;
+    private Coroutine flashRoutine;
 
     protected int maxHealth;
     protected int currentHealth;
@@ -38,6 +47,9 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         body = GetComponent<Rigidbody2D>();
         body.gravityScale = 0f;
         body.freezeRotation = true;
+
+        flashRenderer = GetComponent<SpriteRenderer>();
+        bodyCollider = GetComponent<Collider2D>();
     }
 
     protected virtual void FixedUpdate()
@@ -84,8 +96,51 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
         Debug.Log(name + " health: " + Mathf.Max(0, currentHealth));
 
+        DamageText.Spawn(GetDamageTextPosition(), damage);
+
         if (currentHealth <= 0)
             Die();
+        else
+            StartFlash();
+    }
+
+    private Vector3 GetDamageTextPosition()
+    {
+        if (bodyCollider == null)
+            return transform.position + Vector3.up * 0.5f;
+
+        Bounds bounds = bodyCollider.bounds;
+
+        return new Vector3(
+            bounds.center.x,
+            bounds.max.y + DamageTextGap,
+            transform.position.z
+        );
+    }
+
+    private void StartFlash()
+    {
+        if (flashRenderer == null)
+            return;
+
+        if (flashRoutine != null)
+            StopCoroutine(flashRoutine);
+
+        flashRoutine = StartCoroutine(FlashCoroutine());
+    }
+
+    private IEnumerator FlashCoroutine()
+    {
+        for (int i = 0; i < flashCount; i++)
+        {
+            flashRenderer.enabled = false;
+            yield return new WaitForSeconds(flashInterval);
+
+            flashRenderer.enabled = true;
+            yield return new WaitForSeconds(flashInterval);
+        }
+
+        flashRoutine = null;
     }
 
     protected virtual void Die()
