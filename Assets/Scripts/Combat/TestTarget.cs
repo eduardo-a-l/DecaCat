@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TestTarget : MonoBehaviour
+public class TestTarget : MonoBehaviour, IDamageable
 {
     [SerializeField] private int health = 3;
 

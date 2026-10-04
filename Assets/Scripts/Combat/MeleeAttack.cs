@@ -89,8 +89,8 @@ public class MeleeAttack : MonoBehaviour
 
         foreach (Collider2D hit in hits)
         {
-            TestTarget target =
-                hit.GetComponentInParent<TestTarget>();
+            IDamageable target =
+                hit.GetComponentInParent<IDamageable>();
 
             if (target != null)
             {
