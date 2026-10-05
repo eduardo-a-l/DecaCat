@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd42d64190534da8b30180f6d1c6360e, type: 3}
+  m_Name: Floor 1
+  m_EditorClassIdentifier: Assembly-CSharp::FloorConfig
+  minRooms: 8
+  maxRooms: 12
+  loopChance: 0.65
+  minPowerRooms: 0
+  maxPowerRooms: 2
+  startLayouts:
+  - {fileID: 11400000, guid: 0c743f62ade44c7b8c7eb8935edc7b67, type: 2}
+  normalLayouts:
+  - {fileID: 11400000, guid: 51cebb335f524518ad480b9afbbc3fda, type: 2}
+  - {fileID: 11400000, guid: 71c062bbaa864510998500bc25c56666, type: 2}
+  - {fileID: 11400000, guid: f0b51b4d861c49afacd68d7107d26f8a, type: 2}
+  - {fileID: 11400000, guid: a8b789774cd94580b7ca6ac6f554ed59, type: 2}
+  powerLayouts:
+  - {fileID: 11400000, guid: 34ed7f279e704dd3bae109b0f8d45464, type: 2}
+  bossLayouts:
+  - {fileID: 11400000, guid: 469fe73a32064d23994e64175487b554, type: 2}
+  seed: 0

@@ -15,6 +15,8 @@ MonoBehaviour:
   floorSprite: {fileID: 0}
   wallSprite: {fileID: 0}
   barrierSprite: {fileID: 0}
+  exitSprite: {fileID: 0}
   floorColor: {r: 0.2, g: 0.22, b: 0.27, a: 1}
   wallColor: {r: 0.42, g: 0.45, b: 0.55, a: 1}
   barrierColor: {r: 0.9, g: 0.15, b: 0.15, a: 0.85}
+  exitColor: {r: 0.6, g: 0.4, b: 1, a: 1}

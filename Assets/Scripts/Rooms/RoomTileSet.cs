@@ -10,17 +10,25 @@ public class RoomTileSet : ScriptableObject
     [SerializeField] private Sprite floorSprite;
     [SerializeField] private Sprite wallSprite;
     [SerializeField] private Sprite barrierSprite;
+    [SerializeField] private Sprite exitSprite;
 
     [Header("Placeholder colors (used while a sprite is empty)")]
     [SerializeField] private Color floorColor = new Color(0.2f, 0.22f, 0.27f, 1f);
     [SerializeField] private Color wallColor = new Color(0.42f, 0.45f, 0.55f, 1f);
     [SerializeField] private Color barrierColor = new Color(0.9f, 0.15f, 0.15f, 0.85f);
+    [SerializeField] private Color exitColor = new Color(0.6f, 0.4f, 1f, 1f);
 
     public Sprite BarrierSprite =>
         barrierSprite != null ? barrierSprite : PlaceholderSquare;
 
     public Color BarrierTint =>
         barrierSprite != null ? Color.white : barrierColor;
+
+    public Sprite ExitSprite =>
+        exitSprite != null ? exitSprite : PlaceholderSquare;
+
+    public Color ExitTint =>
+        exitSprite != null ? Color.white : exitColor;
 
     private static Sprite PlaceholderSquare
     {

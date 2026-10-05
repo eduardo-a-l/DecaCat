@@ -9,6 +9,8 @@ public class Room : MonoBehaviour
     private const int FloorSortingOrder = -10;
     private const int WallSortingOrder = -5;
     private const int BarrierSortingOrder = -2;
+    private const int ExitSortingOrder = -1;
+    private const float ExitScale = 1.2f;
 
     private readonly List<Enemy> enemies = new List<Enemy>();
     private readonly List<RoomPassage> passages = new List<RoomPassage>();
@@ -16,6 +18,7 @@ public class Room : MonoBehaviour
     private RoomManager manager;
     private RoomLayout layout;
     private Transform gridTransform;
+    private RoomTileSet tiles;
     private readonly List<RoomSide> linkedSides = new List<RoomSide>();
 
     public event Action<Room> Cleared;
@@ -26,6 +29,7 @@ public class Room : MonoBehaviour
     public Vector3 Center => transform.position;
     public Vector2 Size => new Vector2(layout.Width, layout.Height);
     public IReadOnlyList<RoomSide> ConnectedSides => linkedSides;
+    public RoomType Type { get; private set; }
 
     private void Update()
     {
@@ -36,9 +40,11 @@ public class Room : MonoBehaviour
     public void Build(
         RoomManager owner, RoomLayout roomLayout, RoomTileSet tileSet,
         Vector2Int gridPosition, Vector2 center,
-        IList<RoomSide> connectedSides)
+        IList<RoomSide> connectedSides, RoomType roomType)
     {
         manager = owner;
+        tiles = tileSet;
+        Type = roomType;
         layout = roomLayout;
         GridPosition = gridPosition;
         linkedSides.Clear();
@@ -153,6 +159,9 @@ public class Room : MonoBehaviour
         State = RoomState.Cleared;
         Debug.Log(name + " cleared");
 
+        if (Type == RoomType.Boss)
+            CreateFloorExit();
+
         RefreshBarriers();
 
         if (Cleared != null)
@@ -266,6 +275,24 @@ public class Room : MonoBehaviour
         RoomPassage passage = passageObject.AddComponent<RoomPassage>();
         passage.Setup(this, side, trigger, barriers);
         passages.Add(passage);
+    }
+
+    private void CreateFloorExit()
+    {
+        GameObject exit = new GameObject("FloorExit");
+        exit.transform.SetParent(transform, false);
+        exit.transform.localScale = Vector3.one * ExitScale;
+
+        SpriteRenderer spriteRenderer = exit.AddComponent<SpriteRenderer>();
+        spriteRenderer.sprite = tiles.ExitSprite;
+        spriteRenderer.color = tiles.ExitTint;
+        spriteRenderer.sortingOrder = ExitSortingOrder;
+
+        BoxCollider2D trigger = exit.AddComponent<BoxCollider2D>();
+        trigger.isTrigger = true;
+        trigger.size = spriteRenderer.sprite.bounds.size;
+
+        exit.AddComponent<FloorExit>().Setup(manager);
     }
 
     private void SpawnCrates(List<Vector2Int> crateCells)

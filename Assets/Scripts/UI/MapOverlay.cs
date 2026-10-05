@@ -7,19 +7,15 @@ public static class MapOverlay
 {
     private const float MaxScale = 24f;
     private const float RoomInset = 1f;
-    private const float ConnectorLength = 1.6f;
-    private const float ConnectorThickness = 1f;
-    private const float MarkerSize = 36f;
+    private const float ConnectorLength = 1.4f;
+    private const float ConnectorThickness = 6f;
+    private const float OutlineThickness = 5f;
+    private const float CurrentOutlineThickness = 9f;
+    private const float MarkerSize = 30f;
 
-    private const string LegendText =
-        "<color=#F2B340>Not cleared</color>      " +
-        "<color=#6BBD8C>Cleared</color>      " +
-        "<color=#8A8A94>Unexplored</color>      " +
-        "White outline: you";
-
-    private static readonly Vector2 MapArea = new Vector2(1500f, 700f);
+    private static readonly Vector2 MapArea = new Vector2(1500f, 760f);
     private static readonly Color BackgroundColor = new Color(0f, 0f, 0f, 0.88f);
-    private static readonly Color UnexploredColor = new Color(0.28f, 0.28f, 0.33f, 1f);
+    private static readonly Color UnexploredColor = new Color(0.4f, 0.4f, 0.46f, 1f);
     private static readonly Color ActiveColor = new Color(0.95f, 0.7f, 0.25f, 1f);
     private static readonly Color ClearedColor = new Color(0.42f, 0.74f, 0.55f, 1f);
     private static readonly Color ConnectorColor = new Color(0.55f, 0.55f, 0.62f, 1f);
@@ -37,18 +33,13 @@ public static class MapOverlay
         );
 
         RectTransform area = UIFactory.CreateRect(
-            root.transform, "Area", new Vector2(0f, 20f), MapArea
+            root.transform, "Area", new Vector2(0f, 10f), MapArea
         );
 
         List<Room> visible = GetVisibleRooms(manager);
 
         if (visible.Count > 0)
             DrawMap(manager, visible, area);
-
-        UIFactory.CreateText(
-            root.transform, "Legend", LegendText, 34f, Color.white,
-            new Vector2(0f, -390f), new Vector2(1500f, 60f)
-        );
 
         UIFactory.CreateButton(
             root.transform, "CloseButton", "Close",
@@ -143,18 +134,16 @@ public static class MapOverlay
                     ((Vector2)room.GetPassageWorldCenter(side) +
                      (Vector2)neighbor.GetPassageWorldCenter(side.Opposite())) / 2f;
 
+                float length = ConnectorLength * scale;
+
                 Vector2 size = side.IsHorizontal()
-                    ? new Vector2(ConnectorLength, ConnectorThickness)
-                    : new Vector2(ConnectorThickness, ConnectorLength);
+                    ? new Vector2(length, ConnectorThickness)
+                    : new Vector2(ConnectorThickness, length);
 
-                RectTransform rect = UIFactory.CreateRect(
-                    area, "Connector",
-                    (seam - worldCenter) * scale, size * scale
+                CreateStrip(
+                    area, "Connector", (seam - worldCenter) * scale,
+                    size, ConnectorColor
                 );
-
-                Image image = rect.gameObject.AddComponent<Image>();
-                image.color = ConnectorColor;
-                image.raycastTarget = false;
             }
         }
     }
@@ -170,9 +159,13 @@ public static class MapOverlay
             area, "Room", (center - worldCenter) * scale, size
         );
 
-        Image image = rect.gameObject.AddComponent<Image>();
-        image.color = GetColor(room.State);
-        image.raycastTarget = false;
+        bool isCurrent = room == manager.CurrentRoom;
+
+        CreateOutline(
+            rect, size,
+            isCurrent ? CurrentOutlineThickness : OutlineThickness,
+            isCurrent ? Color.white : GetColor(room.State)
+        );
 
         if (room.State == RoomState.Unexplored)
         {
@@ -182,12 +175,8 @@ public static class MapOverlay
             );
         }
 
-        if (room != manager.CurrentRoom)
+        if (!isCurrent)
             return;
-
-        Outline outline = rect.gameObject.AddComponent<Outline>();
-        outline.effectColor = Color.white;
-        outline.effectDistance = new Vector2(5f, 5f);
 
         RectTransform marker = UIFactory.CreateRect(
             rect, "You", Vector2.zero, Vector2.one * MarkerSize
@@ -197,6 +186,47 @@ public static class MapOverlay
         markerImage.sprite = UIFactory.CircleSprite;
         markerImage.color = Color.white;
         markerImage.raycastTarget = false;
+    }
+
+    private static void CreateOutline(
+        RectTransform parent, Vector2 size, float thickness, Color color)
+    {
+        float halfWidth = size.x / 2f;
+        float halfHeight = size.y / 2f;
+        float half = thickness / 2f;
+
+        CreateStrip(
+            parent, "Top", new Vector2(0f, halfHeight - half),
+            new Vector2(size.x, thickness), color
+        );
+
+        CreateStrip(
+            parent, "Bottom", new Vector2(0f, -halfHeight + half),
+            new Vector2(size.x, thickness), color
+        );
+
+        CreateStrip(
+            parent, "Left", new Vector2(-halfWidth + half, 0f),
+            new Vector2(thickness, size.y), color
+        );
+
+        CreateStrip(
+            parent, "Right", new Vector2(halfWidth - half, 0f),
+            new Vector2(thickness, size.y), color
+        );
+    }
+
+    private static void CreateStrip(
+        RectTransform parent, string objectName, Vector2 position,
+        Vector2 size, Color color)
+    {
+        RectTransform rect = UIFactory.CreateRect(
+            parent, objectName, position, size
+        );
+
+        Image image = rect.gameObject.AddComponent<Image>();
+        image.color = color;
+        image.raycastTarget = false;
     }
 
     private static Color GetColor(RoomState state)

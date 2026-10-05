@@ -1,23 +1,13 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RoomManager : MonoBehaviour
 {
-    [Serializable]
-    private class RoomEntry
-    {
-        [SerializeField] private RoomLayout layout;
-        [SerializeField] private Vector2Int gridPosition;
-
-        public RoomLayout Layout => layout;
-        public Vector2Int GridPosition => gridPosition;
-    }
-
     [SerializeField] private RoomTileSet tileSet;
-    [SerializeField] private RoomEntry[] rooms;
+    [SerializeField] private FloorConfig[] floors;
     [SerializeField] private PlayerInputReader inputReader;
+    [SerializeField] private GameManager gameManager;
     [SerializeField] private float transitionDuration = 0.6f;
 
     private readonly Dictionary<Vector2Int, Room> roomsByCell =
@@ -27,10 +17,28 @@ public class RoomManager : MonoBehaviour
     private Rigidbody2D playerBody;
     private Room currentRoom;
     private bool isTransitioning;
+    private bool hasGenerated;
+    private int floorNumber = 1;
 
     public Room CurrentRoom => currentRoom;
     public bool IsTransitioning => isTransitioning;
     public IEnumerable<Room> Rooms => roomsByCell.Values;
+
+    private void Start()
+    {
+        mainCamera = Camera.main;
+
+        if (inputReader == null)
+            inputReader = FindFirstObjectByType<PlayerInputReader>();
+
+        if (gameManager == null)
+            gameManager = FindFirstObjectByType<GameManager>();
+
+        if (inputReader != null)
+            playerBody = inputReader.GetComponent<Rigidbody2D>();
+
+        GenerateFloor(gameManager != null ? gameManager.CurrentFloor : 1);
+    }
 
     public bool TryGetNeighbor(Room room, RoomSide side, out Room neighbor)
     {
@@ -42,26 +50,6 @@ public class RoomManager : MonoBehaviour
         return roomsByCell.TryGetValue(
             room.GridPosition + side.ToGridOffset(), out neighbor
         );
-    }
-
-    private void Start()
-    {
-        mainCamera = Camera.main;
-
-        if (inputReader == null)
-            inputReader = FindFirstObjectByType<PlayerInputReader>();
-
-        if (inputReader != null)
-            playerBody = inputReader.GetComponent<Rigidbody2D>();
-
-        BuildRooms();
-
-        if (currentRoom == null)
-            return;
-
-        currentRoom.gameObject.SetActive(true);
-        MoveCamera(currentRoom.Center);
-        currentRoom.Enter();
     }
 
     public void RequestTransition(Room from, RoomSide side)
@@ -77,59 +65,105 @@ public class RoomManager : MonoBehaviour
         StartCoroutine(TransitionCoroutine(from, to, side));
     }
 
-    private void BuildRooms()
+    public void AdvanceFloor()
     {
-        if (tileSet == null || rooms == null || rooms.Length == 0)
+        if (isTransitioning)
+            return;
+
+        int next = floorNumber + 1;
+
+        if (gameManager != null)
         {
-            Debug.LogWarning("RoomManager needs a tile set and at least one room");
+            gameManager.NextFloor();
+            next = gameManager.CurrentFloor;
+        }
+
+        GenerateFloor(next);
+    }
+
+    private void GenerateFloor(int number)
+    {
+        FloorConfig config = GetConfig(number);
+
+        if (tileSet == null || config == null)
+        {
+            Debug.LogWarning("RoomManager needs a tile set and a floor config");
             return;
         }
 
-        Dictionary<Vector2Int, RoomLayout> layouts =
-            new Dictionary<Vector2Int, RoomLayout>();
+        int seed = config.Seed != 0
+            ? config.Seed + number
+            : Random.Range(1, int.MaxValue);
 
-        bool hasStart = false;
-        Vector2Int startCell = Vector2Int.zero;
+        FloorPlan plan = FloorGenerator.Generate(config, seed);
 
-        foreach (RoomEntry entry in rooms)
-        {
-            if (entry == null || entry.Layout == null)
-                continue;
-
-            if (layouts.ContainsKey(entry.GridPosition))
-            {
-                Debug.LogWarning(
-                    "Two rooms share the grid position " + entry.GridPosition
-                );
-
-                continue;
-            }
-
-            layouts.Add(entry.GridPosition, entry.Layout);
-
-            if (!hasStart)
-            {
-                hasStart = true;
-                startCell = entry.GridPosition;
-            }
-        }
-
-        if (!hasStart)
+        if (plan == null)
             return;
 
-        Dictionary<Vector2Int, Vector2> centers =
-            ComputeCenters(layouts, startCell);
+        ClearFloor();
 
-        foreach (KeyValuePair<Vector2Int, RoomLayout> pair in layouts)
+        floorNumber = number;
+        BuildRooms(plan);
+        hasGenerated = true;
+
+        Debug.Log(
+            "Floor " + number + ": " + plan.RoomCount +
+            " rooms, seed " + plan.Seed
+        );
+
+        currentRoom = roomsByCell[plan.StartCell];
+
+        Vector3 start = currentRoom.Center;
+
+        if (playerBody != null)
         {
-            if (!centers.ContainsKey(pair.Key))
-            {
-                Debug.LogWarning(
-                    "Room at " + pair.Key +
-                    " is not connected to the start room and was skipped"
-                );
-            }
+            playerBody.linearVelocity = Vector2.zero;
+            playerBody.position = start;
+            playerBody.transform.position = new Vector3(
+                start.x, start.y, playerBody.transform.position.z
+            );
         }
+
+        MoveCamera(start);
+
+        currentRoom.gameObject.SetActive(true);
+        currentRoom.Enter();
+    }
+
+    private FloorConfig GetConfig(int number)
+    {
+        if (floors == null || floors.Length == 0)
+            return null;
+
+        return floors[Mathf.Clamp(number - 1, 0, floors.Length - 1)];
+    }
+
+    private void ClearFloor()
+    {
+        foreach (Room room in roomsByCell.Values)
+        {
+            room.gameObject.SetActive(false);
+            Destroy(room.gameObject);
+        }
+
+        roomsByCell.Clear();
+        currentRoom = null;
+
+        if (!hasGenerated)
+            return;
+
+        foreach (ItemPickup pickup in
+                 FindObjectsByType<ItemPickup>(FindObjectsSortMode.None))
+        {
+            Destroy(pickup.gameObject);
+        }
+    }
+
+    private void BuildRooms(FloorPlan plan)
+    {
+        WarnAboutMixedSizes(plan);
+
+        Dictionary<Vector2Int, Vector2> centers = ComputeCenters(plan);
 
         foreach (KeyValuePair<Vector2Int, Vector2> pair in centers)
         {
@@ -144,53 +178,50 @@ public class RoomManager : MonoBehaviour
             Room room = roomObject.AddComponent<Room>();
 
             room.Build(
-                this, layouts[cell], tileSet, cell, pair.Value,
-                GetConnectedSides(layouts, cell)
+                this, plan.GetLayout(cell), tileSet, cell, pair.Value,
+                plan.GetLinkedSides(cell), plan.GetRoomType(cell)
             );
 
             roomsByCell.Add(cell, room);
         }
-
-        currentRoom = roomsByCell[startCell];
     }
 
-    private static List<RoomSide> GetConnectedSides(
-        Dictionary<Vector2Int, RoomLayout> layouts, Vector2Int cell)
+    private static void WarnAboutMixedSizes(FloorPlan plan)
     {
-        List<RoomSide> connected = new List<RoomSide>();
-        RoomLayout layout = layouts[cell];
+        RoomLayout first = plan.GetLayout(plan.StartCell);
 
-        foreach (RoomSide side in RoomSideExtensions.All)
+        foreach (Vector2Int cell in plan.Cells)
         {
-            Vector2Int neighborCell = cell + side.ToGridOffset();
+            RoomLayout layout = plan.GetLayout(cell);
 
-            if (!layouts.TryGetValue(neighborCell, out RoomLayout neighbor))
-                continue;
+            if (layout.Width != first.Width || layout.Height != first.Height)
+            {
+                Debug.LogWarning(
+                    "Room layouts on one floor should share a size, but " +
+                    layout.name + " differs from " + first.name
+                );
 
-            if (layout.HasPassage(side) && neighbor.HasPassage(side.Opposite()))
-                connected.Add(side);
+                return;
+            }
         }
-
-        return connected;
     }
 
-    private static Dictionary<Vector2Int, Vector2> ComputeCenters(
-        Dictionary<Vector2Int, RoomLayout> layouts, Vector2Int startCell)
+    private static Dictionary<Vector2Int, Vector2> ComputeCenters(FloorPlan plan)
     {
         Dictionary<Vector2Int, Vector2> centers =
             new Dictionary<Vector2Int, Vector2>();
 
         Queue<Vector2Int> queue = new Queue<Vector2Int>();
 
-        centers[startCell] = Vector2.zero;
-        queue.Enqueue(startCell);
+        centers[plan.StartCell] = Vector2.zero;
+        queue.Enqueue(plan.StartCell);
 
         while (queue.Count > 0)
         {
             Vector2Int cell = queue.Dequeue();
-            RoomLayout layout = layouts[cell];
+            RoomLayout layout = plan.GetLayout(cell);
 
-            foreach (RoomSide side in GetConnectedSides(layouts, cell))
+            foreach (RoomSide side in plan.GetLinkedSides(cell))
             {
                 Vector2Int neighborCell = cell + side.ToGridOffset();
 
@@ -199,7 +230,7 @@ public class RoomManager : MonoBehaviour
 
                 centers[neighborCell] =
                     centers[cell] +
-                    GetNeighborOffset(layout, layouts[neighborCell], side);
+                    GetNeighborOffset(layout, plan.GetLayout(neighborCell), side);
 
                 queue.Enqueue(neighborCell);
             }

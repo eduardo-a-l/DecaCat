@@ -87,6 +87,11 @@ public class GameManager : MonoBehaviour
             Resume();
     }
 
+    public void NextFloor()
+    {
+        CurrentFloor++;
+    }
+
     public void Resume()
     {
         if (State != GameState.Paused && State != GameState.Map)

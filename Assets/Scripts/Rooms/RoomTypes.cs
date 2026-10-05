@@ -8,6 +8,14 @@ public enum RoomSide
     West
 }
 
+public enum RoomType
+{
+    Start,
+    Normal,
+    Power,
+    Boss
+}
+
 public enum RoomState
 {
     Unexplored,

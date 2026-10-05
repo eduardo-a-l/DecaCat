@@ -1552,13 +1552,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RoomManager
   tileSet: {fileID: 11400000, guid: 905f611843374c9494a069f883158b4b, type: 2}
-  rooms:
-  - layout: {fileID: 11400000, guid: 0c743f62ade44c7b8c7eb8935edc7b67, type: 2}
-    gridPosition: {x: 0, y: 0}
-  - layout: {fileID: 11400000, guid: 51cebb335f524518ad480b9afbbc3fda, type: 2}
-    gridPosition: {x: 1, y: 0}
-  - layout: {fileID: 11400000, guid: 71c062bbaa864510998500bc25c56666, type: 2}
-    gridPosition: {x: 0, y: 1}
+  floors:
+  - {fileID: 11400000, guid: 21a7f1a77bc243da8be7eb76c7b729e3, type: 2}
   inputReader: {fileID: 1980000021}
   transitionDuration: 0.6
 --- !u!114 &1980000051
