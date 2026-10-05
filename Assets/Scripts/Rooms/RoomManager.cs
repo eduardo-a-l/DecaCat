@@ -30,6 +30,19 @@ public class RoomManager : MonoBehaviour
 
     public Room CurrentRoom => currentRoom;
     public bool IsTransitioning => isTransitioning;
+    public IEnumerable<Room> Rooms => roomsByCell.Values;
+
+    public bool TryGetNeighbor(Room room, RoomSide side, out Room neighbor)
+    {
+        neighbor = null;
+
+        if (room == null || !room.IsConnected(side))
+            return false;
+
+        return roomsByCell.TryGetValue(
+            room.GridPosition + side.ToGridOffset(), out neighbor
+        );
+    }
 
     private void Start()
     {

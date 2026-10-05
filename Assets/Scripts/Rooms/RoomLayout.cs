@@ -8,8 +8,9 @@ public class RoomLayout : ScriptableObject
     [Header("Rules")]
     [SerializeField] private bool requiresClear = true;
     [SerializeField] private Enemy[] enemyPrefabs;
+    [SerializeField] private Crate cratePrefab;
 
-    [Header("Layout:   #  wall     .  floor     E  enemy spawn")]
+    [Header("Layout:   #  wall    .  floor    E  enemy    C  crate")]
     [SerializeField, TextArea(12, 24)] private string layout;
 
     [NonSerialized] private string[] rows;
@@ -17,6 +18,7 @@ public class RoomLayout : ScriptableObject
 
     public bool RequiresClear => requiresClear;
     public Enemy[] EnemyPrefabs => enemyPrefabs;
+    public Crate CratePrefab => cratePrefab;
 
     public int Width
     {
@@ -59,12 +61,17 @@ public class RoomLayout : ScriptableObject
     {
         char cell = GetCell(x, y);
 
-        return cell == '.' || cell == 'E';
+        return cell == '.' || cell == 'E' || cell == 'C';
     }
 
     public bool IsSpawn(int x, int y)
     {
         return GetCell(x, y) == 'E';
+    }
+
+    public bool IsCrate(int x, int y)
+    {
+        return GetCell(x, y) == 'C';
     }
 
     public RoomSide? GetPassageSide(int x, int y)

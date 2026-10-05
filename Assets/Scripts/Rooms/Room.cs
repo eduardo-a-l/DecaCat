@@ -16,6 +16,7 @@ public class Room : MonoBehaviour
     private RoomManager manager;
     private RoomLayout layout;
     private Transform gridTransform;
+    private readonly List<RoomSide> linkedSides = new List<RoomSide>();
 
     public event Action<Room> Cleared;
 
@@ -24,6 +25,7 @@ public class Room : MonoBehaviour
     public RoomLayout Layout => layout;
     public Vector3 Center => transform.position;
     public Vector2 Size => new Vector2(layout.Width, layout.Height);
+    public IReadOnlyList<RoomSide> ConnectedSides => linkedSides;
 
     private void Update()
     {
@@ -39,6 +41,8 @@ public class Room : MonoBehaviour
         manager = owner;
         layout = roomLayout;
         GridPosition = gridPosition;
+        linkedSides.Clear();
+        linkedSides.AddRange(connectedSides);
         transform.position = new Vector3(center.x, center.y, 0f);
 
         gridTransform = new GameObject("Grid", typeof(Grid)).transform;
@@ -53,6 +57,7 @@ public class Room : MonoBehaviour
         Tile floorTile = tileSet.CreateFloorTile();
         Tile wallTile = tileSet.CreateWallTile();
         List<Vector2Int> spawnCells = new List<Vector2Int>();
+        List<Vector2Int> crateCells = new List<Vector2Int>();
 
         for (int y = 0; y < layout.Height; y++)
         {
@@ -74,6 +79,9 @@ public class Room : MonoBehaviour
 
                 if (layout.IsSpawn(x, y))
                     spawnCells.Add(new Vector2Int(x, y));
+
+                if (layout.IsCrate(x, y))
+                    crateCells.Add(new Vector2Int(x, y));
             }
         }
 
@@ -81,6 +89,7 @@ public class Room : MonoBehaviour
             CreatePassage(side, tileSet);
 
         SpawnEnemies(spawnCells);
+        SpawnCrates(crateCells);
     }
 
     public void Activate()
@@ -114,14 +123,21 @@ public class Room : MonoBehaviour
         manager.RequestTransition(this, side);
     }
 
+    public bool IsConnected(RoomSide side)
+    {
+        return linkedSides.Contains(side);
+    }
+
+    public Vector3 GetPassageWorldCenter(RoomSide side)
+    {
+        return transform.TransformPoint(layout.GetPassageLocalCenter(side));
+    }
+
     public Vector3 GetEntryPosition(RoomSide side)
     {
-        Vector3 passageCenter =
-            transform.TransformPoint(layout.GetPassageLocalCenter(side));
-
         Vector2 inward = -side.ToVector();
 
-        return passageCenter + (Vector3)(inward * EntryDepth);
+        return GetPassageWorldCenter(side) + (Vector3)(inward * EntryDepth);
     }
 
     private void CheckCleared()
@@ -250,6 +266,24 @@ public class Room : MonoBehaviour
         RoomPassage passage = passageObject.AddComponent<RoomPassage>();
         passage.Setup(this, side, trigger, barriers);
         passages.Add(passage);
+    }
+
+    private void SpawnCrates(List<Vector2Int> crateCells)
+    {
+        Crate prefab = layout.CratePrefab;
+
+        if (prefab == null || crateCells.Count == 0)
+            return;
+
+        Transform crateRoot = new GameObject("Crates").transform;
+        crateRoot.SetParent(transform, false);
+
+        foreach (Vector2Int cell in crateCells)
+        {
+            Vector3 position = transform.TransformPoint(CellToLocal(cell));
+
+            Instantiate(prefab, position, Quaternion.identity, crateRoot);
+        }
     }
 
     private void SpawnEnemies(List<Vector2Int> spawnCells)

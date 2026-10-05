@@ -283,6 +283,7 @@ GameObject:
   - component: {fileID: 453055487}
   - component: {fileID: 453055491}
   - component: {fileID: 453055492}
+  - component: {fileID: 1980000051}
   m_Layer: 5
   m_Name: GameCanvas
   m_TagString: Untagged
@@ -842,7 +843,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2800449215981f44fab8a91e0af2df73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerItem
-  startingItem: {fileID: 11400000, guid: 5c2f609af37a2a343b6fe139f8df408d, type: 2}
+  startingItem: {fileID: 0}
   droppedItemPrefab: {fileID: 5646304530710650892, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
   interactKey: 101
   dropKey: 113
@@ -1232,67 +1233,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1499238373
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 2061182551629421930, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_Name
-      value: ItemPickup (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 5.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 2.82
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2588076543710472180, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5646304530710650892, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
-      propertyPath: itemData
-      value: 
-      objectReference: {fileID: 11400000, guid: 546aae90c1088594289bca8ead700bb5, type: 2}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}
 --- !u!1 &1619967880
 GameObject:
   m_ObjectHideFlags: 0
@@ -1770,6 +1710,23 @@ MonoBehaviour:
     gridPosition: {x: 0, y: 1}
   inputReader: {fileID: 1980000021}
   transitionDuration: 0.6
+--- !u!114 &1980000051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453055486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 222d3f4ed25a424e94f43cfec38222d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameHud
+  pauseSprite: {fileID: 0}
+  mapSprite: {fileID: 0}
+  font: {fileID: 0}
+  floorFormat: "Floor {0}"
+  gameManager: {fileID: 1980000033}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1779,7 +1736,6 @@ SceneRoots:
   - {fileID: 453055490}
   - {fileID: 769149257}
   - {fileID: 1092636116}
-  - {fileID: 1499238373}
   - {fileID: 1329614022}
   - {fileID: 1980000032}
   - {fileID: 1980000042}

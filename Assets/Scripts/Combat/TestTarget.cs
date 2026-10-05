@@ -4,6 +4,8 @@ public class TestTarget : MonoBehaviour, IDamageable
 {
     [SerializeField] private int health = 3;
 
+    public bool CostsDurability => true;
+
     public void TakeDamage(int damage)
     {
         health -= damage;

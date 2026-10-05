@@ -18,6 +18,10 @@ public class ItemData : ScriptableObject
     [SerializeField] private float swingAngle = 100f;
     [SerializeField] private float swingDuration = 0.2f;
 
+    [Header("Swing Effect (optional sprite, drawn facing right)")]
+    [SerializeField] private Sprite swingEffectSprite;
+    [SerializeField] private Color swingEffectColor = new Color(1f, 1f, 1f, 0.9f);
+
     public string ItemName => itemName;
     public Sprite ItemSprite => itemSprite;
     public int MaxDurability => maxDurability;
@@ -28,4 +32,6 @@ public class ItemData : ScriptableObject
     public float AttackRadius => attackRadius;
     public float SwingAngle => swingAngle;
     public float SwingDuration => swingDuration;
+    public Sprite SwingEffectSprite => swingEffectSprite;
+    public Color SwingEffectColor => swingEffectColor;
 }

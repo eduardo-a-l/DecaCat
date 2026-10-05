@@ -80,6 +80,8 @@ public class MeleeAttack : MonoBehaviour
             Swing(angle, item.SwingAngle, item.SwingDuration)
         );
 
+        SwingEffect.Play(transform, angle, item);
+
         Vector2 attackPosition =
             (Vector2)transform.position +
             direction * item.AttackRange;
@@ -89,6 +91,7 @@ public class MeleeAttack : MonoBehaviour
         );
 
         HashSet<IDamageable> damaged = new HashSet<IDamageable>();
+        bool spendDurability = false;
 
         foreach (Collider2D hit in hits)
         {
@@ -98,10 +101,13 @@ public class MeleeAttack : MonoBehaviour
             if (target == null || !damaged.Add(target))
                 continue;
 
+            if (target.CostsDurability)
+                spendDurability = true;
+
             target.TakeDamage(item.Damage);
         }
 
-        if (damaged.Count > 0)
+        if (spendDurability)
             playerItem.UseItem();
     }
 

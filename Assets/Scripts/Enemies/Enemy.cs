@@ -28,6 +28,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
 
     public event System.Action<Enemy> Died;
 
+    public bool CostsDurability => true;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 

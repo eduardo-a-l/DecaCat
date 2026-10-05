@@ -1,10 +1,18 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class PlayerInputReader : MonoBehaviour
 {
+    private static readonly List<RaycastResult> RaycastResults =
+        new List<RaycastResult>();
+
     [SerializeField] private KeyCode interactKey = KeyCode.E;
     [SerializeField] private KeyCode dropKey = KeyCode.Q;
     [SerializeField] private KeyCode restartKey = KeyCode.R;
+    [SerializeField] private KeyCode pauseKey = KeyCode.Escape;
+    [SerializeField] private KeyCode mapKey = KeyCode.M;
 
     private Camera mainCamera;
 
@@ -46,8 +54,34 @@ public class PlayerInputReader : MonoBehaviour
         }
     }
 
-    public bool AttackPressed => InputEnabled && Input.GetMouseButtonDown(0);
+    public bool AttackPressed =>
+        InputEnabled && Input.GetMouseButtonDown(0) && !IsPointerOverButton();
+
     public bool InteractPressed => InputEnabled && Input.GetKeyDown(interactKey);
     public bool DropPressed => InputEnabled && Input.GetKeyDown(dropKey);
     public bool RestartPressed => Input.GetKeyDown(restartKey);
+    public bool PausePressed => Input.GetKeyDown(pauseKey);
+    public bool MapPressed => Input.GetKeyDown(mapKey);
+
+    private static bool IsPointerOverButton()
+    {
+        EventSystem eventSystem = EventSystem.current;
+
+        if (eventSystem == null)
+            return false;
+
+        PointerEventData pointerData = new PointerEventData(eventSystem);
+        pointerData.position = Input.mousePosition;
+
+        RaycastResults.Clear();
+        eventSystem.RaycastAll(pointerData, RaycastResults);
+
+        foreach (RaycastResult result in RaycastResults)
+        {
+            if (result.gameObject.GetComponentInParent<Selectable>() != null)
+                return true;
+        }
+
+        return false;
+    }
 }

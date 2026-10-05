@@ -76,7 +76,8 @@ public class PlayerItem : MonoBehaviour
 
         foreach (ItemPickup pickup in nearbyPickups)
         {
-            if (pickup == null || pickup.ItemData == null)
+            if (pickup == null || pickup.ItemData == null ||
+                !pickup.isActiveAndEnabled)
                 continue;
 
             float distance =
