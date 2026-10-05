@@ -89,6 +89,19 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         body.linearVelocity = direction.normalized * moveSpeed;
     }
 
+    public void SetFrozen(bool frozen)
+    {
+        enabled = !frozen;
+
+        if (body == null)
+            return;
+
+        if (frozen)
+            body.linearVelocity = Vector2.zero;
+
+        body.simulated = !frozen;
+    }
+
     public virtual void TakeDamage(int damage)
     {
         if (isDead || damage <= 0)
