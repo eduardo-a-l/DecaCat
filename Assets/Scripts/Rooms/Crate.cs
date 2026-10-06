@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer))]
@@ -5,6 +6,7 @@ public class Crate : MonoBehaviour, IDamageable
 {
     private const int PlaceholderPixels = 16;
     private const float PlaceholderSize = 0.8f;
+    private const int FallSortingOrder = 5;
 
     private static Sprite placeholderSprite;
 
@@ -12,6 +14,9 @@ public class Crate : MonoBehaviour, IDamageable
     [SerializeField] private ItemData[] loot;
     [SerializeField] private ItemPickup pickupPrefab;
 
+    private SpriteRenderer spriteRenderer;
+    private BoxCollider2D boxCollider;
+    private int restingSortingOrder;
     private bool isBroken;
 
     public bool CostsDurability => false;
@@ -29,18 +34,25 @@ public class Crate : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
         if (spriteRenderer.sprite == null)
             spriteRenderer.sprite = PlaceholderSprite;
 
-        BoxCollider2D box = GetComponent<BoxCollider2D>();
+        restingSortingOrder = spriteRenderer.sortingOrder;
 
-        if (box == null)
-            box = gameObject.AddComponent<BoxCollider2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
 
-        box.size = spriteRenderer.sprite.bounds.size;
-        box.offset = spriteRenderer.sprite.bounds.center;
+        if (boxCollider == null)
+            boxCollider = gameObject.AddComponent<BoxCollider2D>();
+
+        boxCollider.size = spriteRenderer.sprite.bounds.size;
+        boxCollider.offset = spriteRenderer.sprite.bounds.center;
+    }
+
+    public void BeginFall(float height, float duration)
+    {
+        StartCoroutine(FallCoroutine(height, duration));
     }
 
     public void TakeDamage(int damage)
@@ -52,6 +64,30 @@ public class Crate : MonoBehaviour, IDamageable
 
         if (health <= 0)
             Break();
+    }
+
+    private IEnumerator FallCoroutine(float height, float duration)
+    {
+        Vector3 landed = transform.position;
+        float elapsed = 0f;
+
+        boxCollider.enabled = false;
+        spriteRenderer.sortingOrder = FallSortingOrder;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            transform.position = landed + Vector3.up * (height * (1f - t * t));
+
+            yield return null;
+        }
+
+        transform.position = landed;
+        spriteRenderer.sortingOrder = restingSortingOrder;
+        boxCollider.enabled = true;
     }
 
     private void Break()

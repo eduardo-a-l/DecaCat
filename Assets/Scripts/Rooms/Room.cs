@@ -146,6 +146,36 @@ public class Room : MonoBehaviour
         return GetPassageWorldCenter(side) + (Vector3)(inward * EntryDepth);
     }
 
+    public void AddEnemy(Enemy enemy)
+    {
+        if (enemy != null)
+            enemies.Add(enemy);
+    }
+
+    public List<Vector3> GetCornerPositions()
+    {
+        int last = layout.Height - 2;
+        int right = layout.Width - 2;
+
+        Vector2Int[] cells =
+        {
+            new Vector2Int(1, 1),
+            new Vector2Int(right, 1),
+            new Vector2Int(1, last),
+            new Vector2Int(right, last)
+        };
+
+        List<Vector3> corners = new List<Vector3>();
+
+        foreach (Vector2Int cell in cells)
+        {
+            if (layout.IsFloor(cell.x, cell.y))
+                corners.Add(transform.TransformPoint(CellToLocal(cell)));
+        }
+
+        return corners;
+    }
+
     private void CheckCleared()
     {
         if (State != RoomState.Active)

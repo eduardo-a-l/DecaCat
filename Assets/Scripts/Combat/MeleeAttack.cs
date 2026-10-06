@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class MeleeAttack : MonoBehaviour
 {
+    private const int SweepSamples = 5;
+    private const float PlayerDistanceTieBreak = 0.001f;
+
     [SerializeField] private PlayerItem playerItem;
     [SerializeField] private Transform weaponPivot;
     [SerializeField] private WeaponAiming weaponAiming;
@@ -82,33 +85,90 @@ public class MeleeAttack : MonoBehaviour
 
         SwingEffect.Play(transform, angle, item);
 
-        Vector2 attackPosition =
-            (Vector2)transform.position +
-            direction * item.AttackRange;
-
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            attackPosition, item.AttackRadius
-        );
-
-        HashSet<IDamageable> damaged = new HashSet<IDamageable>();
+        List<IDamageable> targets = CollectTargets(item, angle);
         bool spendDurability = false;
 
-        foreach (Collider2D hit in hits)
+        foreach (IDamageable target in targets)
         {
-            IDamageable target =
-                hit.GetComponentInParent<IDamageable>();
-
-            if (target == null || !damaged.Add(target))
-                continue;
-
             if (target.CostsDurability)
                 spendDurability = true;
 
             target.TakeDamage(item.Damage);
+
+            if (item.Knockback > 0f && target is IPushable pushable)
+                pushable.Push(transform.position, item.Knockback);
         }
 
         if (spendDurability)
             playerItem.UseItem();
+    }
+
+    private List<IDamageable> CollectTargets(ItemData item, float aimAngle)
+    {
+        Dictionary<IDamageable, float> scores =
+            new Dictionary<IDamageable, float>();
+
+        Vector2 origin = transform.position;
+        int samples = item.HitsMultipleTargets ? SweepSamples : 1;
+
+        for (int i = 0; i < samples; i++)
+        {
+            float angle = aimAngle;
+
+            if (samples > 1)
+            {
+                float t = (float)i / (samples - 1);
+                angle = aimAngle - item.SwingAngle / 2f + item.SwingAngle * t;
+            }
+
+            float radians = angle * Mathf.Deg2Rad;
+
+            Vector2 center =
+                origin +
+                new Vector2(Mathf.Cos(radians), Mathf.Sin(radians)) *
+                item.AttackRange;
+
+            Collider2D[] hits =
+                Physics2D.OverlapCircleAll(center, item.AttackRadius);
+
+            foreach (Collider2D hit in hits)
+            {
+                IDamageable target = hit.GetComponentInParent<IDamageable>();
+
+                if (target == null)
+                    continue;
+
+                float score =
+                    Vector2.Distance(center, hit.ClosestPoint(center)) +
+                    Vector2.Distance(origin, hit.bounds.center) *
+                    PlayerDistanceTieBreak;
+
+                if (!scores.TryGetValue(target, out float best) || score < best)
+                    scores[target] = score;
+            }
+        }
+
+        if (item.HitsMultipleTargets)
+            return new List<IDamageable>(scores.Keys);
+
+        IDamageable closest = null;
+        float closestScore = float.MaxValue;
+
+        foreach (KeyValuePair<IDamageable, float> pair in scores)
+        {
+            if (pair.Value < closestScore)
+            {
+                closestScore = pair.Value;
+                closest = pair.Key;
+            }
+        }
+
+        List<IDamageable> result = new List<IDamageable>();
+
+        if (closest != null)
+            result.Add(closest);
+
+        return result;
     }
 
     private IEnumerator Swing(

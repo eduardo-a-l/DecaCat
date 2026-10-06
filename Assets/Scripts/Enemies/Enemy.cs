@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public abstract class Enemy : MonoBehaviour, IDamageable
+public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 {
     [Header("Hit Flash")]
     [SerializeField] private float flashInterval = 0.04f;
@@ -11,6 +11,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     private const int PlaceholderPixels = 64;
     private const float PlaceholderDiameter = 0.6f;
     private const float DamageTextGap = 0.15f;
+    private const float KnockbackDuration = 0.2f;
 
     private static Sprite placeholderSprite;
 
@@ -19,6 +20,8 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     private SpriteRenderer flashRenderer;
     private Collider2D bodyCollider;
     private Coroutine flashRoutine;
+    private Vector2 knockbackVelocity;
+    private float knockbackTimer;
 
     protected int maxHealth;
     protected int currentHealth;
@@ -33,6 +36,8 @@ public abstract class Enemy : MonoBehaviour, IDamageable
     public int MaxHealth => maxHealth;
 
     protected Rigidbody2D Body => body;
+
+    protected virtual bool CanBeKnockedBack => true;
 
     protected static Sprite PlaceholderSprite
     {
@@ -51,7 +56,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         body.gravityScale = 0f;
         body.freezeRotation = true;
 
-        flashRenderer = GetComponent<SpriteRenderer>();
+        flashRenderer = GetComponentInChildren<SpriteRenderer>();
         bodyCollider = GetComponent<Collider2D>();
     }
 
@@ -60,10 +65,37 @@ public abstract class Enemy : MonoBehaviour, IDamageable
         if (isDead)
             return;
 
+        if (knockbackTimer > 0f)
+        {
+            knockbackTimer -= Time.fixedDeltaTime;
+
+            body.linearVelocity =
+                knockbackVelocity *
+                Mathf.Clamp01(knockbackTimer / KnockbackDuration);
+
+            return;
+        }
+
         MoveTowardsTarget();
     }
 
-    protected virtual void MoveTowardsTarget()
+    public void Push(Vector2 source, float distance)
+    {
+        if (isDead || !CanBeKnockedBack || distance <= 0f || body == null)
+            return;
+
+        Vector2 direction = body.position - source;
+
+        if (direction.sqrMagnitude < 0.0001f)
+            direction = Vector2.right;
+
+        knockbackVelocity =
+            direction.normalized * (2f * distance / KnockbackDuration);
+
+        knockbackTimer = KnockbackDuration;
+    }
+
+    protected Transform GetTarget()
     {
         if (target == null)
         {
@@ -73,13 +105,20 @@ public abstract class Enemy : MonoBehaviour, IDamageable
                 target = player.transform;
         }
 
-        if (target == null)
+        return target;
+    }
+
+    protected virtual void MoveTowardsTarget()
+    {
+        Transform chased = GetTarget();
+
+        if (chased == null)
         {
             body.linearVelocity = Vector2.zero;
             return;
         }
 
-        Vector2 direction = (Vector2)target.position - body.position;
+        Vector2 direction = (Vector2)chased.position - body.position;
 
         if (direction.sqrMagnitude < 0.0001f)
         {

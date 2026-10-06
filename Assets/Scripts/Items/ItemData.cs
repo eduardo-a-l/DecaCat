@@ -17,6 +17,8 @@ public class ItemData : ScriptableObject
     [SerializeField] private float attackRadius = 0.5f;
     [SerializeField] private float swingAngle = 100f;
     [SerializeField] private float swingDuration = 0.2f;
+    [SerializeField] private bool hitsMultipleTargets;
+    [SerializeField] private float knockback;
 
     [Header("Swing Effect (optional sprite, drawn facing right)")]
     [SerializeField] private Sprite swingEffectSprite;
@@ -32,6 +34,8 @@ public class ItemData : ScriptableObject
     public float AttackRadius => attackRadius;
     public float SwingAngle => swingAngle;
     public float SwingDuration => swingDuration;
+    public bool HitsMultipleTargets => hitsMultipleTargets;
+    public float Knockback => knockback;
     public Sprite SwingEffectSprite => swingEffectSprite;
     public Color SwingEffectColor => swingEffectColor;
 }
