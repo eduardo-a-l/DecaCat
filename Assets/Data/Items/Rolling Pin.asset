@@ -16,10 +16,12 @@ MonoBehaviour:
   itemSprite: {fileID: -4635790234179710389, guid: b485a9c4fd2ad5448950bd17e8c94d3f, type: 3}
   maxDurability: 10
   damage: 10
-  cooldown: 2.0
-  attackRange: 0.25
+  cooldown: 2
+  attackRange: 0.5
   attackRadius: 0.5
   swingAngle: 160
   swingDuration: 0.25
   hitsMultipleTargets: 1
   knockback: 0
+  swingEffectSprite: {fileID: 0}
+  swingEffectColor: {r: 1, g: 1, b: 1, a: 0.9}

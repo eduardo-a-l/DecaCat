@@ -17,9 +17,11 @@ MonoBehaviour:
   maxDurability: 10
   damage: 5
   cooldown: 0.5
-  attackRange: 0.25
+  attackRange: 0.5
   attackRadius: 0.5
   swingAngle: 160
   swingDuration: 0.2
   hitsMultipleTargets: 1
   knockback: 0
+  swingEffectSprite: {fileID: 0}
+  swingEffectColor: {r: 1, g: 1, b: 1, a: 0.9}
