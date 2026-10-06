@@ -57,6 +57,8 @@ public class PlayerInputReader : MonoBehaviour
     public bool AttackPressed =>
         InputEnabled && Input.GetMouseButtonDown(0) && !IsPointerOverButton();
 
+    public string InteractKeyLabel => interactKey.ToString();
+
     public bool InteractPressed => InputEnabled && Input.GetKeyDown(interactKey);
     public bool DropPressed => InputEnabled && Input.GetKeyDown(dropKey);
     public bool RestartPressed => Input.GetKeyDown(restartKey);

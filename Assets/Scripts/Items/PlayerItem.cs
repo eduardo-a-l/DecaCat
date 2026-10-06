@@ -37,6 +37,8 @@ public class PlayerItem : MonoBehaviour
 
         if (inputReader.DropPressed)
             DropCurrentItem();
+
+        UpdatePrompts();
     }
 
     public void EnterPickupRange(ItemPickup pickup)
@@ -47,7 +49,22 @@ public class PlayerItem : MonoBehaviour
 
     public void ExitPickupRange(ItemPickup pickup)
     {
+        if (pickup != null)
+            pickup.SetPromptVisible(false, string.Empty);
+
         nearbyPickups.Remove(pickup);
+    }
+
+    private void UpdatePrompts()
+    {
+        ItemPickup closest = GetClosestPickup();
+        string key = inputReader.InteractKeyLabel;
+
+        foreach (ItemPickup pickup in nearbyPickups)
+        {
+            if (pickup != null)
+                pickup.SetPromptVisible(pickup == closest, key);
+        }
     }
 
     private void Interact()
@@ -141,12 +158,9 @@ public class PlayerItem : MonoBehaviour
             return false;
         }
 
-        Vector3 dropPosition =
-            transform.position + Vector3.down * 0.6f;
-
         ItemPickup dropped = Instantiate(
             droppedItemPrefab,
-            dropPosition,
+            transform.position,
             Quaternion.identity
         );
 

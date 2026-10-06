@@ -17,6 +17,9 @@ public class SlimeKing : Enemy
     private const float CrateFallHeight = 8f;
     private const float CrateFallTime = 0.6f;
     private const float CornerClearRadius = 0.45f;
+    private const float SummonSpacing = 1f;
+    private const float SummonRingGap = 0.9f;
+    private const float SummonRingDepth = 0.8f;
     private const float ShadowAlpha = 0.3f;
     private const int ShadowSortingOrder = -4;
 
@@ -42,6 +45,8 @@ public class SlimeKing : Enemy
     [Header("Summons")]
     [SerializeField] private Slime slimePrefab;
     [SerializeField] private int slimesPerSummon = 2;
+    [SerializeField] private float summonDelay = 1.2f;
+    [SerializeField] private float summonMarkerRadius = 0.6f;
     [SerializeField] private int[] summonHealthThresholds = { 150, 100, 50 };
 
     [Header("Falling crates")]
@@ -49,8 +54,17 @@ public class SlimeKing : Enemy
     [SerializeField] private float crateInterval = 30f;
     [SerializeField] private int cratesPerDrop = 2;
 
+    private class PendingSummon
+    {
+        public Vector3 Position;
+        public float Timer;
+    }
+
     private readonly Dictionary<Crate, Vector3> droppedCrates =
         new Dictionary<Crate, Vector3>();
+
+    private readonly List<PendingSummon> pendingSummons =
+        new List<PendingSummon>();
 
     private CircleCollider2D circleCollider;
     private Transform visual;
@@ -125,6 +139,7 @@ public class SlimeKing : Enemy
         float step = Time.fixedDeltaTime;
 
         UpdateCrateTimer(step);
+        UpdateSummons(step);
 
         stateTimer += step;
 
@@ -263,27 +278,90 @@ public class SlimeKing : Enemy
         if (slimePrefab == null || slimesPerSummon <= 0)
             return;
 
-        Room room = GetComponentInParent<Room>();
-
-        float ring = circleCollider.radius + 0.8f;
-        float startAngle = Random.Range(0f, 360f);
-
-        for (int i = 0; i < slimesPerSummon; i++)
+        foreach (Vector3 position in FindSummonPositions())
         {
-            float angle =
-                (startAngle + 360f * i / slimesPerSummon) * Mathf.Deg2Rad;
-
-            Vector3 position =
-                transform.position +
-                new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * ring;
-
-            Slime slime = Instantiate(
-                slimePrefab, position, Quaternion.identity, transform.parent
+            GroundMarker.Spawn(
+                position, summonMarkerRadius, summonDelay, MarkerColor
             );
 
-            if (room != null)
-                room.AddEnemy(slime);
+            PendingSummon pending = new PendingSummon();
+            pending.Position = position;
+            pending.Timer = summonDelay;
+
+            pendingSummons.Add(pending);
         }
+    }
+
+    private void UpdateSummons(float step)
+    {
+        for (int i = pendingSummons.Count - 1; i >= 0; i--)
+        {
+            PendingSummon pending = pendingSummons[i];
+
+            pending.Timer -= step;
+
+            if (pending.Timer > 0f)
+                continue;
+
+            SpawnSlime(pending.Position);
+            pendingSummons.RemoveAt(i);
+        }
+    }
+
+    private void SpawnSlime(Vector3 position)
+    {
+        Slime slime = Instantiate(
+            slimePrefab, position, Quaternion.identity, transform.parent
+        );
+
+        Room room = GetComponentInParent<Room>();
+
+        if (room != null)
+            room.AddEnemy(slime);
+    }
+
+    private List<Vector3> FindSummonPositions()
+    {
+        List<Vector3> positions = new List<Vector3>();
+
+        float minDistance = circleCollider.radius + SummonRingGap;
+        float maxDistance = minDistance + SummonRingDepth;
+        int attempts = slimesPerSummon * 20;
+
+        for (int i = 0; i < attempts && positions.Count < slimesPerSummon; i++)
+        {
+            float angle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+            float distance = Random.Range(minDistance, maxDistance);
+
+            Vector3 candidate =
+                transform.position +
+                new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0f) * distance;
+
+            if (IsSummonSpotFree(candidate, positions))
+                positions.Add(candidate);
+        }
+
+        return positions;
+    }
+
+    private bool IsSummonSpotFree(Vector3 position, List<Vector3> chosen)
+    {
+        foreach (Vector3 other in chosen)
+        {
+            if (Vector2.Distance(other, position) < SummonSpacing)
+                return false;
+        }
+
+        foreach (Collider2D hit in
+                 Physics2D.OverlapCircleAll(position, summonMarkerRadius))
+        {
+            if (hit.isTrigger || hit.GetComponentInParent<SlimeKing>() == this)
+                continue;
+
+            return false;
+        }
+
+        return true;
     }
 
     private void UpdateCrateTimer(float step)

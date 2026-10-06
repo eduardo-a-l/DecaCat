@@ -122,6 +122,8 @@ MonoBehaviour:
   landingRadius: 1.6
   slimePrefab: {fileID: 4120071188240761046, guid: dae4e8c50dc14f7987df333c94fadbeb, type: 3}
   slimesPerSummon: 2
+  summonDelay: 1.2
+  summonMarkerRadius: 0.6
   summonHealthThresholds:
   - 150
   - 100
