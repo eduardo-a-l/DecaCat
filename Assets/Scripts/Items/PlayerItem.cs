@@ -9,6 +9,7 @@ public class PlayerItem : MonoBehaviour
     private PlayerInputReader inputReader;
     private ItemData currentItem;
     private int currentDurability;
+    private bool loadoutApplied;
 
     private readonly HashSet<ItemPickup> nearbyPickups =
         new HashSet<ItemPickup>();
@@ -23,7 +24,7 @@ public class PlayerItem : MonoBehaviour
 
     private void Start()
     {
-        if (startingItem != null)
+        if (startingItem != null && !loadoutApplied)
             EquipItem(startingItem);
     }
 
@@ -83,6 +84,8 @@ public class PlayerItem : MonoBehaviour
         nearbyPickups.Remove(pickup);
         Destroy(pickup.gameObject);
 
+        GameStats.Add(StatType.ItemsPickedUp);
+
         EquipItem(newItem, durability);
     }
 
@@ -111,12 +114,22 @@ public class PlayerItem : MonoBehaviour
         return closest;
     }
 
+    public void ApplyLoadout(ItemData item, int durability)
+    {
+        loadoutApplied = true;
+
+        if (item != null)
+            EquipItem(item, durability);
+    }
+
     private void EquipItem(ItemData item, int durability = -1)
     {
         if (item == null)
             return;
 
         currentItem = item;
+
+        GameStats.RecordWeaponUsed(item.ItemName);
 
         currentDurability = durability < 0
             ? item.MaxDurability
@@ -140,6 +153,7 @@ public class PlayerItem : MonoBehaviour
         if (currentDurability <= 0)
         {
             Debug.Log(currentItem.ItemName + " broke");
+            GameStats.Add(StatType.WeaponsBroken);
             currentItem = null;
             currentDurability = 0;
         }

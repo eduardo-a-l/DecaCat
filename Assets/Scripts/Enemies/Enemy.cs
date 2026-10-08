@@ -201,8 +201,16 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     protected virtual void Die()
     {
         isDead = true;
+
+        GameStats.Add(StatType.EnemiesDefeated);
+        RecordDefeat();
+
         Died?.Invoke(this);
         Destroy(gameObject);
+    }
+
+    protected virtual void RecordDefeat()
+    {
     }
 
     protected virtual void HandleContact(Collision2D collision)

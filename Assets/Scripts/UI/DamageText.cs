@@ -16,6 +16,9 @@ public class DamageText : MonoBehaviour
 
     public static void Spawn(Vector3 position, int amount)
     {
+        if (!GameSettings.ShowDamageNumbers)
+            return;
+
         GameObject textObject = new GameObject(
             "DamageText", typeof(RectTransform)
         );

@@ -12,7 +12,7 @@ public class GameOverScreen : MonoBehaviour
     private CanvasGroup canvasGroup;
     private float elapsed;
 
-    public static GameOverScreen Create(Action onRestart)
+    public static GameOverScreen Create(Action onRestartFloor, Action onMainMenu)
     {
         GameObject root = UIFactory.CreateOverlayCanvas("GameOverScreen", 100);
 
@@ -25,18 +25,23 @@ public class GameOverScreen : MonoBehaviour
         UIFactory.CreatePanel(root.transform, "Background", BackgroundColor);
 
         UIFactory.CreateText(
-            root.transform, "Title", "GAME OVER", 120f, TitleColor,
-            new Vector2(0f, 140f), new Vector2(1200f, 160f)
+            root.transform, "Title", "YOU DIED", 120f, TitleColor,
+            new Vector2(0f, 190f), new Vector2(1200f, 160f)
         );
 
         UIFactory.CreateButton(
-            root.transform, "RestartButton", "Restart",
-            new Vector2(0f, -40f), new Vector2(420f, 100f), onRestart
+            root.transform, "RestartButton", "Restart Floor",
+            new Vector2(0f, 10f), new Vector2(520f, 100f), onRestartFloor, 50f
+        );
+
+        UIFactory.CreateButton(
+            root.transform, "MenuButton", "Main Menu",
+            new Vector2(0f, -115f), new Vector2(520f, 100f), onMainMenu, 50f
         );
 
         UIFactory.CreateText(
-            root.transform, "Hint", "or press R", 32f, HintColor,
-            new Vector2(0f, -170f), new Vector2(600f, 50f)
+            root.transform, "Hint", "or press R to restart the floor", 32f,
+            HintColor, new Vector2(0f, -235f), new Vector2(900f, 50f)
         );
 
         return screen;

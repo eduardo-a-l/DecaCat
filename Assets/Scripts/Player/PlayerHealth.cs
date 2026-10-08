@@ -11,6 +11,7 @@ public class PlayerHealth : MonoBehaviour
     private SpriteRenderer spriteRenderer;
 
     public event System.Action Died;
+    public event System.Action Damaged;
 
     public bool IsDead => currentHealth <= 0;
     public int CurrentHealth => currentHealth;
@@ -31,6 +32,8 @@ public class PlayerHealth : MonoBehaviour
 
         Debug.Log("Player health: " + currentHealth + "/" + maxHealth);
 
+        Damaged?.Invoke();
+
         if (currentHealth == 0)
         {
             Die();
@@ -38,6 +41,17 @@ public class PlayerHealth : MonoBehaviour
         }
 
         StartCoroutine(InvulnerabilityCoroutine());
+    }
+
+    public void RestoreFullHealth()
+    {
+        StopAllCoroutines();
+
+        isInvulnerable = false;
+        currentHealth = maxHealth;
+
+        if (spriteRenderer != null)
+            spriteRenderer.enabled = true;
     }
 
     private IEnumerator InvulnerabilityCoroutine()

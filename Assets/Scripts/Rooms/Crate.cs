@@ -94,6 +94,8 @@ public class Crate : MonoBehaviour, IDamageable
     {
         isBroken = true;
 
+        GameStats.Add(StatType.CratesBroken);
+
         DropLoot();
         Destroy(gameObject);
     }

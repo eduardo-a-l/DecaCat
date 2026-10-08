@@ -193,6 +193,11 @@ public class SlimeKing : Enemy
         }
     }
 
+    protected override void RecordDefeat()
+    {
+        GameStats.Add(StatType.BossesDefeated);
+    }
+
     private void EnterState(State next, float duration)
     {
         state = next;

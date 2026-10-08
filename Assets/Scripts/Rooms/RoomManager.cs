@@ -20,6 +20,8 @@ public class RoomManager : MonoBehaviour
     private bool hasGenerated;
     private int floorNumber = 1;
 
+    public event System.Action<int, int> FloorGenerated;
+
     public Room CurrentRoom => currentRoom;
     public bool IsTransitioning => isTransitioning;
     public IEnumerable<Room> Rooms => roomsByCell.Values;
@@ -91,16 +93,14 @@ public class RoomManager : MonoBehaviour
             return;
         }
 
-        int seed = config.Seed != 0
-            ? config.Seed + number
-            : Random.Range(1, int.MaxValue);
+        int seed = ChooseSeed(config, number);
 
         FloorPlan plan = FloorGenerator.Generate(config, seed);
 
         if (plan == null)
             return;
 
-        ClearFloor();
+        ClearFloor(hasGenerated || number > 1);
 
         floorNumber = number;
         BuildRooms(plan);
@@ -128,6 +128,21 @@ public class RoomManager : MonoBehaviour
 
         currentRoom.gameObject.SetActive(true);
         currentRoom.Enter();
+
+        FloorGenerated?.Invoke(number, plan.Seed);
+    }
+
+    private static int ChooseSeed(FloorConfig config, int number)
+    {
+        if (config.Seed != 0)
+            return config.Seed + number;
+
+        if (SaveSession.IsActive &&
+            SaveSession.Data.floor == number &&
+            SaveSession.Data.floorSeed != 0)
+            return SaveSession.Data.floorSeed;
+
+        return Random.Range(1, int.MaxValue);
     }
 
     private FloorConfig GetConfig(int number)
@@ -138,7 +153,7 @@ public class RoomManager : MonoBehaviour
         return floors[Mathf.Clamp(number - 1, 0, floors.Length - 1)];
     }
 
-    private void ClearFloor()
+    private void ClearFloor(bool removeLoosePickups)
     {
         foreach (Room room in roomsByCell.Values)
         {
@@ -149,7 +164,7 @@ public class RoomManager : MonoBehaviour
         roomsByCell.Clear();
         currentRoom = null;
 
-        if (!hasGenerated)
+        if (!removeLoosePickups)
             return;
 
         foreach (ItemPickup pickup in

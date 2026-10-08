@@ -34,6 +34,11 @@ public class Ghost : Enemy
         ActiveGhosts.Remove(this);
     }
 
+    protected override void RecordDefeat()
+    {
+        GameStats.Add(StatType.GhostsDefeated);
+    }
+
     protected override void MoveTowardsTarget()
     {
         Transform chased = GetTarget();

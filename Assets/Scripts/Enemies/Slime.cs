@@ -61,6 +61,13 @@ public class Slime : Enemy
         Body.linearVelocity = Vector2.zero;
 
         ApplyStage(data.Big, true, combinedHealth);
+
+        GameStats.Add(StatType.SlimeMerges);
+    }
+
+    protected override void RecordDefeat()
+    {
+        GameStats.Add(StatType.SlimesDefeated);
     }
 
     private void Absorb()
