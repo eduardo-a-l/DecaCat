@@ -6,7 +6,6 @@ public class MainMenu : MonoBehaviour
     private const string GameScene = "Game";
 
     private static readonly Color BackgroundColor = new Color(0.05f, 0.05f, 0.07f, 1f);
-    private static readonly Color SubtitleColor = new Color(1f, 1f, 1f, 0.55f);
     private static readonly Vector2 ButtonSize = new Vector2(560f, 100f);
 
     private GameObject current;
@@ -35,11 +34,6 @@ public class MainMenu : MonoBehaviour
         UIFactory.CreateText(
             root.transform, "Title", "DECACAT", 170f, Color.white,
             new Vector2(0f, 290f), new Vector2(1400f, 220f)
-        );
-
-        UIFactory.CreateText(
-            root.transform, "Subtitle", "Ten is the number", 40f, SubtitleColor,
-            new Vector2(0f, 180f), new Vector2(900f, 60f)
         );
 
         AddButton(root, "PlayButton", "Play", 40f, ShowSlots);

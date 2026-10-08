@@ -30,32 +30,46 @@ public class SwingEffect : MonoBehaviour
 
     public static void Play(Transform owner, float aimAngle, ItemData item)
     {
+        Play(
+            owner, aimAngle, item.AttackRange, item.AttackRadius,
+            item.SwingAngle, item.SwingDuration,
+            item.SwingEffectSprite, item.SwingEffectColor
+        );
+    }
+
+    public static void Play(
+        Transform owner, float aimAngle, float range, float radius,
+        float swingAngle, float swingDuration, Sprite sprite, Color color)
+    {
         GameObject pivot = new GameObject("SwingEffect");
         pivot.transform.position = owner.position;
 
         SwingEffect effect = pivot.AddComponent<SwingEffect>();
-        effect.Begin(owner, aimAngle, item);
+
+        effect.Begin(
+            owner, aimAngle, range, radius,
+            swingAngle, swingDuration, sprite, color
+        );
     }
 
-    private void Begin(Transform owner, float aimAngle, ItemData item)
+    private void Begin(
+        Transform owner, float aimAngle, float range, float radius,
+        float swingAngle, float swingDuration, Sprite effectSprite, Color color)
     {
         follow = owner;
-        startAngle = aimAngle - item.SwingAngle / 2f;
-        endAngle = aimAngle + item.SwingAngle / 2f;
-        duration = Mathf.Max(0.05f, item.SwingDuration);
-        baseColor = item.SwingEffectColor;
+        startAngle = aimAngle - swingAngle / 2f;
+        endAngle = aimAngle + swingAngle / 2f;
+        duration = Mathf.Max(0.05f, swingDuration);
+        baseColor = color;
 
-        Sprite sprite = item.SwingEffectSprite != null
-            ? item.SwingEffectSprite
-            : DefaultSprite;
+        Sprite sprite = effectSprite != null ? effectSprite : DefaultSprite;
 
         GameObject slash = new GameObject("Slash");
         slash.transform.SetParent(transform, false);
-        slash.transform.localPosition = new Vector3(item.AttackRange, 0f, 0f);
+        slash.transform.localPosition = new Vector3(range, 0f, 0f);
 
         float width = Mathf.Max(0.01f, sprite.bounds.size.x);
-        slash.transform.localScale =
-            Vector3.one * (item.AttackRadius * 2f / width);
+        slash.transform.localScale = Vector3.one * (radius * 2f / width);
 
         slashRenderer = slash.AddComponent<SpriteRenderer>();
         slashRenderer.sprite = sprite;
