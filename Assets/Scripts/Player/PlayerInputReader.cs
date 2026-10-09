@@ -13,10 +13,20 @@ public class PlayerInputReader : MonoBehaviour
     [SerializeField] private KeyCode restartKey = KeyCode.R;
     [SerializeField] private KeyCode pauseKey = KeyCode.Escape;
     [SerializeField] private KeyCode mapKey = KeyCode.M;
+    [SerializeField] private bool forceTouchControls;
+
+    private const float TouchAimDistance = 6f;
 
     private Camera mainCamera;
+    private MobileControls mobile;
 
     public bool InputEnabled { get; set; } = true;
+
+    private void Awake()
+    {
+        if (Application.isMobilePlatform || forceTouchControls)
+            mobile = MobileControls.Create(this);
+    }
 
     public Vector2 Move
     {
@@ -28,9 +38,12 @@ public class PlayerInputReader : MonoBehaviour
             Vector2 move = new Vector2(
                 Input.GetAxisRaw("Horizontal"),
                 Input.GetAxisRaw("Vertical")
-            );
+            ).normalized;
 
-            return move.normalized;
+            if (mobile != null)
+                move = Vector2.ClampMagnitude(move + mobile.MoveValue, 1f);
+
+            return move;
         }
     }
 
@@ -38,6 +51,12 @@ public class PlayerInputReader : MonoBehaviour
     {
         get
         {
+            if (mobile != null)
+            {
+                return transform.position +
+                       (Vector3)(mobile.AimDirection * TouchAimDistance);
+            }
+
             if (mainCamera == null)
                 mainCamera = Camera.main;
 
@@ -54,13 +73,37 @@ public class PlayerInputReader : MonoBehaviour
         }
     }
 
-    public bool AttackPressed =>
-        InputEnabled && Input.GetMouseButtonDown(0) && !IsPointerOverButton();
+    public bool AttackPressed
+    {
+        get
+        {
+            if (!InputEnabled)
+                return false;
+
+            if (mobile != null)
+                return mobile.AttackBuffered;
+
+            return Input.GetMouseButtonDown(0) && !IsPointerOverButton();
+        }
+    }
+
+    public void AcknowledgeAttack()
+    {
+        if (mobile != null)
+            mobile.ClearAttackBuffer();
+    }
 
     public string InteractKeyLabel => interactKey.ToString();
 
-    public bool InteractPressed => InputEnabled && Input.GetKeyDown(interactKey);
-    public bool DropPressed => InputEnabled && Input.GetKeyDown(dropKey);
+    public bool InteractPressed =>
+        InputEnabled &&
+        (Input.GetKeyDown(interactKey) ||
+         (mobile != null && mobile.ConsumeInteract()));
+
+    public bool DropPressed =>
+        InputEnabled &&
+        (Input.GetKeyDown(dropKey) ||
+         (mobile != null && mobile.ConsumeDrop()));
     public bool RestartPressed => Input.GetKeyDown(restartKey);
     public bool PausePressed => Input.GetKeyDown(pauseKey);
     public bool MapPressed => Input.GetKeyDown(mapKey);

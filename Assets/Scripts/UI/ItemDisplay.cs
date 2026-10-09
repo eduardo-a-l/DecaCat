@@ -42,6 +42,24 @@ public class ItemDisplay : MonoBehaviour
         }
     }
 
+    public void ShiftBy(Vector2 delta)
+    {
+        if (itemImage == null)
+            return;
+
+        itemImage.rectTransform.anchoredPosition += delta;
+
+        Transform parent = itemImage.transform.parent;
+        Transform background =
+            parent != null ? parent.Find("ItemSlotBackground") : null;
+
+        if (background != null)
+            ((RectTransform)background).anchoredPosition += delta;
+
+        if (durabilityText != null)
+            durabilityText.rectTransform.anchoredPosition += delta;
+    }
+
     private void ShowDurability(int current, int max)
     {
         if (durabilityText == null)

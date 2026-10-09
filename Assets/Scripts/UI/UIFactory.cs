@@ -202,14 +202,16 @@ public static class UIFactory
             root, "Handle Slide Area", Vector2.zero, Vector2.one
         );
 
-        handleArea.offsetMin = new Vector2(12f, 0f);
-        handleArea.offsetMax = new Vector2(-12f, 0f);
+        float handleWidth = Application.isMobilePlatform ? 56f : 24f;
+
+        handleArea.offsetMin = new Vector2(handleWidth / 2f, 0f);
+        handleArea.offsetMax = new Vector2(-handleWidth / 2f, 0f);
 
         RectTransform handle = CreateStretched(
             handleArea, "Handle", Vector2.zero, Vector2.one
         );
 
-        handle.sizeDelta = new Vector2(24f, 0f);
+        handle.sizeDelta = new Vector2(handleWidth, 0f);
 
         Image handleImage = handle.gameObject.AddComponent<Image>();
         handleImage.color = Color.white;

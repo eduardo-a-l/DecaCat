@@ -28,7 +28,7 @@ public static class PauseMenu
         AddButton(root, "MenuButton", "Main Menu", -240f, onMainMenu);
 
         UIFactory.CreateText(
-            root.transform, "Hint", "Esc to resume", 32f, HintColor,
+            root.transform, "Hint", Application.isMobilePlatform ? "Back to resume" : "Esc to resume", 32f, HintColor,
             new Vector2(0f, -350f), new Vector2(600f, 50f)
         );
 

@@ -64,6 +64,8 @@ public class MeleeAttack : MonoBehaviour
         if (playerItem == null)
             return;
 
+        inputReader.AcknowledgeAttack();
+
         ItemData item = playerItem.CurrentItem;
 
         if (item == null)

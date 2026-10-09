@@ -77,7 +77,12 @@ public static class GameSettings
         AudioListener.volume = Data.masterVolume;
 
         if (Application.isMobilePlatform)
+        {
+            Application.targetFrameRate = 60;
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
             return;
+        }
 
         FullScreenMode mode = Data.fullscreen
             ? FullScreenMode.FullScreenWindow

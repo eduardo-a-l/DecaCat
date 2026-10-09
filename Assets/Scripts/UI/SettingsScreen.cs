@@ -6,9 +6,20 @@ using UnityEngine.UI;
 
 public class SettingsScreen : MonoBehaviour
 {
-    private const string ControlsText =
-        "Move: WASD / Arrow keys     Attack: Left mouse button\n" +
-        "Interact: E     Drop: Q     Map: M     Pause: Esc";
+    private static string ControlsText
+    {
+        get
+        {
+            if (Application.isMobilePlatform)
+            {
+                return "Move: left stick     Attack: flick the right stick\n" +
+                       "Interact: E button     Drop: Q button     Pause: Back button";
+            }
+
+            return "Move: WASD / Arrow keys     Attack: Left mouse button\n" +
+                   "Interact: E     Drop: Q     Map: M     Pause: Esc";
+        }
+    }
 
     private static readonly Color BackgroundColor = new Color(0.04f, 0.04f, 0.06f, 0.97f);
     private static readonly Color ControlsColor = new Color(1f, 1f, 1f, 0.6f);

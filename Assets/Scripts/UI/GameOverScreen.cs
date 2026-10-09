@@ -39,10 +39,13 @@ public class GameOverScreen : MonoBehaviour
             new Vector2(0f, -115f), new Vector2(520f, 100f), onMainMenu, 50f
         );
 
-        UIFactory.CreateText(
-            root.transform, "Hint", "or press R to restart the floor", 32f,
-            HintColor, new Vector2(0f, -235f), new Vector2(900f, 50f)
-        );
+        if (!Application.isMobilePlatform)
+        {
+            UIFactory.CreateText(
+                root.transform, "Hint", "or press R to restart the floor", 32f,
+                HintColor, new Vector2(0f, -235f), new Vector2(900f, 50f)
+            );
+        }
 
         return screen;
     }
