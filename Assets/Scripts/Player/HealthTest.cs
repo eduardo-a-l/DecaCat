@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class HealthTest : MonoBehaviour
 {
@@ -7,10 +8,10 @@ public class HealthTest : MonoBehaviour
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
+        Keyboard keyboard = Keyboard.current;
+
+        if (keyboard != null && keyboard.hKey.wasPressedThisFrame)
             playerHealth.TakeDamage(1);
-        }
     }
 #endif
 }
