@@ -860,6 +860,13 @@ MonoBehaviour:
   playerItem: {fileID: 725008576}
   weaponPivot: {fileID: 1619967881}
   weaponAiming: {fileID: 725008578}
+  unarmedDamage: 1
+  unarmedCooldown: 0.25
+  unarmedRange: 0.6
+  unarmedRadius: 0.4
+  unarmedSwingAngle: 80
+  unarmedSwingDuration: 0.1
+  unarmedEffectColor: {r: 1, g: 1, b: 1, a: 0.6}
 --- !u!114 &725008578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1460,6 +1467,7 @@ MonoBehaviour:
   restartKey: 114
   pauseKey: 27
   mapKey: 109
+  forceTouchControls: 0
 --- !u!1 &1980000031
 GameObject:
   m_ObjectHideFlags: 0
@@ -1555,6 +1563,7 @@ MonoBehaviour:
   floors:
   - {fileID: 11400000, guid: 21a7f1a77bc243da8be7eb76c7b729e3, type: 2}
   inputReader: {fileID: 1980000021}
+  gameManager: {fileID: 0}
   transitionDuration: 0.6
 --- !u!114 &1980000051
 MonoBehaviour:
