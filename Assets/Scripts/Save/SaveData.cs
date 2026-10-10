@@ -17,6 +17,7 @@ public class SaveData
     public int version = CurrentVersion;
     public int floor = 1;
     public int floorSeed;
+    public int runSeed;
     public string loadoutItem = string.Empty;
     public int loadoutDurability;
     public float playTimeSeconds;

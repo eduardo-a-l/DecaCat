@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd42d64190534da8b30180f6d1c6360e, type: 3}
   m_Name: Floor 1
   m_EditorClassIdentifier: Assembly-CSharp::FloorConfig
-  minRooms: 8
-  maxRooms: 12
+  minRooms: 14
+  maxRooms: 20
   loopChance: 0.65
   minPowerRooms: 0
   maxPowerRooms: 2

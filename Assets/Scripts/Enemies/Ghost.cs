@@ -19,9 +19,9 @@ public class Ghost : Enemy
     {
         base.Awake();
 
-        maxHealth = health;
-        currentHealth = health;
-        contactDamage = touchDamage;
+        maxHealth = ScaleHealth(health);
+        currentHealth = maxHealth;
+        contactDamage = ScaleDamage(touchDamage);
     }
 
     private void OnEnable()
@@ -63,7 +63,8 @@ public class Ghost : Enemy
             1f + crowdSpeedBonus * Mathf.Max(0, ActiveGhosts.Count - 1);
 
         float speed =
-            Mathf.Lerp(closeSpeed, farSpeed, distanceFactor) * crowdFactor;
+            Mathf.Lerp(closeSpeed, farSpeed, distanceFactor) * crowdFactor *
+            Scaling.Speed;
 
         Body.linearVelocity = offset / distance * speed;
     }

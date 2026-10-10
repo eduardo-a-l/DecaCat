@@ -16,6 +16,7 @@ public class Room : MonoBehaviour
     private readonly List<RoomPassage> passages = new List<RoomPassage>();
 
     private RoomManager manager;
+    private FloorEncounter encounter;
     private RoomLayout layout;
     private Transform gridTransform;
     private RoomTileSet tiles;
@@ -40,9 +41,11 @@ public class Room : MonoBehaviour
     public void Build(
         RoomManager owner, RoomLayout roomLayout, RoomTileSet tileSet,
         Vector2Int gridPosition, Vector2 center,
-        IList<RoomSide> connectedSides, RoomType roomType)
+        IList<RoomSide> connectedSides, RoomType roomType,
+        FloorEncounter floorEncounter)
     {
         manager = owner;
+        encounter = floorEncounter;
         tiles = tileSet;
         Type = roomType;
         layout = roomLayout;
@@ -60,8 +63,13 @@ public class Room : MonoBehaviour
         Tilemap walls = CreateTilemap("Walls", WallSortingOrder);
         SetupWallCollision(walls);
 
-        Tile floorTile = tileSet.CreateFloorTile();
-        Tile wallTile = tileSet.CreateWallTile();
+        Tile floorTile = tileSet.CreateFloorTile(
+            encounter != null ? encounter.FloorTint : Color.white
+        );
+
+        Tile wallTile = tileSet.CreateWallTile(
+            encounter != null ? encounter.WallTint : Color.white
+        );
         List<Vector2Int> spawnCells = new List<Vector2Int>();
         List<Vector2Int> crateCells = new List<Vector2Int>();
 
@@ -345,26 +353,54 @@ public class Room : MonoBehaviour
 
     private void SpawnEnemies(List<Vector2Int> spawnCells)
     {
-        Enemy[] prefabs = layout.EnemyPrefabs;
-
-        if (prefabs == null || prefabs.Length == 0 || spawnCells.Count == 0)
+        if (spawnCells.Count == 0)
             return;
 
-        Transform enemyRoot = new GameObject("Enemies").transform;
-        enemyRoot.SetParent(transform, false);
+        EnemyScaling scaling =
+            encounter != null ? encounter.Scaling : EnemyScaling.None;
+
+        Transform enemyRoot = null;
 
         foreach (Vector2Int cell in spawnCells)
         {
-            Enemy prefab = prefabs[UnityEngine.Random.Range(0, prefabs.Length)];
+            Enemy prefab = ChooseEnemy();
 
             if (prefab == null)
                 continue;
 
+            if (enemyRoot == null)
+            {
+                enemyRoot = new GameObject("Enemies").transform;
+                enemyRoot.SetParent(transform, false);
+            }
+
             Vector3 position = transform.TransformPoint(CellToLocal(cell));
 
-            enemies.Add(
-                Instantiate(prefab, position, Quaternion.identity, enemyRoot)
-            );
+            enemies.Add(Enemy.Spawn(prefab, position, enemyRoot, scaling));
         }
+    }
+
+    private Enemy ChooseEnemy()
+    {
+        if (encounter != null)
+        {
+            if (Type == RoomType.Boss && encounter.BossPrefab != null)
+                return encounter.BossPrefab;
+
+            if (Type != RoomType.Boss && layout.UseFloorEnemies)
+            {
+                Enemy picked = encounter.PickEnemy();
+
+                if (picked != null)
+                    return picked;
+            }
+        }
+
+        Enemy[] prefabs = layout.EnemyPrefabs;
+
+        if (prefabs == null || prefabs.Length == 0)
+            return null;
+
+        return prefabs[UnityEngine.Random.Range(0, prefabs.Length)];
     }
 }

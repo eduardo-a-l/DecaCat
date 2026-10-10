@@ -25,7 +25,7 @@ public class Slime : Enemy
             data = ScriptableObject.CreateInstance<SlimeData>();
         }
 
-        ApplyStage(data.Small, false, data.Small.Health);
+        ApplyStage(data.Small, false, ScaleHealth(data.Small.Health));
     }
 
     protected override void HandleContact(Collision2D collision)
@@ -79,10 +79,10 @@ public class Slime : Enemy
     private void ApplyStage(SlimeStage stage, bool big, int health)
     {
         isBig = big;
-        maxHealth = stage.Health;
+        maxHealth = ScaleHealth(stage.Health);
         currentHealth = Mathf.Clamp(health, 1, maxHealth);
-        contactDamage = stage.Damage;
-        moveSpeed = stage.MoveSpeed;
+        contactDamage = ScaleDamage(stage.Damage);
+        moveSpeed = ScaleSpeed(stage.MoveSpeed);
 
         bool hasSprite = stage.Sprite != null;
         Sprite sprite = hasSprite ? stage.Sprite : PlaceholderSprite;

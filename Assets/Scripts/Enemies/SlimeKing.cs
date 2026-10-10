@@ -87,9 +87,9 @@ public class SlimeKing : Enemy
     {
         base.Awake();
 
-        maxHealth = health;
-        currentHealth = health;
-        contactDamage = touchDamage;
+        maxHealth = ScaleHealth(health);
+        currentHealth = maxHealth;
+        contactDamage = ScaleDamage(touchDamage);
 
         circleCollider = GetComponent<CircleCollider2D>();
 
@@ -146,7 +146,7 @@ public class SlimeKing : Enemy
         switch (state)
         {
             case State.Following:
-                moveSpeed = followSpeed * Rage;
+                moveSpeed = ScaleSpeed(followSpeed) * Rage;
                 MoveTowardsTarget();
 
                 if (stateTimer >= stateDuration)
@@ -185,12 +185,22 @@ public class SlimeKing : Enemy
 
         for (int i = 0; i < summonHealthThresholds.Length; i++)
         {
-            if (summoned[i] || currentHealth > summonHealthThresholds[i])
+            if (summoned[i] || currentHealth > GetSummonThreshold(i))
                 continue;
 
             summoned[i] = true;
             SummonSlimes();
         }
+    }
+
+    private int GetSummonThreshold(int index)
+    {
+        if (health <= 0)
+            return summonHealthThresholds[index];
+
+        return Mathf.RoundToInt(
+            summonHealthThresholds[index] * (float)maxHealth / health
+        );
     }
 
     protected override void RecordDefeat()
@@ -315,9 +325,7 @@ public class SlimeKing : Enemy
 
     private void SpawnSlime(Vector3 position)
     {
-        Slime slime = Instantiate(
-            slimePrefab, position, Quaternion.identity, transform.parent
-        );
+        Slime slime = Spawn(slimePrefab, position, transform.parent, Scaling);
 
         Room room = GetComponentInParent<Room>();
 

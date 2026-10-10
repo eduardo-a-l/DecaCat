@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f71db3a1cbe48eaac6e2a8fd99adc52, type: 3}
+  m_Name: FloorThemes
+  m_EditorClassIdentifier: Assembly-CSharp::FloorThemeCatalog
+  themes:
+  - displayName: Blue
+    floorTint: {r: 1, g: 1, b: 1, a: 1}
+    wallTint: {r: 1, g: 1, b: 1, a: 1}
+    enemies:
+    - prefab: {fileID: 4120071188240761046, guid: dae4e8c50dc14f7987df333c94fadbeb, type: 3}
+      unlockFloor: 1
+    - prefab: {fileID: 7120071188240761046, guid: 0147b3b8394c44b0921454944db62ba9, type: 3}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 2
+    - prefab: {fileID: 0}
+      unlockFloor: 3
+    - prefab: {fileID: 0}
+      unlockFloor: 4
+    bosses:
+    - {fileID: 8120071188240761045, guid: 4ac52256a5474bdea70520c4328051d7, type: 3}
+    - {fileID: 0}
+    - {fileID: 0}
+  - displayName: Yellow
+    floorTint: {r: 1, g: 0.92, b: 0.55, a: 1}
+    wallTint: {r: 1, g: 0.92, b: 0.55, a: 1}
+    enemies:
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 2
+    - prefab: {fileID: 0}
+      unlockFloor: 3
+    - prefab: {fileID: 0}
+      unlockFloor: 4
+    bosses:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+  - displayName: Orange
+    floorTint: {r: 1, g: 0.7, b: 0.4, a: 1}
+    wallTint: {r: 1, g: 0.7, b: 0.4, a: 1}
+    enemies:
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 2
+    - prefab: {fileID: 0}
+      unlockFloor: 3
+    - prefab: {fileID: 0}
+      unlockFloor: 4
+    bosses:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+  - displayName: Red
+    floorTint: {r: 1, g: 0.5, b: 0.5, a: 1}
+    wallTint: {r: 1, g: 0.5, b: 0.5, a: 1}
+    enemies:
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 2
+    - prefab: {fileID: 0}
+      unlockFloor: 3
+    - prefab: {fileID: 0}
+      unlockFloor: 4
+    bosses:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+  - displayName: Green
+    floorTint: {r: 0.6, g: 1, b: 0.65, a: 1}
+    wallTint: {r: 0.6, g: 1, b: 0.65, a: 1}
+    enemies:
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 2
+    - prefab: {fileID: 0}
+      unlockFloor: 3
+    - prefab: {fileID: 0}
+      unlockFloor: 4
+    bosses:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+  - displayName: Purple
+    floorTint: {r: 0.8, g: 0.6, b: 1, a: 1}
+    wallTint: {r: 0.8, g: 0.6, b: 1, a: 1}
+    enemies:
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 1
+    - prefab: {fileID: 0}
+      unlockFloor: 2
+    - prefab: {fileID: 0}
+      unlockFloor: 3
+    - prefab: {fileID: 0}
+      unlockFloor: 4
+    bosses:
+    - {fileID: 0}
+    - {fileID: 0}
+    - {fileID: 0}
+  tuning:
+    healthPerFloor: 0.04
+    healthPerGroup: 0.15
+    speedPerFloor: 0.01
+    speedPerGroup: 0.03
+    maxSpeedMultiplier: 1.6
+    groupsPerDamageBonus: 3
+    olderEnemyWeight: 0.6

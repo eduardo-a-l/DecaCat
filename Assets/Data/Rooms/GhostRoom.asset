@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: GhostRoom
   m_EditorClassIdentifier: Assembly-CSharp::RoomLayout
   requiresClear: 1
+  useFloorEnemies: 0
   enemyPrefabs:
   - {fileID: 7120071188240761046, guid: 0147b3b8394c44b0921454944db62ba9, type: 3}
   cratePrefab: {fileID: 0}

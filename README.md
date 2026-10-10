@@ -19,3 +19,16 @@ The app icon is generated from the player cat sprite, see `Assets/Art/Icon`.
 For Google Play, create a keystore and set `DECACAT_KEYSTORE`, `DECACAT_KEYSTORE_PASS`, `DECACAT_KEY_ALIAS` and `DECACAT_KEY_PASS` before building the App Bundle. Without them the build is signed with the debug key, which is fine for installing the APK on a phone.
 
 Increase `bundleVersion` and the Android bundle version code in Player Settings for every release.
+
+## Floor progression
+
+Floors are grouped in sets of 5. There are 6 groups per cycle (floors 1-30), each with its own color: Blue, Yellow, Orange, Red, Green, Purple, in that order for the first cycle. Every later cycle uses the 6 colors in a random order that is saved with the run, and its first color is never the last color of the previous cycle.
+
+Everything is edited in `Assets/Resources/FloorThemes.asset`:
+
+- **Themes**: one entry per color, with the floor and wall tint, 5 new enemies and 3 bosses.
+- **Enemies**: drag the enemy prefab into a slot. Unlock floor (1 to 5) is the first floor of the group where it can appear. Enemies from earlier groups of the current cycle keep appearing less often. Empty slots are skipped.
+- **Bosses**: the 3 bosses of a color are spread so each one shows up at least once in the 5 floors, and floor 1 always has the first boss of Blue (Slime King). Bosses of other colors never show up until the cycle loops. An empty slot reuses another boss of the same color, and with none set the boss room layout's own boss is used.
+- **Tuning**: how much stronger enemies get every floor and every group of 5 floors (health, speed, and contact damage every few groups).
+
+Room layouts use the floor's enemies by default. Untick `Use Floor Enemies` on a layout to keep its own enemy list, as the Ghost room does. The number of rooms per floor is in `Assets/Data/Floors/Floor 1.asset`.

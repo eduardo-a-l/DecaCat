@@ -16,6 +16,7 @@ public class RoomManager : MonoBehaviour
     private Camera mainCamera;
     private Rigidbody2D playerBody;
     private Room currentRoom;
+    private FloorEncounter encounter;
     private bool isTransitioning;
     private bool hasGenerated;
     private int floorNumber = 1;
@@ -23,6 +24,7 @@ public class RoomManager : MonoBehaviour
     public event System.Action<int, int> FloorGenerated;
 
     public Room CurrentRoom => currentRoom;
+    public FloorEncounter Encounter => encounter;
     public bool IsTransitioning => isTransitioning;
     public IEnumerable<Room> Rooms => roomsByCell.Values;
 
@@ -103,15 +105,20 @@ public class RoomManager : MonoBehaviour
         if (plan == null)
             return;
 
+        FloorEncounter newEncounter =
+            FloorEncounter.Create(number, GetRunSeed());
+
         ClearFloor(hasGenerated || number > 1);
 
         floorNumber = number;
+        encounter = newEncounter;
         BuildRooms(plan);
         hasGenerated = true;
 
         Debug.Log(
             "Floor " + number + ": " + plan.RoomCount +
-            " rooms, seed " + plan.Seed
+            " rooms, seed " + plan.Seed + ", theme " + encounter.ThemeName +
+            ", enemy types " + encounter.PoolSize
         );
 
         currentRoom = roomsByCell[plan.StartCell];
@@ -133,6 +140,19 @@ public class RoomManager : MonoBehaviour
         currentRoom.Enter();
 
         FloorGenerated?.Invoke(number, plan.Seed);
+    }
+
+    private static int GetRunSeed()
+    {
+        if (!SaveSession.IsActive)
+            return 1;
+
+        SaveData data = SaveSession.Data;
+
+        if (data.runSeed == 0)
+            data.runSeed = Random.Range(1, int.MaxValue);
+
+        return data.runSeed;
     }
 
     private static int ChooseSeed(FloorConfig config, int number)
@@ -197,7 +217,8 @@ public class RoomManager : MonoBehaviour
 
             room.Build(
                 this, plan.GetLayout(cell), tileSet, cell, pair.Value,
-                plan.GetLinkedSides(cell), plan.GetRoomType(cell)
+                plan.GetLinkedSides(cell), plan.GetRoomType(cell),
+                encounter
             );
 
             roomsByCell.Add(cell, room);

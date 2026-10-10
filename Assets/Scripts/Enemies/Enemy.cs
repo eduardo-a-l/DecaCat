@@ -14,6 +14,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     private const float KnockbackDuration = 0.2f;
 
     private static Sprite placeholderSprite;
+    private static EnemyScaling pendingScaling = EnemyScaling.None;
 
     private Rigidbody2D body;
     private Transform target;
@@ -36,6 +37,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     public int MaxHealth => maxHealth;
 
     protected Rigidbody2D Body => body;
+    protected EnemyScaling Scaling { get; private set; }
 
     protected virtual bool CanBeKnockedBack => true;
 
@@ -50,8 +52,42 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         }
     }
 
+    public static T Spawn<T>(
+        T prefab, Vector3 position, Transform parent, EnemyScaling scaling)
+        where T : Enemy
+    {
+        EnemyScaling previous = pendingScaling;
+        pendingScaling = scaling;
+
+        try
+        {
+            return Instantiate(prefab, position, Quaternion.identity, parent);
+        }
+        finally
+        {
+            pendingScaling = previous;
+        }
+    }
+
+    protected int ScaleHealth(int value)
+    {
+        return Mathf.Max(1, Mathf.RoundToInt(value * Scaling.Health));
+    }
+
+    protected int ScaleDamage(int value)
+    {
+        return value + Scaling.DamageBonus;
+    }
+
+    protected float ScaleSpeed(float value)
+    {
+        return value * Scaling.Speed;
+    }
+
     protected virtual void Awake()
     {
+        Scaling = pendingScaling;
+
         body = GetComponent<Rigidbody2D>();
         body.gravityScale = 0f;
         body.freezeRotation = true;

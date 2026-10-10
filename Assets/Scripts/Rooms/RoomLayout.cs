@@ -7,6 +7,7 @@ public class RoomLayout : ScriptableObject
 {
     [Header("Rules")]
     [SerializeField] private bool requiresClear = true;
+    [SerializeField] private bool useFloorEnemies = true;
     [SerializeField] private Enemy[] enemyPrefabs;
     [SerializeField] private Crate cratePrefab;
 
@@ -17,6 +18,7 @@ public class RoomLayout : ScriptableObject
     [NonSerialized] private int width;
 
     public bool RequiresClear => requiresClear;
+    public bool UseFloorEnemies => useFloorEnemies;
     public Enemy[] EnemyPrefabs => enemyPrefabs;
     public Crate CratePrefab => cratePrefab;
 

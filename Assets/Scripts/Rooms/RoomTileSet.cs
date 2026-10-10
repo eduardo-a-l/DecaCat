@@ -57,24 +57,55 @@ public class RoomTileSet : ScriptableObject
 
     public Tile CreateFloorTile()
     {
-        return CreateTile(floorSprite, floorColor, Tile.ColliderType.None);
+        return CreateFloorTile(Color.white);
     }
 
     public Tile CreateWallTile()
     {
-        return CreateTile(wallSprite, wallColor, Tile.ColliderType.Grid);
+        return CreateWallTile(Color.white);
+    }
+
+    public Tile CreateFloorTile(Color tint)
+    {
+        return CreateTile(floorSprite, floorColor, tint, Tile.ColliderType.None);
+    }
+
+    public Tile CreateWallTile(Color tint)
+    {
+        return CreateTile(wallSprite, wallColor, tint, Tile.ColliderType.Grid);
     }
 
     private static Tile CreateTile(
-        Sprite sprite, Color placeholderColor, Tile.ColliderType colliderType)
+        Sprite sprite, Color placeholderColor, Color tint,
+        Tile.ColliderType colliderType)
     {
         Tile tile = CreateInstance<Tile>();
         bool hasSprite = sprite != null;
 
         tile.sprite = hasSprite ? sprite : PlaceholderSquare;
-        tile.color = hasSprite ? Color.white : placeholderColor;
+        tile.color = hasSprite ? tint : ThemedColor(placeholderColor, tint);
         tile.colliderType = colliderType;
 
         return tile;
+    }
+
+    private static Color ThemedColor(Color placeholder, Color tint)
+    {
+        Color.RGBToHSV(tint, out float tintHue, out float tintSaturation, out _);
+
+        if (tintSaturation < 0.01f)
+            return placeholder;
+
+        Color.RGBToHSV(
+            placeholder, out _, out float saturation, out float value
+        );
+
+        Color themed = Color.HSVToRGB(
+            tintHue, Mathf.Max(saturation, tintSaturation * 0.8f), value
+        );
+
+        themed.a = placeholder.a;
+
+        return themed;
     }
 }
