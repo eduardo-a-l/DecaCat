@@ -6,6 +6,8 @@ public class GameHud : MonoBehaviour
 {
     private const int IconPixels = 64;
 
+    private static float ButtonScale => Application.isMobilePlatform ? 1.35f : 1f;
+
     [Header("Drag your sprites here (empty = placeholder)")]
     [SerializeField] private Sprite pauseSprite;
     [SerializeField] private Sprite mapSprite;
@@ -17,12 +19,16 @@ public class GameHud : MonoBehaviour
     [SerializeField] private GameManager gameManager;
 
     private TextMeshProUGUI floorLabel;
+    private RoomManager roomManager;
     private int shownFloor = -1;
+    private string shownTheme;
 
     private void Awake()
     {
         if (gameManager == null)
             gameManager = FindFirstObjectByType<GameManager>();
+
+        roomManager = FindFirstObjectByType<RoomManager>();
 
         BuildFloorLabel();
         BuildPauseButton();
@@ -33,18 +39,41 @@ public class GameHud : MonoBehaviour
     {
         int floor = gameManager != null ? gameManager.CurrentFloor : 1;
 
-        if (floor == shownFloor)
+        FloorEncounter encounter =
+            roomManager != null ? roomManager.Encounter : null;
+
+        string theme = encounter != null ? encounter.ThemeName : null;
+
+        if (floor == shownFloor && theme == shownTheme)
             return;
 
         shownFloor = floor;
-        floorLabel.text = string.Format(floorFormat, floor);
+        shownTheme = theme;
+
+        string text = string.Format(floorFormat, floor);
+
+        if (encounter != null)
+        {
+            text += "\n<size=55%><color=#" +
+                    ColorUtility.ToHtmlStringRGB(GetLabelColor(encounter)) +
+                    ">" + theme + "</color></size>";
+        }
+
+        floorLabel.text = text;
+    }
+
+    private static Color GetLabelColor(FloorEncounter encounter)
+    {
+        Color tint = encounter.FloorTint;
+
+        return Color.Lerp(Color.white, tint, 0.85f);
     }
 
     private void BuildFloorLabel()
     {
         RectTransform rect = CreateTopRect(
             "FloorLabel", new Vector2(0.5f, 1f),
-            new Vector2(0f, -90f), new Vector2(700f, 90f)
+            new Vector2(0f, -105f), new Vector2(700f, 140f)
         );
 
         floorLabel = rect.gameObject.AddComponent<TextMeshProUGUI>();
@@ -63,7 +92,7 @@ public class GameHud : MonoBehaviour
 
         CreateIconButton(
             "PauseButton", sprite,
-            new Vector2(-91f, -103f), new Vector2(90f, 90f),
+            new Vector2(-91f, -103f), new Vector2(90f, 90f) * ButtonScale,
             () =>
             {
                 if (gameManager != null)
@@ -78,7 +107,8 @@ public class GameHud : MonoBehaviour
 
         CreateIconButton(
             "MapButton", sprite,
-            new Vector2(-91f, -213f), new Vector2(80f, 70f),
+            new Vector2(-91f, -213f - (ButtonScale - 1f) * 20f),
+            new Vector2(80f, 70f) * ButtonScale,
             () =>
             {
                 if (gameManager != null)
@@ -88,7 +118,8 @@ public class GameHud : MonoBehaviour
 
         RectTransform label = CreateTopRect(
             "MapLabel", new Vector2(1f, 1f),
-            new Vector2(-91f, -268f), new Vector2(140f, 40f)
+            new Vector2(-91f, -268f - (ButtonScale - 1f) * 60f),
+            new Vector2(140f, 40f)
         );
 
         TextMeshProUGUI text = label.gameObject.AddComponent<TextMeshProUGUI>();

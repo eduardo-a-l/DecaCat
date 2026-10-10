@@ -129,7 +129,7 @@ public class PlayerItem : MonoBehaviour
 
         currentItem = item;
 
-        Discoveries.Add(Discoveries.ItemKind, item.ItemName);
+        Discoveries.Add(Discoveries.ItemKind, item.ItemName, item.ItemName);
 
         GameStats.RecordWeaponUsed(item.ItemName);
 

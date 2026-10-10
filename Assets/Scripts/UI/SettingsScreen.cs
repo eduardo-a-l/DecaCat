@@ -85,9 +85,37 @@ public class SettingsScreen : MonoBehaviour
             value => GameSettings.ShowDamageNumbers = value
         );
 
+        if (Application.isMobilePlatform)
+        {
+            y -= 90f;
+
+            AddSlider(
+                root.transform, "Controls Size", y,
+                Mathf.InverseLerp(
+                    GameSettings.MinTouchScale, GameSettings.MaxTouchScale,
+                    GameSettings.TouchScale
+                ),
+                value => GameSettings.TouchScale = Mathf.Lerp(
+                    GameSettings.MinTouchScale, GameSettings.MaxTouchScale, value
+                )
+            );
+
+            y -= 90f;
+
+            AddSlider(
+                root.transform, "Controls Opacity", y,
+                Mathf.InverseLerp(
+                    GameSettings.MinTouchOpacity, 1f, GameSettings.TouchOpacity
+                ),
+                value => GameSettings.TouchOpacity = Mathf.Lerp(
+                    GameSettings.MinTouchOpacity, 1f, value
+                )
+            );
+        }
+
         UIFactory.CreateText(
             root.transform, "Controls", ControlsText, 30f, ControlsColor,
-            new Vector2(0f, -290f), new Vector2(1500f, 120f)
+            new Vector2(0f, -330f), new Vector2(1500f, 100f)
         );
 
         UIFactory.CreateButton(

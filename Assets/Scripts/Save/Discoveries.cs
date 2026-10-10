@@ -6,7 +6,7 @@ public static class Discoveries
     public const string EnemyKind = "enemy";
     public const string BossKind = "boss";
 
-    public static bool Add(string kind, string id)
+    public static bool Add(string kind, string id, string displayName = null)
     {
         if (!SaveSession.IsActive || string.IsNullOrEmpty(id))
             return false;
@@ -23,13 +23,21 @@ public static class Discoveries
 
         data.discoveries.Add(key);
 
+        AchievementToast.Show(
+            "NEW INDEX ENTRY",
+            string.IsNullOrEmpty(displayName) ? id : displayName,
+            GetKindLabel(kind)
+        );
+
+        SaveSession.Save();
+
         return true;
     }
 
     public static void AddEnemy(Enemy enemy)
     {
         if (enemy != null)
-            Add(enemy.IsBoss ? BossKind : EnemyKind, enemy.IndexId);
+            Add(enemy.IsBoss ? BossKind : EnemyKind, enemy.IndexId, enemy.DisplayName);
     }
 
     public static bool Has(SaveData data, string kind, string id)
@@ -37,6 +45,14 @@ public static class Discoveries
         return data != null &&
                data.discoveries != null &&
                data.discoveries.Contains(Key(kind, id));
+    }
+
+    private static string GetKindLabel(string kind)
+    {
+        if (kind == BossKind)
+            return "Boss";
+
+        return kind == EnemyKind ? "Enemy" : "Item";
     }
 
     private static string Key(string kind, string id)

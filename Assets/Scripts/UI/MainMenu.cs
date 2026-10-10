@@ -17,12 +17,15 @@ public class MainMenu : MonoBehaviour
         ShowMain();
     }
 
-    private void Show(GameObject screen)
+    private void Show(GameObject screen, bool allowBack = true)
     {
         if (current != null)
             Destroy(current);
 
         current = screen;
+
+        if (allowBack)
+            BackAction.Attach(screen, ShowMain);
     }
 
     private void ShowMain()
@@ -46,7 +49,7 @@ public class MainMenu : MonoBehaviour
 
         MenuCat.Create(root.transform);
 
-        Show(root);
+        Show(root, false);
     }
 
     private void ShowSlots()
