@@ -30,6 +30,9 @@ public class RoomManager : MonoBehaviour
     {
         mainCamera = Camera.main;
 
+        if (mainCamera != null && mainCamera.GetComponent<CameraFit>() == null)
+            mainCamera.gameObject.AddComponent<CameraFit>();
+
         if (inputReader == null)
             inputReader = FindFirstObjectByType<PlayerInputReader>();
 
