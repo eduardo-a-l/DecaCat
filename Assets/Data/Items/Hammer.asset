@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Hammer
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Hammer
+  description: 'The slowest swing around, and the hardest hit. Make it count.'
   itemSprite: {fileID: 5393448996881579246, guid: f0670fce61ee8ab4189dccbf36577b56, type: 3}
   maxDurability: 10
   damage: 25

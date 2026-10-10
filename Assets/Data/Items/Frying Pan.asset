@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Frying Pan
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Frying Pan
+  description: 'Solid kitchen cookware that lands a proper whack.'
   itemSprite: {fileID: -2996719189407371719, guid: cf930453462b529458574009e915a48b, type: 3}
   maxDurability: 10
   damage: 15

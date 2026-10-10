@@ -16,6 +16,8 @@ public class Room : MonoBehaviour
     private readonly List<RoomPassage> passages = new List<RoomPassage>();
 
     private RoomManager manager;
+
+    public Collider2D WallCollider { get; private set; }
     private FloorEncounter encounter;
     private RoomLayout layout;
     private Transform gridTransform;
@@ -61,7 +63,7 @@ public class Room : MonoBehaviour
 
         Tilemap floor = CreateTilemap("Floor", FloorSortingOrder);
         Tilemap walls = CreateTilemap("Walls", WallSortingOrder);
-        SetupWallCollision(walls);
+        WallCollider = SetupWallCollision(walls);
 
         Tile floorTile = tileSet.CreateFloorTile(
             encounter != null ? encounter.FloorTint : Color.white
@@ -128,8 +130,18 @@ public class Room : MonoBehaviour
             State = RoomState.Active;
 
         SetEnemiesFrozen(false);
+        DiscoverEnemies();
         CheckCleared();
         RefreshBarriers();
+    }
+
+    private void DiscoverEnemies()
+    {
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy != null)
+                Discoveries.AddEnemy(enemy);
+        }
     }
 
     public void NotifyPassageReached(RoomSide side)
@@ -156,8 +168,13 @@ public class Room : MonoBehaviour
 
     public void AddEnemy(Enemy enemy)
     {
-        if (enemy != null)
-            enemies.Add(enemy);
+        if (enemy == null)
+            return;
+
+        enemies.Add(enemy);
+
+        if (State == RoomState.Active)
+            Discoveries.AddEnemy(enemy);
     }
 
     public List<Vector3> GetCornerPositions()
@@ -252,7 +269,7 @@ public class Room : MonoBehaviour
         return tilemapObject.GetComponent<Tilemap>();
     }
 
-    private static void SetupWallCollision(Tilemap walls)
+    private static CompositeCollider2D SetupWallCollision(Tilemap walls)
     {
         Rigidbody2D body = walls.gameObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Static;
@@ -267,6 +284,8 @@ public class Room : MonoBehaviour
 
         tilemapCollider.compositeOperation =
             Collider2D.CompositeOperation.Merge;
+
+        return composite;
     }
 
     private void CreatePassage(RoomSide side, RoomTileSet tileSet)

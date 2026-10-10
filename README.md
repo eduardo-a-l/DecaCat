@@ -32,3 +32,15 @@ Everything is edited in `Assets/Resources/FloorThemes.asset`:
 - **Tuning**: how much stronger enemies get every floor and every group of 5 floors (health, speed, and contact damage every few groups).
 
 Room layouts use the floor's enemies by default. Untick `Use Floor Enemies` on a layout to keep its own enemy list, as the Ghost room does. The number of rooms per floor is in `Assets/Data/Floors/Floor 1.asset`.
+
+## Index
+
+The Index (main menu and pause menu) lists items, enemies and bosses per save slot. Entries stay as `???` until the player equips or sees an item, or enters a room with that enemy. Bare Hands is always listed and has no icon.
+
+- Item descriptions are the `Description` field on each item asset.
+- Enemy and boss entries come from `Assets/Resources/FloorThemes.asset`. Set `Display Name` and `Description` on the enemy prefab, or leave them empty to use the built-in text.
+- A new boss class should override `IsBoss` so it shows under Bosses.
+
+## Room designs
+
+Room layouts are text grids in `Assets/Data/Rooms` and are picked per room type from `Assets/Data/Floors/Floor 1.asset` (start, normal, power and boss pools). All layouts must be 18x10 with the 2 cell wide doors in the middle of each side.

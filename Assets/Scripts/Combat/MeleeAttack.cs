@@ -12,8 +12,11 @@ public class MeleeAttack : MonoBehaviour
     [SerializeField] private WeaponAiming weaponAiming;
 
     [Header("Unarmed")]
-    [SerializeField] private int unarmedDamage = 1;
-    [SerializeField] private float unarmedCooldown = 0.25f;
+    public const int DefaultUnarmedDamage = 1;
+    public const float DefaultUnarmedCooldown = 0.25f;
+
+    [SerializeField] private int unarmedDamage = DefaultUnarmedDamage;
+    [SerializeField] private float unarmedCooldown = DefaultUnarmedCooldown;
     [SerializeField] private float unarmedRange = 0.6f;
     [SerializeField] private float unarmedRadius = 0.4f;
     [SerializeField] private float unarmedSwingAngle = 80f;

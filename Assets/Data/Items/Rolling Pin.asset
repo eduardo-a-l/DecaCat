@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Rolling Pin
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Rolling Pin
+  description: 'A baker''s weapon that sweeps through several enemies at once.'
   itemSprite: {fileID: -4635790234179710389, guid: b485a9c4fd2ad5448950bd17e8c94d3f, type: 3}
   maxDurability: 10
   damage: 10

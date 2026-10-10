@@ -193,6 +193,23 @@ public class SlimeKing : Enemy
         }
     }
 
+    public override bool IsBoss => true;
+
+    protected override string DefaultDescription =>
+        "The ruler of all slimes. It jumps at you after a warning shadow, " +
+        "summons slimes as its health drops, sends down crates now and then, " +
+        "and gets faster and angrier the more hurt it is.";
+
+    public override string[] GetIndexStats()
+    {
+        return new[]
+        {
+            "Health " + health,
+            "Contact damage " + touchDamage,
+            "Summons slimes at low health"
+        };
+    }
+
     private int GetSummonThreshold(int index)
     {
         if (health <= 0)

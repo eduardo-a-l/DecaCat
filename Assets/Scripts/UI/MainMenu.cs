@@ -36,12 +36,15 @@ public class MainMenu : MonoBehaviour
             new Vector2(0f, 290f), new Vector2(1400f, 220f)
         );
 
-        AddButton(root, "PlayButton", "Play", 40f, ShowSlots);
-        AddButton(root, "AchievementsButton", "Achievements", -80f, ShowAchievements);
-        AddButton(root, "SettingsButton", "Settings", -200f, ShowSettings);
+        AddButton(root, "PlayButton", "Play", 70f, ShowSlots);
+        AddButton(root, "AchievementsButton", "Achievements", -40f, ShowAchievements);
+        AddButton(root, "IndexButton", "Index", -150f, ShowIndex);
+        AddButton(root, "SettingsButton", "Settings", -260f, ShowSettings);
 
         if (!Application.isMobilePlatform)
-            AddButton(root, "QuitButton", "Quit", -320f, Quit);
+            AddButton(root, "QuitButton", "Quit", -370f, Quit);
+
+        MenuCat.Create(root.transform);
 
         Show(root);
     }
@@ -54,6 +57,11 @@ public class MainMenu : MonoBehaviour
     private void ShowSettings()
     {
         Show(SettingsScreen.Create(ShowMain));
+    }
+
+    private void ShowIndex()
+    {
+        Show(IndexScreen.Create(GetDefaultAchievementSlot(), ShowMain));
     }
 
     private void ShowAchievements()

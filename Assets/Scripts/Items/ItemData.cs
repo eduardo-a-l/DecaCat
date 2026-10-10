@@ -7,6 +7,7 @@ public class ItemData : ScriptableObject
     [SerializeField] private string itemName;
     [SerializeField] private Sprite itemSprite;
     [SerializeField] private int maxDurability = 10;
+    [SerializeField, TextArea(2, 6)] private string description;
 
     [Header("Combat")]
     [SerializeField] private int damage = 10;
@@ -27,6 +28,7 @@ public class ItemData : ScriptableObject
     public string ItemName => itemName;
     public Sprite ItemSprite => itemSprite;
     public int MaxDurability => maxDurability;
+    public string Description => description;
 
     public int Damage => damage;
     public float Cooldown => cooldown;

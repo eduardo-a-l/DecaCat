@@ -19,14 +19,31 @@ MonoBehaviour:
   maxPowerRooms: 2
   startLayouts:
   - {fileID: 11400000, guid: 0c743f62ade44c7b8c7eb8935edc7b67, type: 2}
+  - {fileID: 11400000, guid: f57fa56c74664d9abdf9223143941855, type: 2}
+  - {fileID: 11400000, guid: 4b17b1e154ea4641a063515d9b37754f, type: 2}
   normalLayouts:
   - {fileID: 11400000, guid: 51cebb335f524518ad480b9afbbc3fda, type: 2}
   - {fileID: 11400000, guid: 71c062bbaa864510998500bc25c56666, type: 2}
   - {fileID: 11400000, guid: f0b51b4d861c49afacd68d7107d26f8a, type: 2}
   - {fileID: 11400000, guid: a8b789774cd94580b7ca6ac6f554ed59, type: 2}
   - {fileID: 11400000, guid: 3105f021b40749b08f406d952878b946, type: 2}
+  - {fileID: 11400000, guid: 6fb48aea4e2c469dbc5b258156936350, type: 2}
+  - {fileID: 11400000, guid: b0db14ac51b044a1a1ee1aa4270579ec, type: 2}
+  - {fileID: 11400000, guid: 6cb9134b52a44738bdb33c481bc7501c, type: 2}
+  - {fileID: 11400000, guid: 4b458942b49c4bbd89276ba0c3b61ab8, type: 2}
+  - {fileID: 11400000, guid: cc62aa0f360d452a9ae915f015b145ef, type: 2}
+  - {fileID: 11400000, guid: e3194a7fb37d43d9b9926ff5ab0309f6, type: 2}
+  - {fileID: 11400000, guid: 36ea5a767a204a2e96b0962067578688, type: 2}
+  - {fileID: 11400000, guid: 307daf9c8b854a4aba1b0c1a227090b1, type: 2}
+  - {fileID: 11400000, guid: a7d6e82b19724e4e84d4d21303d18889, type: 2}
+  - {fileID: 11400000, guid: 887fe37da7204b65875f847febcff107, type: 2}
+  - {fileID: 11400000, guid: 78e650d9f0a44c11a3c31ca09438d7c3, type: 2}
   powerLayouts:
   - {fileID: 11400000, guid: 34ed7f279e704dd3bae109b0f8d45464, type: 2}
+  - {fileID: 11400000, guid: 1111bde23c9b482196cc5076a8731d49, type: 2}
+  - {fileID: 11400000, guid: f94b5a9f312d4ab88b73ed6a382ef3f8, type: 2}
   bossLayouts:
   - {fileID: 11400000, guid: 469fe73a32064d23994e64175487b554, type: 2}
+  - {fileID: 11400000, guid: ff6bc79c49cf4c5c8fc30e604acfd964, type: 2}
+  - {fileID: 11400000, guid: f2187b42070a4eb4911aed91d5a01e85, type: 2}
   seed: 0

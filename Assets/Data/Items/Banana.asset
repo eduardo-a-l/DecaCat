@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Banana
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Banana
+  description: 'Light and quick. It will not hurt much, but you can swing it again almost right away.'
   itemSprite: {fileID: 7381965769198725172, guid: cdad6d9306caf21468d1ab1fd87ee7b1, type: 3}
   maxDurability: 10
   damage: 5

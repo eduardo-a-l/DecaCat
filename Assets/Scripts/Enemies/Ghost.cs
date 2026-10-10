@@ -24,6 +24,17 @@ public class Ghost : Enemy
         contactDamage = ScaleDamage(touchDamage);
     }
 
+    private void Start()
+    {
+        Room room = GetComponentInParent<Room>();
+
+        if (room == null || room.WallCollider == null)
+            return;
+
+        foreach (Collider2D own in GetComponents<Collider2D>())
+            Physics2D.IgnoreCollision(own, room.WallCollider, true);
+    }
+
     private void OnEnable()
     {
         ActiveGhosts.Add(this);
@@ -32,6 +43,21 @@ public class Ghost : Enemy
     private void OnDisable()
     {
         ActiveGhosts.Remove(this);
+    }
+
+    protected override string DefaultDescription =>
+        "A floaty spirit that drifts straight through walls. It creeps slowly " +
+        "when it is close to you and rushes in when you are far away, and it " +
+        "gets faster when more ghosts are around.";
+
+    public override string[] GetIndexStats()
+    {
+        return new[]
+        {
+            "Health " + health,
+            "Contact damage " + touchDamage,
+            "Passes through walls"
+        };
     }
 
     protected override void RecordDefeat()

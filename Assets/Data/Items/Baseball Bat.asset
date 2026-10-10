@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Baseball Bat
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Baseball Bat
+  description: 'A slow swing with great reach and a heavy hit.'
   itemSprite: {fileID: 2771664849551918302, guid: 3017e2d96508f614092a110d4c50981f, type: 3}
   maxDurability: 10
   damage: 20

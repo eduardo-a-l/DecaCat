@@ -234,7 +234,8 @@ public class GameManager : MonoBehaviour
     {
         SetOverlay(
             PauseMenu.Create(
-                Resume, ShowAchievements, ShowSettings, Restart, QuitToMenu
+                Resume, ShowAchievements, ShowIndex, ShowSettings, Restart,
+                QuitToMenu
             )
         );
     }
@@ -242,6 +243,11 @@ public class GameManager : MonoBehaviour
     private void ShowSettings()
     {
         SetOverlay(SettingsScreen.Create(ShowPauseMenu));
+    }
+
+    private void ShowIndex()
+    {
+        SetOverlay(IndexScreen.Create(SaveSession.ActiveSlot, ShowPauseMenu));
     }
 
     private void ShowAchievements()

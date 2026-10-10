@@ -46,6 +46,7 @@ public class FloorTheme
     public Color FloorTint => floorTint;
     public Color WallTint => wallTint;
     public ThemeEnemy[] Enemies => enemies;
+    public Enemy[] Bosses => bosses ?? new Enemy[0];
 
     public Enemy GetBoss(int slot)
     {

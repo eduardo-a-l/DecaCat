@@ -34,6 +34,9 @@ public class ItemPickup : MonoBehaviour
         if (!durabilitySet && itemData != null)
             durability = itemData.MaxDurability;
 
+        if (itemData != null)
+            Discoveries.Add(Discoveries.ItemKind, itemData.ItemName);
+
         UpdateSprite();
     }
 

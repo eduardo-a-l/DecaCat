@@ -9,8 +9,8 @@ public static class PauseMenu
     private static readonly Vector2 ButtonSize = new Vector2(500f, 90f);
 
     public static GameObject Create(
-        Action onResume, Action onAchievements, Action onSettings,
-        Action onRestartFloor, Action onMainMenu)
+        Action onResume, Action onAchievements, Action onIndex,
+        Action onSettings, Action onRestartFloor, Action onMainMenu)
     {
         GameObject root = UIFactory.CreateOverlayCanvas("PauseMenu", 100);
 
@@ -21,15 +21,16 @@ public static class PauseMenu
             new Vector2(0f, 340f), new Vector2(1000f, 150f)
         );
 
-        AddButton(root, "ResumeButton", "Resume", 200f, onResume);
-        AddButton(root, "AchievementsButton", "Achievements", 90f, onAchievements);
-        AddButton(root, "SettingsButton", "Settings", -20f, onSettings);
-        AddButton(root, "RestartButton", "Restart Floor", -130f, onRestartFloor);
-        AddButton(root, "MenuButton", "Main Menu", -240f, onMainMenu);
+        AddButton(root, "ResumeButton", "Resume", 215f, onResume);
+        AddButton(root, "AchievementsButton", "Achievements", 110f, onAchievements);
+        AddButton(root, "IndexButton", "Index", 5f, onIndex);
+        AddButton(root, "SettingsButton", "Settings", -100f, onSettings);
+        AddButton(root, "RestartButton", "Restart Floor", -205f, onRestartFloor);
+        AddButton(root, "MenuButton", "Main Menu", -310f, onMainMenu);
 
         UIFactory.CreateText(
             root.transform, "Hint", Application.isMobilePlatform ? "Back to resume" : "Esc to resume", 32f, HintColor,
-            new Vector2(0f, -350f), new Vector2(600f, 50f)
+            new Vector2(0f, -410f), new Vector2(600f, 50f)
         );
 
         return root;

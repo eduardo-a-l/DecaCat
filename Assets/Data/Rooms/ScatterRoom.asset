@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58d21b91c780444f98704f272cb93e18, type: 3}
+  m_Name: ScatterRoom
+  m_EditorClassIdentifier: Assembly-CSharp::RoomLayout
+  requiresClear: 1
+  enemyPrefabs:
+  - {fileID: 4120071188240761046, guid: dae4e8c50dc14f7987df333c94fadbeb, type: 3}
+  - {fileID: 7120071188240761046, guid: 0147b3b8394c44b0921454944db62ba9, type: 3}
+  cratePrefab: {fileID: 5120071188240761045, guid: 796de7722b794bd48607a26f8973ff9a, type: 3}
+  layout: "########..########\n#..........E.....#\n#...#.....#......#\n#......#.....#...#\n...E..........E...\n........E.........\n#......#.....#...#\n#...#.....#......#\n#.....E..........#\n########..########"

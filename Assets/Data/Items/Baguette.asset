@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Baguette
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Baguette
+  description: 'Crusty, long and surprisingly dangerous. A dependable all-rounder.'
   itemSprite: {fileID: 1384307969618782483, guid: c86c182db269bf94cbce00151488fbbd, type: 3}
   maxDurability: 10
   damage: 8

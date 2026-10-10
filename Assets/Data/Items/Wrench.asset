@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: Wrench
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemName: Wrench
+  description: 'Short reach, but quick and handy in a tight spot.'
   itemSprite: {fileID: -601167320069568822, guid: bd4d5e3721391bf4c8e1dd58989ad4ed, type: 3}
   maxDurability: 10
   damage: 15

@@ -12,6 +12,31 @@ public class Slime : Enemy
 
     public bool IsBig => isBig;
 
+    protected override string DefaultDescription =>
+        "A small bouncy blob that chases you. When two slimes touch they " +
+        "merge into one big slime that is slower but much sturdier, so do not " +
+        "let them pile up.";
+
+    public override string[] GetIndexStats()
+    {
+        if (data == null)
+            return base.GetIndexStats();
+
+        return new[]
+        {
+            "Health " + data.Small.Health + " (" + data.Big.Health + " merged)",
+            "Contact damage " + data.Small.Damage
+        };
+    }
+
+    public override void GetIndexVisual(out Sprite sprite, out Color color)
+    {
+        SlimeStage stage = data != null ? data.Small : new SlimeStage();
+
+        sprite = stage.Sprite != null ? stage.Sprite : PlaceholderSprite;
+        color = stage.Sprite != null ? Color.white : stage.PlaceholderColor;
+    }
+
     protected override void Awake()
     {
         base.Awake();

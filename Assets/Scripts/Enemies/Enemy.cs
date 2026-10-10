@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -7,6 +8,10 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     [Header("Hit Flash")]
     [SerializeField] private float flashInterval = 0.04f;
     [SerializeField] private int flashCount = 3;
+
+    [Header("Index (leave empty to use the built-in text)")]
+    [SerializeField] private string displayName;
+    [SerializeField, TextArea(2, 6)] private string description;
 
     private const int PlaceholderPixels = 64;
     private const float PlaceholderDiameter = 0.6f;
@@ -37,6 +42,41 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     public int MaxHealth => maxHealth;
 
     protected Rigidbody2D Body => body;
+
+    public virtual bool IsBoss => false;
+
+    public string IndexId => name.Replace("(Clone)", string.Empty).Trim();
+
+    public string DisplayName
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(displayName))
+                return displayName;
+
+            return Regex.Replace(GetType().Name, "(?<=[a-z])(?=[A-Z])", " ");
+        }
+    }
+
+    public string Description =>
+        !string.IsNullOrEmpty(description) ? description : DefaultDescription;
+
+    protected virtual string DefaultDescription => "Nothing is known about this one yet.";
+
+    public virtual string[] GetIndexStats()
+    {
+        return new string[0];
+    }
+
+    public virtual void GetIndexVisual(out Sprite sprite, out Color color)
+    {
+        SpriteRenderer found = GetComponentInChildren<SpriteRenderer>(true);
+
+        bool hasSprite = found != null && found.sprite != null;
+
+        sprite = hasSprite ? found.sprite : PlaceholderSprite;
+        color = found != null ? found.color : Color.white;
+    }
     protected EnemyScaling Scaling { get; private set; }
 
     protected virtual bool CanBeKnockedBack => true;

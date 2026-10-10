@@ -18,6 +18,7 @@ public class SaveData
     public int floor = 1;
     public int floorSeed;
     public int runSeed;
+    public List<string> discoveries = new List<string>();
     public string loadoutItem = string.Empty;
     public int loadoutDurability;
     public float playTimeSeconds;
