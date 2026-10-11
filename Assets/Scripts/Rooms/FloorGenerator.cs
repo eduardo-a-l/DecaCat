@@ -177,24 +177,64 @@ public static class FloorGenerator
         if (config.PowerLayouts == null || config.PowerLayouts.Length == 0)
             return;
 
-        List<Vector2Int> deadEnds = new List<Vector2Int>();
+        List<Vector2Int> candidates = new List<Vector2Int>();
 
         foreach (Vector2Int cell in plan.Cells)
         {
-            if (cell == plan.StartCell || cell == bossCell)
-                continue;
-
-            if (plan.GetLinkCount(cell) == 1)
-                deadEnds.Add(cell);
+            if (cell != plan.StartCell && cell != bossCell)
+                candidates.Add(cell);
         }
 
-        Shuffle(deadEnds, random);
-
         int count = random.Next(config.MinPowerRooms, config.MaxPowerRooms + 1);
-        count = Mathf.Min(count, deadEnds.Count);
+        count = Mathf.Min(count, candidates.Count);
+
+        List<Vector2Int> references = new List<Vector2Int> { plan.StartCell };
 
         for (int i = 0; i < count; i++)
-            plan.SetRoomType(deadEnds[i], RoomType.Power);
+        {
+            Vector2Int chosen = PickSpreadCell(candidates, references, random);
+
+            candidates.Remove(chosen);
+            references.Add(chosen);
+            plan.SetRoomType(chosen, RoomType.Power);
+        }
+    }
+
+    private static Vector2Int PickSpreadCell(
+        List<Vector2Int> candidates, List<Vector2Int> references,
+        System.Random random)
+    {
+        int bestScore = -1;
+
+        List<Vector2Int> scored = new List<Vector2Int>();
+        List<int> scores = new List<int>();
+
+        foreach (Vector2Int cell in candidates)
+        {
+            int nearest = int.MaxValue;
+
+            foreach (Vector2Int reference in references)
+            {
+                int distance =
+                    Mathf.Abs(cell.x - reference.x) + Mathf.Abs(cell.y - reference.y);
+
+                nearest = Mathf.Min(nearest, distance);
+            }
+
+            scored.Add(cell);
+            scores.Add(nearest);
+            bestScore = Mathf.Max(bestScore, nearest);
+        }
+
+        List<Vector2Int> best = new List<Vector2Int>();
+
+        for (int i = 0; i < scored.Count; i++)
+        {
+            if (scores[i] >= bestScore - 1)
+                best.Add(scored[i]);
+        }
+
+        return best[random.Next(best.Count)];
     }
 
     private static bool AssignLayouts(

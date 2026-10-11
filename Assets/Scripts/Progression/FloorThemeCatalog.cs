@@ -13,6 +13,9 @@ public class FloorThemeCatalog : ScriptableObject
 
     [SerializeField] private ProgressionTuning tuning = new ProgressionTuning();
 
+    [Header("Crate used for the bonus crates in rooms without one")]
+    [SerializeField] private Crate defaultCratePrefab;
+
     public static FloorThemeCatalog Instance
     {
         get
@@ -23,6 +26,8 @@ public class FloorThemeCatalog : ScriptableObject
             return instance;
         }
     }
+
+    public Crate DefaultCratePrefab => defaultCratePrefab;
 
     public ProgressionTuning Tuning => tuning ?? new ProgressionTuning();
 

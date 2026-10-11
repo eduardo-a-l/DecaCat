@@ -116,6 +116,9 @@ public class Room : MonoBehaviour
         foreach (RoomSide side in connectedSides)
             CreatePassage(side, tileSet);
 
+        if (crateCells.Count == 0 && Type != RoomType.Boss)
+            TryAddBonusCrate(crateCells);
+
         SpawnEnemies(spawnCells);
         SpawnCrates(crateCells);
         SpawnAltars(altarCells);
@@ -465,9 +468,52 @@ public class Room : MonoBehaviour
         }
     }
 
+    private void TryAddBonusCrate(List<Vector2Int> crateCells)
+    {
+        StableRandom random = encounter != null
+            ? new StableRandom(
+                encounter.RunSeed,
+                encounter.Floor * 2003 + GridPosition.x * 131 + GridPosition.y * 17 + 3)
+            : new StableRandom(UnityEngine.Random.Range(1, int.MaxValue), 3);
+
+        if (random.Next(2) == 0)
+            return;
+
+        int width = layout.Width;
+        int height = layout.Height;
+
+        List<Vector2Int> options = new List<Vector2Int>();
+
+        for (int y = 1; y < height - 1; y++)
+        {
+            for (int x = 1; x < width - 1; x++)
+            {
+                if (layout.GetCell(x, y) != '.')
+                    continue;
+
+                bool sideDoorLane = (y == 4 || y == 5) && (x <= 3 || x >= width - 4);
+                bool endDoorLane = (x == 8 || x == 9) && (y <= 2 || y >= height - 3);
+
+                if (!sideDoorLane && !endDoorLane)
+                    options.Add(new Vector2Int(x, y));
+            }
+        }
+
+        if (options.Count > 0)
+            crateCells.Add(options[random.Next(options.Count)]);
+    }
+
     private void SpawnCrates(List<Vector2Int> crateCells)
     {
         Crate prefab = layout.CratePrefab;
+
+        if (prefab == null)
+        {
+            FloorThemeCatalog catalog = FloorThemeCatalog.Instance;
+
+            if (catalog != null)
+                prefab = catalog.DefaultCratePrefab;
+        }
 
         if (prefab == null || crateCells.Count == 0)
             return;

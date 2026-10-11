@@ -7,7 +7,7 @@ public class PowerAltar : MonoBehaviour
 {
     private const float TriggerRadius = 0.95f;
     private const float IconWorldSize = 0.95f;
-    private const float IconHeight = 0.5f;
+    private const float IconHeight = 0f;
     private const float PromptGap = 0.45f;
     private const float PromptSize = 0.5f;
     private const int PromptSortingOrder = 10;

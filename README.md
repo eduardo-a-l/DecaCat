@@ -47,10 +47,12 @@ Room layouts are text grids in `Assets/Data/Rooms` and are picked per room type 
 
 ## Powers
 
-Special rooms (up to 2 per floor) hold 1 or 2 altars, each with a random power. Walk up to one and press E (the E button on phones) to take it, and the other altar in that room disappears. Taking a power replaces the one you have. Every power gives a passive, a negative, and a special on Space (the power button on phones). A power has 10 charges, one per special use, and it is lost when they run out. Your player sprite changes to the power's variation but the hitbox stays the same.
+Power rooms (2 to 3 per floor, set in `Floor 1.asset`) can be any room except the start and boss rooms and are spread apart from each other. They hold 1 or 2 altars, each with a random power. Walk up to one and press E (the E button on phones) to take it, and the other altar in that room disappears. Taking a power replaces the one you have. Every power gives a passive, a negative, and a special on Space (the power button on phones). A power has 10 charges, one per special use, and it is lost when they run out. Your player sprite changes to the power's variation but the hitbox stays the same.
 
 - Power names, texts, icons, player sprites and accent colors are in `Assets/Resources/Powers.asset`.
 - All numbers (durations, chances, damage, cooldowns) are constants at the top of each class in `Assets/Scripts/Powers`, for example `IcePower.cs`.
 - Put an `A` in a room layout where an altar should be. Power rooms use the `PowerRoom`, `AlcovePower` and `PillarPower` layouts.
 - Enemy attacks can have an element (`AttackElement` on `Enemy`), which Ice and Fire use for their 80% evade.
 - Walls inside a room are on the `Obstacle` physics layer and the room border is on `RoomWall`. Bosses (any enemy with `IsBoss`) walk over obstacles, and the Ghost power and ghost enemies pass through them.
+
+Every room except the boss room that has no crate in its layout has a 50% chance of getting one bonus crate. The crate used for that is set in `FloorThemes.asset` (`Default Crate Prefab`).

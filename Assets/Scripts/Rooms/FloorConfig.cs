@@ -10,9 +10,9 @@ public class FloorConfig : ScriptableObject
     [Header("Paths (chance that touching rooms get an extra connection)")]
     [SerializeField, Range(0f, 1f)] private float loopChance = 0.65f;
 
-    [Header("Power rooms (optional dead-end rooms)")]
-    [SerializeField] private int minPowerRooms = 0;
-    [SerializeField] private int maxPowerRooms = 2;
+    [Header("Power rooms (any room except start and boss, spread apart)")]
+    [SerializeField] private int minPowerRooms = 2;
+    [SerializeField] private int maxPowerRooms = 3;
 
     [Header("Room pools")]
     [SerializeField] private RoomLayout[] startLayouts;

@@ -121,6 +121,7 @@ MonoBehaviour:
     - {fileID: 0}
     - {fileID: 0}
     - {fileID: 0}
+  defaultCratePrefab: {fileID: 5120071188240761045, guid: 796de7722b794bd48607a26f8973ff9a, type: 3}
   tuning:
     healthPerFloor: 0.04
     healthPerGroup: 0.15
