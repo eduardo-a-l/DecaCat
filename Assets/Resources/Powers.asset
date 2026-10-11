@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b1d7c0e3f6a4a1f9d2e8c47a0b3f6e1, type: 3}
+  m_Name: Powers
+  m_EditorClassIdentifier: Assembly-CSharp::PowerCatalog
+  powers:
+  - type: 0
+    displayName: Ice Power
+    icon: {fileID: 1873187256904553782, guid: afd8aec81131dce408e807818676870b, type: 3}
+    playerSprite: {fileID: 3704502696723664069, guid: ee33b8427e4e53948868819c6e9078bc, type: 3}
+    accent: {r: 0.55, g: 0.85, b: 1, a: 1}
+    passive: 'Enemies you hit are slowed for 5 seconds, with a 10% chance of freezing them in place for 10 seconds. 80% chance to evade ice attacks.'
+    special: 'Slows down every enemy in the room for 20 seconds.'
+    negative: 'Your speed is cut by 50%.'
+  - type: 1
+    displayName: Fire Power
+    icon: {fileID: 9158069545400490995, guid: 18a08b831ccfbf24280f96bd6dabbb33, type: 3}
+    playerSprite: {fileID: 7767431460072092978, guid: dcd66ef5290446640ad7cb3057f27d13, type: 3}
+    accent: {r: 1, g: 0.45, b: 0.2, a: 1}
+    passive: 'You leave a trail of fire that lasts 5 seconds. Enemies that step on it burn for 2 seconds, taking 1 damage every second. All your attacks deal 20% more damage. 80% chance to evade fire attacks.'
+    special: 'Makes a fire explosion where you stand, dealing 20 damage and burning every enemy in the area.'
+    negative: 'Enemies killed while burning explode in a small burst that damages everything nearby, including you.'
+  - type: 2
+    displayName: Cloud Power
+    icon: {fileID: -5539112930399030129, guid: e29d8139018eac64cb14afb1503072c7, type: 3}
+    playerSprite: {fileID: 627801884037311512, guid: cd3362aba71d81f458bbe5b5100dbf51, type: 3}
+    accent: {r: 0.9, g: 0.9, b: 0.95, a: 1}
+    passive: 'A fog around you slows nearby enemies. Every attack knocks enemies back.'
+    special: 'Makes rain for 20 seconds that slows enemies. The rain carries over between rooms and floors, and you cannot use this special again until it ends. 20% chance the rain is a thunderstorm that randomly stuns enemies.'
+    negative: 'Dropping a weapon makes it lose half of its durability.'
+  - type: 3
+    displayName: Leaf Power
+    icon: {fileID: -4703069846889883192, guid: bd8a684fc6888ae47a4158b301ee1d20, type: 3}
+    playerSprite: {fileID: 3725837656178886585, guid: 6e98879e9c8f42d4a9292e85e6f54236, type: 3}
+    accent: {r: 0.35, g: 0.8, b: 0.3, a: 1}
+    passive: 'Moving builds a swirling ring of up to 4 floating razor leaves around you. They damage enemies that touch them and break on contact.'
+    special: 'Heals one heart.'
+    negative: 'You deal 50% less damage.'
+  - type: 4
+    displayName: Ghost Power
+    icon: {fileID: 3235656779695580413, guid: e8c8ac44f8c779241a65640473f5dc78, type: 3}
+    playerSprite: {fileID: 484727422052415027, guid: 540ad09e8cd786f43867d964746e486a, type: 3}
+    accent: {r: 0.75, g: 0.75, b: 0.85, a: 1}
+    passive: 'You can move through the walls inside a room, but not through the room borders.'
+    special: 'Instantly teleports you a short distance in the direction you are moving and leaves a spectral decoy behind. The decoy taunts nearby enemies for 3 seconds, then explodes into ectoplasmic fire.'
+    negative: 'After you leave a wall, your main attack is locked for 1.5 seconds.'
+  - type: 5
+    displayName: Water Power
+    icon: {fileID: -7616463522953889481, guid: 6ba0644f4e5a3ff40b818bb891461813, type: 3}
+    playerSprite: {fileID: 5147866115859380170, guid: 03f2bc8b46b9ffd4db841725e203f06c, type: 3}
+    accent: {r: 0.2, g: 0.8, b: 0.85, a: 1}
+    passive: 'Each successful basic attack builds energy. At 4 stacks, your next attack unleashes a sweeping tidal wave that knocks enemies back, pierces obstacles and hits several enemies.'
+    special: 'Summons three small minions that chase the closest enemy. Each one has 5 hearts, the same invulnerability as you, and damages enemies on contact.'
+    negative: 'Taking damage stops you from using your special for 10 seconds.'
+  - type: 6
+    displayName: Electric Power
+    icon: {fileID: 2155070164262084617, guid: fcf4b2fcd3d25be45af41381e957211e, type: 3}
+    playerSprite: {fileID: 5405297293540544648, guid: 553bfe25f43e64540b6e351a28d3e318, type: 3}
+    accent: {r: 1, g: 0.9, b: 0.25, a: 1}
+    passive: 'Moving builds energy, making your next attack stronger and giving it a chance to stun the enemy. Your attack cooldown is cut by 50%.'
+    special: 'Turns you into a thunderbolt that deals strong electric area damage to every enemy it passes. It moves through walls and obstacles.'
+    negative: 'Every enemy in the room moves faster.'
+  - type: 7
+    displayName: Bunny Power
+    icon: {fileID: -8921142967358206505, guid: 9378dc6c61323d64c902b90a9955e40a, type: 3}
+    playerSprite: {fileID: 3536412033779261668, guid: bd6471badbccaf846b034700c3f2d8f3, type: 3}
+    accent: {r: 1, g: 1, b: 1, a: 1}
+    passive: 'A shield surrounds you and blocks any damage from enemies. When an enemy hits it, it breaks for 30 seconds.'
+    special: 'Dashes in the direction you are moving, damaging every enemy on the path, and makes you invulnerable for 5 seconds.'
+    negative: 'You are not a cat :('
+  - type: 8
+    displayName: Crystal Power
+    icon: {fileID: 5657358617200700111, guid: 1886febbd06ac7f44bf4b28154ed857c, type: 3}
+    playerSprite: {fileID: 2531208049316094303, guid: b658b79bdd2894347b42ce5fa86ffe78, type: 3}
+    accent: {r: 0.9, g: 0.55, b: 0.95, a: 1}
+    passive: 'Attacking shoots a crystal projectile that splits into 2 auto-homing light beams when it hits an enemy or a wall.'
+    special: 'Deploys a floating crystal prism at your location for 10 seconds. Any crystal projectile fired through it splits into 3 amplified projectiles, each splitting into 4 auto-homing beams.'
+    negative: 'Attacking builds up heat. You have to wait for it to cool down to keep attacking, and building up too much heat makes you lose a heart.'

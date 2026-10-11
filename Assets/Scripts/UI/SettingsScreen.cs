@@ -13,11 +13,11 @@ public class SettingsScreen : MonoBehaviour
             if (Application.isMobilePlatform)
             {
                 return "Move: left stick     Attack: flick the right stick\n" +
-                       "Interact: E button     Drop: Q button     Pause: Back button";
+                       "Interact: E     Drop: Q     Power: power button     Pause: Back button";
             }
 
             return "Move: WASD / Arrow keys     Attack: Left mouse button\n" +
-                   "Interact: E     Drop: Q     Map: M     Pause: Esc";
+                   "Interact: E     Drop: Q     Power: Space     Map: M     Pause: Esc";
         }
     }
 

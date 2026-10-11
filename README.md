@@ -44,3 +44,13 @@ The Index (main menu and pause menu) lists items, enemies and bosses per save sl
 ## Room designs
 
 Room layouts are text grids in `Assets/Data/Rooms` and are picked per room type from `Assets/Data/Floors/Floor 1.asset` (start, normal, power and boss pools). All layouts must be 18x10 with the 2 cell wide doors in the middle of each side.
+
+## Powers
+
+Special rooms (up to 2 per floor) hold 1 or 2 altars, each with a random power. Walk up to one and press E (the E button on phones) to take it, and the other altar in that room disappears. Taking a power replaces the one you have. Every power gives a passive, a negative, and a special on Space (the power button on phones). A power has 10 charges, one per special use, and it is lost when they run out. Your player sprite changes to the power's variation but the hitbox stays the same.
+
+- Power names, texts, icons, player sprites and accent colors are in `Assets/Resources/Powers.asset`.
+- All numbers (durations, chances, damage, cooldowns) are constants at the top of each class in `Assets/Scripts/Powers`, for example `IcePower.cs`.
+- Put an `A` in a room layout where an altar should be. Power rooms use the `PowerRoom`, `AlcovePower` and `PillarPower` layouts.
+- Enemy attacks can have an element (`AttackElement` on `Enemy`), which Ice and Fire use for their 80% evade.
+- Walls inside a room are on the `Obstacle` physics layer and the room border is on `RoomWall`. Bosses (any enemy with `IsBoss`) walk over obstacles, and the Ghost power and ghost enemies pass through them.

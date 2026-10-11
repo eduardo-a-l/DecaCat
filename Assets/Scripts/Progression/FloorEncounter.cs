@@ -8,6 +8,7 @@ public class FloorEncounter
     private float totalWeight;
 
     public int Floor { get; private set; }
+    public int RunSeed { get; private set; }
     public int ThemeIndex { get; private set; }
     public string ThemeName { get; private set; }
     public Color FloorTint { get; private set; }
@@ -35,6 +36,7 @@ public class FloorEncounter
         FloorEncounter encounter = new FloorEncounter();
 
         encounter.Floor = floor;
+        encounter.RunSeed = runSeed;
         encounter.ThemeIndex = themeIndex;
         encounter.Scaling = FloorProgression.GetScaling(floor, tuning);
 

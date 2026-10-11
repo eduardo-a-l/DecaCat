@@ -17,6 +17,14 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     private const float PlaceholderDiameter = 0.6f;
     private const float DamageTextGap = 0.15f;
     private const float KnockbackDuration = 0.2f;
+    private const float BurnTickSeconds = 1f;
+    private const float BossStatusScale = 0.4f;
+    private const float ClimbSpeed = 5f;
+
+    private static readonly Color SlowTint = new Color(0.65f, 0.85f, 1f, 1f);
+    private static readonly Color FreezeTint = new Color(0.45f, 0.75f, 1f, 1f);
+    private static readonly Color BurnTint = new Color(1f, 0.55f, 0.25f, 1f);
+    private static readonly Color StunTint = new Color(1f, 1f, 0.4f, 1f);
 
     private static Sprite placeholderSprite;
     private static EnemyScaling pendingScaling = EnemyScaling.None;
@@ -28,6 +36,17 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     private Coroutine flashRoutine;
     private Vector2 knockbackVelocity;
     private float knockbackTimer;
+    private float slowFactor = 1f;
+    private float slowTimer;
+    private float freezeTimer;
+    private float stunTimer;
+    private float burnTimer;
+    private float burnTick;
+    private float tauntTimer;
+    private float obstacleClimb;
+    private Transform tauntTarget;
+    private Color untintedColor;
+    private bool tinted;
 
     protected int maxHealth;
     protected int currentHealth;
@@ -35,13 +54,22 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     protected float moveSpeed;
     protected bool isDead;
 
+    public static float GlobalSpeedMultiplier { get; set; } = 1f;
+
     public event System.Action<Enemy> Died;
+
+    public bool IsBurning => burnTimer > 0f;
+    public bool IsImmobilized => freezeTimer > 0f || stunTimer > 0f;
+    public float ObstacleClimb01 => obstacleClimb;
+    public virtual bool CanWalkOverObstacles => IsBoss;
+    public virtual DamageElement AttackElement => DamageElement.None;
 
     public bool CostsDurability => true;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 
     protected Rigidbody2D Body => body;
+    protected float SpeedMultiplier => slowFactor * GlobalSpeedMultiplier;
 
     public virtual bool IsBoss => false;
 
@@ -134,11 +162,189 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 
         flashRenderer = GetComponentInChildren<SpriteRenderer>();
         bodyCollider = GetComponent<Collider2D>();
+
+        if (CanWalkOverObstacles)
+            PhysicsLayers.Exclude(gameObject, PhysicsLayers.ObstacleMask);
+    }
+
+    public void ApplySlow(float factor, float seconds)
+    {
+        if (isDead || seconds <= 0f)
+            return;
+
+        seconds *= StatusDurationScale;
+
+        if (slowTimer <= 0f || factor < slowFactor)
+            slowFactor = Mathf.Clamp(factor, 0.05f, 1f);
+
+        slowTimer = Mathf.Max(slowTimer, seconds);
+    }
+
+    public void Freeze(float seconds)
+    {
+        if (isDead || seconds <= 0f)
+            return;
+
+        if (IsBoss)
+        {
+            ApplySlow(0.3f, seconds);
+            return;
+        }
+
+        freezeTimer = Mathf.Max(freezeTimer, seconds);
+    }
+
+    public void Stun(float seconds)
+    {
+        if (isDead || seconds <= 0f)
+            return;
+
+        stunTimer = Mathf.Max(stunTimer, seconds * StatusDurationScale);
+    }
+
+    public void Burn(float seconds)
+    {
+        if (isDead || seconds <= 0f)
+            return;
+
+        if (burnTimer <= 0f)
+            burnTick = BurnTickSeconds;
+
+        burnTimer = Mathf.Max(burnTimer, seconds);
+    }
+
+    public void Taunt(Transform decoy, float seconds)
+    {
+        if (isDead || decoy == null || seconds <= 0f)
+            return;
+
+        tauntTarget = decoy;
+        tauntTimer = seconds;
+    }
+
+    private float StatusDurationScale => IsBoss ? BossStatusScale : 1f;
+
+    protected bool UpdateStatus()
+    {
+        float step = Time.fixedDeltaTime;
+
+        UpdateObstacleClimb(step);
+
+        if (slowTimer > 0f)
+        {
+            slowTimer -= step;
+
+            if (slowTimer <= 0f)
+                slowFactor = 1f;
+        }
+
+        if (freezeTimer > 0f)
+            freezeTimer -= step;
+
+        if (stunTimer > 0f)
+            stunTimer -= step;
+
+        if (tauntTimer > 0f)
+        {
+            tauntTimer -= step;
+
+            if (tauntTimer <= 0f)
+                tauntTarget = null;
+        }
+
+        if (burnTimer > 0f)
+        {
+            burnTimer -= step;
+            burnTick -= step;
+
+            if (burnTick <= 0f)
+            {
+                burnTick += BurnTickSeconds;
+                TakeDamage(1);
+
+                if (isDead)
+                    return true;
+            }
+        }
+
+        UpdateTint();
+
+        if (!IsImmobilized)
+            return false;
+
+        body.linearVelocity = Vector2.zero;
+
+        return true;
+    }
+
+    private void UpdateObstacleClimb(float step)
+    {
+        if (!CanWalkOverObstacles || body == null)
+            return;
+
+        int mask = PhysicsLayers.ObstacleMask;
+        bool over = mask != 0 && Physics2D.OverlapPoint(body.position, mask) != null;
+
+        obstacleClimb = Mathf.MoveTowards(
+            obstacleClimb, over ? 1f : 0f, step * ClimbSpeed
+        );
+    }
+
+    private void UpdateTint()
+    {
+        if (flashRenderer == null)
+            return;
+
+        Color tint = Color.white;
+        bool any = false;
+
+        if (slowTimer > 0f)
+        {
+            tint *= SlowTint;
+            any = true;
+        }
+
+        if (freezeTimer > 0f)
+        {
+            tint *= FreezeTint;
+            any = true;
+        }
+
+        if (burnTimer > 0f)
+        {
+            tint *= BurnTint;
+            any = true;
+        }
+
+        if (stunTimer > 0f)
+        {
+            tint *= StunTint;
+            any = true;
+        }
+
+        if (any)
+        {
+            if (!tinted)
+            {
+                untintedColor = flashRenderer.color;
+                tinted = true;
+            }
+
+            flashRenderer.color = untintedColor * tint;
+        }
+        else if (tinted)
+        {
+            flashRenderer.color = untintedColor;
+            tinted = false;
+        }
     }
 
     protected virtual void FixedUpdate()
     {
         if (isDead)
+            return;
+
+        if (UpdateStatus())
             return;
 
         if (knockbackTimer > 0f)
@@ -173,6 +379,9 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 
     protected Transform GetTarget()
     {
+        if (tauntTarget != null && tauntTimer > 0f)
+            return tauntTarget;
+
         if (target == null)
         {
             PlayerHealth player = FindFirstObjectByType<PlayerHealth>();
@@ -202,7 +411,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
             return;
         }
 
-        body.linearVelocity = direction.normalized * moveSpeed;
+        body.linearVelocity = direction.normalized * moveSpeed * SpeedMultiplier;
     }
 
     public void SetFrozen(bool frozen)
@@ -276,12 +485,18 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 
     protected virtual void Die()
     {
+        bool wasBurning = IsBurning;
+
         isDead = true;
 
         GameStats.Add(StatType.EnemiesDefeated);
         RecordDefeat();
 
         Died?.Invoke(this);
+
+        if (PlayerPower.Instance != null)
+            PlayerPower.Instance.OnEnemyKilled(this, wasBurning, transform.position);
+
         Destroy(gameObject);
     }
 
@@ -291,14 +506,22 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 
     protected virtual void HandleContact(Collision2D collision)
     {
-        if (isDead)
+        if (isDead || IsImmobilized)
             return;
 
         PlayerHealth player =
             collision.collider.GetComponentInParent<PlayerHealth>();
 
         if (player != null)
-            player.TakeDamage(contactDamage);
+        {
+            player.TakeDamage(contactDamage, AttackElement);
+            return;
+        }
+
+        AllyMinion minion = collision.collider.GetComponentInParent<AllyMinion>();
+
+        if (minion != null)
+            minion.TakeHit(contactDamage);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

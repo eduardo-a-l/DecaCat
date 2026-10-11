@@ -18,6 +18,9 @@ public class Room : MonoBehaviour
     private RoomManager manager;
 
     public Collider2D WallCollider { get; private set; }
+    public Collider2D ObstacleCollider { get; private set; }
+    public IReadOnlyList<Enemy> Enemies => enemies;
+    private readonly List<PowerAltar> altars = new List<PowerAltar>();
     private FloorEncounter encounter;
     private RoomLayout layout;
     private Transform gridTransform;
@@ -63,7 +66,10 @@ public class Room : MonoBehaviour
 
         Tilemap floor = CreateTilemap("Floor", FloorSortingOrder);
         Tilemap walls = CreateTilemap("Walls", WallSortingOrder);
-        WallCollider = SetupWallCollision(walls);
+        Tilemap obstacles = CreateTilemap("Obstacles", WallSortingOrder);
+
+        WallCollider = SetupWallCollision(walls, PhysicsLayers.BorderLayer);
+        ObstacleCollider = SetupWallCollision(obstacles, PhysicsLayers.ObstacleLayer);
 
         Tile floorTile = tileSet.CreateFloorTile(
             encounter != null ? encounter.FloorTint : Color.white
@@ -74,6 +80,7 @@ public class Room : MonoBehaviour
         );
         List<Vector2Int> spawnCells = new List<Vector2Int>();
         List<Vector2Int> crateCells = new List<Vector2Int>();
+        List<Vector2Int> altarCells = new List<Vector2Int>();
 
         for (int y = 0; y < layout.Height; y++)
         {
@@ -87,7 +94,9 @@ public class Room : MonoBehaviour
 
                 if (!open)
                 {
-                    walls.SetTile(cell, wallTile);
+                    Tilemap target = IsBorderCell(x, y) ? walls : obstacles;
+
+                    target.SetTile(cell, wallTile);
                     continue;
                 }
 
@@ -98,6 +107,9 @@ public class Room : MonoBehaviour
 
                 if (layout.IsCrate(x, y))
                     crateCells.Add(new Vector2Int(x, y));
+
+                if (layout.IsAltar(x, y))
+                    altarCells.Add(new Vector2Int(x, y));
             }
         }
 
@@ -106,6 +118,7 @@ public class Room : MonoBehaviour
 
         SpawnEnemies(spawnCells);
         SpawnCrates(crateCells);
+        SpawnAltars(altarCells);
     }
 
     public void Activate()
@@ -131,6 +144,7 @@ public class Room : MonoBehaviour
 
         SetEnemiesFrozen(false);
         DiscoverEnemies();
+        DiscoverAltars();
         CheckCleared();
         RefreshBarriers();
     }
@@ -269,8 +283,22 @@ public class Room : MonoBehaviour
         return tilemapObject.GetComponent<Tilemap>();
     }
 
-    private static CompositeCollider2D SetupWallCollision(Tilemap walls)
+    public bool IsObstacleAt(Vector2 worldPosition)
     {
+        int mask = PhysicsLayers.ObstacleMask;
+
+        return mask != 0 && Physics2D.OverlapPoint(worldPosition, mask) != null;
+    }
+
+    private bool IsBorderCell(int x, int y)
+    {
+        return x == 0 || y == 0 || x == layout.Width - 1 || y == layout.Height - 1;
+    }
+
+    private static CompositeCollider2D SetupWallCollision(Tilemap walls, int layer)
+    {
+        PhysicsLayers.SetLayer(walls.gameObject, layer);
+
         Rigidbody2D body = walls.gameObject.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Static;
 
@@ -350,6 +378,91 @@ public class Room : MonoBehaviour
         trigger.size = spriteRenderer.sprite.bounds.size;
 
         exit.AddComponent<FloorExit>().Setup(manager);
+    }
+
+    private void SpawnAltars(List<Vector2Int> altarCells)
+    {
+        PowerCatalog catalog = PowerCatalog.Instance;
+
+        if (altarCells.Count == 0 || encounter == null || catalog == null)
+            return;
+
+        bool hasSave = SaveSession.IsActive;
+
+        if (hasSave && SaveSession.Data.takenAltarRooms.Contains(GetAltarKey()))
+            return;
+
+        PowerType held = default;
+        bool holding = hasSave &&
+            Enum.TryParse(SaveSession.Data.loadoutPower, out held);
+
+        List<PowerDefinition> options = new List<PowerDefinition>();
+
+        foreach (PowerDefinition definition in catalog.Powers)
+        {
+            if (definition != null && !(holding && definition.Type == held))
+                options.Add(definition);
+        }
+
+        StableRandom random = new StableRandom(
+            encounter.RunSeed,
+            encounter.Floor * 1009 + GridPosition.x * 97 + GridPosition.y * 13 + 7
+        );
+
+        Transform altarRoot = new GameObject("Altars").transform;
+        altarRoot.SetParent(transform, false);
+
+        foreach (Vector2Int cell in altarCells)
+        {
+            if (options.Count == 0)
+                break;
+
+            int index = random.Next(options.Count);
+            PowerDefinition chosen = options[index];
+
+            options.RemoveAt(index);
+
+            Vector3 position = transform.TransformPoint(CellToLocal(cell));
+
+            altars.Add(PowerAltar.Spawn(position, altarRoot, chosen, OnAltarTaken));
+        }
+    }
+
+    private void OnAltarTaken(PowerAltar taken)
+    {
+        foreach (PowerAltar other in altars)
+        {
+            if (other != null && other != taken)
+                other.Vanish();
+        }
+
+        if (!SaveSession.IsActive)
+            return;
+
+        List<string> list = SaveSession.Data.takenAltarRooms;
+        string key = GetAltarKey();
+
+        if (!list.Contains(key))
+            list.Add(key);
+    }
+
+    private string GetAltarKey()
+    {
+        return encounter.Floor + ":" + GridPosition.x + ":" + GridPosition.y;
+    }
+
+    private void DiscoverAltars()
+    {
+        foreach (PowerAltar altar in altars)
+        {
+            if (altar != null && !altar.Taken)
+            {
+                Discoveries.Add(
+                    Discoveries.PowerKind, altar.PowerType.ToString(),
+                    altar.Definition.DisplayName
+                );
+            }
+        }
     }
 
     private void SpawnCrates(List<Vector2Int> crateCells)

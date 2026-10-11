@@ -66,11 +66,25 @@ public class PlayerItem : MonoBehaviour
             if (pickup != null)
                 pickup.SetPromptVisible(pickup == closest, key);
         }
+
+        if (PlayerPower.Instance != null)
+            PlayerPower.Instance.UpdateAltarPrompts(key);
     }
 
     private void Interact()
     {
         ItemPickup pickup = GetClosestPickup();
+        PlayerPower power = PlayerPower.Instance;
+        PowerAltar altar = power != null ? power.GetClosestAltar() : null;
+
+        if (altar != null &&
+            (pickup == null ||
+             (altar.transform.position - transform.position).sqrMagnitude <=
+             (pickup.transform.position - transform.position).sqrMagnitude))
+        {
+            power.TakeAltar(altar);
+            return;
+        }
 
         if (pickup == null)
             return;
@@ -180,7 +194,11 @@ public class PlayerItem : MonoBehaviour
             Quaternion.identity
         );
 
-        dropped.SetItem(currentItem, currentDurability);
+        int droppedDurability = PlayerPower.Instance != null
+            ? PlayerPower.Instance.ModifyDroppedDurability(currentDurability)
+            : currentDurability;
+
+        dropped.SetItem(currentItem, droppedDurability);
         EnterPickupRange(dropped);
 
         Debug.Log("Dropped: " + currentItem.ItemName);

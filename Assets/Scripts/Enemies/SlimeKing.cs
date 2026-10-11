@@ -20,6 +20,8 @@ public class SlimeKing : Enemy
     private const float SummonSpacing = 1f;
     private const float SummonRingGap = 0.9f;
     private const float SummonRingDepth = 0.8f;
+    private const float ClimbHeight = 0.35f;
+    private const float ClimbScale = 0.1f;
     private const float ShadowAlpha = 0.3f;
     private const int ShadowSortingOrder = -4;
 
@@ -68,6 +70,7 @@ public class SlimeKing : Enemy
 
     private CircleCollider2D circleCollider;
     private Transform visual;
+    private Vector3 visualBaseScale = Vector3.one;
     private Transform shadow;
     private Vector3 shadowBaseScale;
     private bool[] summoned;
@@ -96,7 +99,10 @@ public class SlimeKing : Enemy
         SpriteRenderer bodyRenderer = GetComponentInChildren<SpriteRenderer>();
 
         if (bodyRenderer != null && bodyRenderer.transform != transform)
+        {
             visual = bodyRenderer.transform;
+            visualBaseScale = visual.localScale;
+        }
 
         summoned = new bool[summonHealthThresholds.Length];
 
@@ -124,8 +130,16 @@ public class SlimeKing : Enemy
             lift = height01 * jumpHeight;
         }
 
+        float climb = Mathf.SmoothStep(0f, 1f, ObstacleClimb01);
+
+        lift += climb * ClimbHeight;
+        height01 = Mathf.Max(height01, climb * 0.6f);
+
         if (visual != null)
+        {
             visual.localPosition = new Vector3(0f, lift, 0f);
+            visual.localScale = visualBaseScale * (1f + ClimbScale * climb);
+        }
 
         if (shadow != null)
             shadow.localScale = shadowBaseScale * (1f - 0.35f * height01);
@@ -134,6 +148,9 @@ public class SlimeKing : Enemy
     protected override void FixedUpdate()
     {
         if (isDead)
+            return;
+
+        if (UpdateStatus() && state != State.Jumping)
             return;
 
         float step = Time.fixedDeltaTime;

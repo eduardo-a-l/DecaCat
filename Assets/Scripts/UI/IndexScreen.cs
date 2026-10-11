@@ -22,7 +22,7 @@ public class IndexScreen : MonoBehaviour
     private static readonly Color LockedColor = new Color(1f, 1f, 1f, 0.35f);
     private static readonly Color TabSelected = new Color(0.95f, 0.78f, 0.3f, 1f);
 
-    private static readonly string[] CategoryNames = { "Items", "Enemies", "Bosses" };
+    private static readonly string[] CategoryNames = { "Items", "Enemies", "Bosses", "Powers" };
 
     private class Entry
     {
@@ -140,7 +140,7 @@ public class IndexScreen : MonoBehaviour
 
             Button tab = UIFactory.CreateButton(
                 content, "CategoryTab" + i, CategoryNames[i],
-                new Vector2((i - 1) * 300f, 315f), new Vector2(260f, 60f),
+                new Vector2((i - 1.5f) * 300f, 315f), new Vector2(260f, 60f),
                 () => SelectCategory(tabCategory), 32f
             );
 
@@ -299,6 +299,10 @@ public class IndexScreen : MonoBehaviour
             new Vector2(0f, -170f), new Vector2(DetailWidth - 80f, 250f),
             null, TextAlignmentOptions.TopLeft
         );
+
+        detailDescription.enableAutoSizing = true;
+        detailDescription.fontSizeMin = 18f;
+        detailDescription.fontSizeMax = 34f;
     }
 
     private void ShowEntry(int index)
@@ -339,6 +343,9 @@ public class IndexScreen : MonoBehaviour
         if (category == 0)
             return BuildItemEntries(data);
 
+        if (category == 3)
+            return BuildPowerEntries(data);
+
         return BuildEnemyEntries(data, category == 2);
     }
 
@@ -375,6 +382,35 @@ public class IndexScreen : MonoBehaviour
                 Sprite = item.ItemSprite,
                 Discovered = Discoveries.Has(
                     data, Discoveries.ItemKind, item.ItemName
+                )
+            });
+        }
+
+        return result;
+    }
+
+    private static List<Entry> BuildPowerEntries(SaveData data)
+    {
+        List<Entry> result = new List<Entry>();
+        PowerCatalog catalog = PowerCatalog.Instance;
+
+        if (catalog == null)
+            return result;
+
+        foreach (PowerDefinition definition in catalog.Powers)
+        {
+            if (definition == null)
+                continue;
+
+            result.Add(new Entry
+            {
+                Name = definition.DisplayName,
+                Subtitle = "Power",
+                Description = definition.FullDescription,
+                Stats = new[] { PlayerPower.MaxCharges + " special charges" },
+                Sprite = definition.Icon,
+                Discovered = Discoveries.Has(
+                    data, Discoveries.PowerKind, definition.Type.ToString()
                 )
             });
         }

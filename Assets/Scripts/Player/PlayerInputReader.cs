@@ -17,6 +17,7 @@ public class PlayerInputReader : MonoBehaviour
     [SerializeField] private KeyCode restartKey = KeyCode.R;
     [SerializeField] private KeyCode pauseKey = KeyCode.Escape;
     [SerializeField] private KeyCode mapKey = KeyCode.M;
+    [SerializeField] private KeyCode specialKey = KeyCode.Space;
     [SerializeField] private bool forceTouchControls;
 
     private Camera mainCamera;
@@ -26,6 +27,7 @@ public class PlayerInputReader : MonoBehaviour
     private Key restartInput;
     private Key pauseInput;
     private Key mapInput;
+    private Key specialInput;
 
     public bool InputEnabled { get; set; } = true;
 
@@ -36,6 +38,10 @@ public class PlayerInputReader : MonoBehaviour
         restartInput = ToKey(restartKey);
         pauseInput = ToKey(pauseKey);
         mapInput = ToKey(mapKey);
+        specialInput = ToKey(specialKey);
+
+        if (GetComponent<PlayerPower>() == null)
+            gameObject.AddComponent<PlayerPower>();
 
         if (Application.isMobilePlatform || forceTouchControls)
             mobile = MobileControls.Create(this);
@@ -141,6 +147,11 @@ public class PlayerInputReader : MonoBehaviour
         InputEnabled &&
         (WasPressed(dropInput) ||
          (mobile != null && mobile.ConsumeDrop()));
+
+    public bool SpecialPressed =>
+        InputEnabled &&
+        (WasPressed(specialInput) ||
+         (mobile != null && mobile.ConsumeSpecial()));
 
     public bool RestartPressed => WasPressed(restartInput);
     public bool PausePressed => WasPressed(pauseInput);

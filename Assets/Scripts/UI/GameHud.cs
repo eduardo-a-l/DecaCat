@@ -33,6 +33,8 @@ public class GameHud : MonoBehaviour
         BuildFloorLabel();
         BuildPauseButton();
         BuildMapButton();
+
+        BossHealthBar.Create(transform, font, roomManager);
     }
 
     private void Update()

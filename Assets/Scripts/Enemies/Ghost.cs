@@ -22,18 +22,11 @@ public class Ghost : Enemy
         maxHealth = ScaleHealth(health);
         currentHealth = maxHealth;
         contactDamage = ScaleDamage(touchDamage);
+
+        PhysicsLayers.Exclude(gameObject, PhysicsLayers.WallMask);
     }
 
-    private void Start()
-    {
-        Room room = GetComponentInParent<Room>();
-
-        if (room == null || room.WallCollider == null)
-            return;
-
-        foreach (Collider2D own in GetComponents<Collider2D>())
-            Physics2D.IgnoreCollision(own, room.WallCollider, true);
-    }
+    public override bool CanWalkOverObstacles => true;
 
     private void OnEnable()
     {
@@ -90,7 +83,7 @@ public class Ghost : Enemy
 
         float speed =
             Mathf.Lerp(closeSpeed, farSpeed, distanceFactor) * crowdFactor *
-            Scaling.Speed;
+            Scaling.Speed * SpeedMultiplier;
 
         Body.linearVelocity = offset / distance * speed;
     }

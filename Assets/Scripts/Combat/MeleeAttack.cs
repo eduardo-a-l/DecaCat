@@ -54,12 +54,21 @@ public class MeleeAttack : MonoBehaviour
 
     private void Update()
     {
-        if (inputReader != null &&
-            inputReader.AttackPressed &&
-            Time.time >= nextAttackTime)
+        if (inputReader == null ||
+            !inputReader.AttackPressed ||
+            Time.time < nextAttackTime)
+            return;
+
+        PlayerPower power = PlayerPower.Instance;
+
+        if (power != null && !power.CanAttack)
         {
-            Attack();
+            inputReader.AcknowledgeAttack();
+            power.OnAttackBlocked();
+            return;
         }
+
+        Attack();
     }
 
     private void Attack()
@@ -77,7 +86,10 @@ public class MeleeAttack : MonoBehaviour
             return;
         }
 
-        nextAttackTime = Time.time + item.Cooldown;
+        PlayerPower power = PlayerPower.Instance;
+
+        nextAttackTime = Time.time + item.Cooldown *
+            (power != null ? power.CooldownMultiplier : 1f);
 
         Vector3 aimPosition = inputReader.AimWorldPosition;
 
@@ -111,16 +123,33 @@ public class MeleeAttack : MonoBehaviour
         );
         bool spendDurability = false;
 
+        int damage = power != null ? power.ModifyDamage(item.Damage) : item.Damage;
+
+        AttackContext context = new AttackContext
+        {
+            Origin = transform.position,
+            Direction = direction,
+            Angle = angle,
+            BaseDamage = item.Damage,
+            Damage = damage
+        };
+
         foreach (IDamageable target in targets)
         {
             if (target.CostsDurability)
                 spendDurability = true;
 
-            target.TakeDamage(item.Damage);
+            target.TakeDamage(damage);
+
+            if (power != null)
+                power.OnHit(context, target);
 
             if (item.Knockback > 0f && target is IPushable pushable)
                 pushable.Push(transform.position, item.Knockback);
         }
+
+        if (power != null)
+            power.OnAttackEnded(context, targets.Count);
 
         if (spendDurability)
             playerItem.UseItem();
@@ -128,9 +157,14 @@ public class MeleeAttack : MonoBehaviour
 
     private void Punch()
     {
-        nextAttackTime = Time.time + unarmedCooldown;
+        PlayerPower power = PlayerPower.Instance;
+
+        nextAttackTime = Time.time + unarmedCooldown *
+            (power != null ? power.CooldownMultiplier : 1f);
 
         float angle = GetAimAngle();
+        float radians = angle * Mathf.Deg2Rad;
+        Vector2 direction = new Vector2(Mathf.Cos(radians), Mathf.Sin(radians));
 
         SwingEffect.Play(
             transform, angle, unarmedRange, unarmedRadius,
@@ -142,8 +176,27 @@ public class MeleeAttack : MonoBehaviour
             angle, unarmedRange, unarmedRadius, unarmedSwingAngle, false
         );
 
+        int damage = power != null ? power.ModifyDamage(unarmedDamage) : unarmedDamage;
+
+        AttackContext context = new AttackContext
+        {
+            Origin = transform.position,
+            Direction = direction,
+            Angle = angle,
+            BaseDamage = unarmedDamage,
+            Damage = damage
+        };
+
         foreach (IDamageable target in targets)
-            target.TakeDamage(unarmedDamage);
+        {
+            target.TakeDamage(damage);
+
+            if (power != null)
+                power.OnHit(context, target);
+        }
+
+        if (power != null)
+            power.OnAttackEnded(context, targets.Count);
     }
 
     private float GetAimAngle()

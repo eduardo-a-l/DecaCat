@@ -23,6 +23,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        rb.linearVelocity = movement * moveSpeed;
+        PlayerPower power = PlayerPower.Instance;
+
+        if (power != null && power.IsDashing)
+            return;
+
+        float multiplier = power != null ? power.SpeedMultiplier : 1f;
+
+        rb.linearVelocity = movement * moveSpeed * multiplier;
     }
 }

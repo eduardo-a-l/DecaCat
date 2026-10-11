@@ -11,7 +11,7 @@ public class RoomLayout : ScriptableObject
     [SerializeField] private Enemy[] enemyPrefabs;
     [SerializeField] private Crate cratePrefab;
 
-    [Header("Layout:   #  wall    .  floor    E  enemy    C  crate")]
+    [Header("Layout:   #  wall    .  floor    E  enemy    C  crate    A  power altar")]
     [SerializeField, TextArea(12, 24)] private string layout;
 
     [NonSerialized] private string[] rows;
@@ -63,7 +63,7 @@ public class RoomLayout : ScriptableObject
     {
         char cell = GetCell(x, y);
 
-        return cell == '.' || cell == 'E' || cell == 'C';
+        return cell == '.' || cell == 'E' || cell == 'C' || cell == 'A';
     }
 
     public bool IsSpawn(int x, int y)
@@ -74,6 +74,11 @@ public class RoomLayout : ScriptableObject
     public bool IsCrate(int x, int y)
     {
         return GetCell(x, y) == 'C';
+    }
+
+    public bool IsAltar(int x, int y)
+    {
+        return GetCell(x, y) == 'A';
     }
 
     public RoomSide? GetPassageSide(int x, int y)

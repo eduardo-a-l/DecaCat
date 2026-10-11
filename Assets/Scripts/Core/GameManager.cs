@@ -196,6 +196,13 @@ public class GameManager : MonoBehaviour
             data.loadoutDurability = playerItem.CurrentDurability;
         }
 
+        if (PlayerPower.Instance != null)
+            PlayerPower.Instance.SaveTo(data);
+
+        string floorPrefix = floor + ":";
+
+        data.takenAltarRooms.RemoveAll(entry => !entry.StartsWith(floorPrefix));
+
         GameStats.SetMax(StatType.HighestFloor, floor);
 
         SaveSession.Save();

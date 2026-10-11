@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MobileControls : MonoBehaviour
 {
@@ -24,6 +25,9 @@ public class MobileControls : MonoBehaviour
     private float attackBufferedUntil = -1f;
     private bool interactQueued;
     private bool dropQueued;
+    private bool specialQueued;
+    private TouchButton specialButton;
+    private Image specialIcon;
 
     public Vector2 MoveValue
     {
@@ -64,6 +68,14 @@ public class MobileControls : MonoBehaviour
     {
         bool value = interactQueued;
         interactQueued = false;
+
+        return value;
+    }
+
+    public bool ConsumeSpecial()
+    {
+        bool value = specialQueued;
+        specialQueued = false;
 
         return value;
     }
@@ -117,8 +129,45 @@ public class MobileControls : MonoBehaviour
             () => dropQueued = true
         );
 
+        specialButton = TouchButton.Create(
+            safeRoot, "SpecialButton", string.Empty, new Vector2(1f, 0f),
+            new Vector2(-590f, 320f), ButtonDiameter * 1.1f,
+            () => specialQueued = true
+        );
+
+        specialIcon = UIFactory.CreateImage(
+            specialButton.transform, "Icon", Vector2.zero,
+            Vector2.one * ButtonDiameter * 0.8f, Color.white
+        );
+
+        specialButton.gameObject.SetActive(false);
+
         foreach (Transform child in safeRoot)
             controls.Add((RectTransform)child);
+    }
+
+    private void UpdateSpecialButton()
+    {
+        PlayerPower power = PlayerPower.Instance;
+        bool hasPower = power != null && power.HasPower;
+
+        if (specialButton.gameObject.activeSelf != hasPower)
+            specialButton.gameObject.SetActive(hasPower);
+
+        if (!hasPower)
+            return;
+
+        Sprite sprite = power.Current.Icon;
+
+        if (specialIcon.sprite != sprite)
+        {
+            specialIcon.sprite = sprite;
+            specialIcon.preserveAspect = true;
+        }
+
+        specialIcon.color = power.SpecialReady
+            ? Color.white
+            : new Color(1f, 1f, 1f, 0.4f);
     }
 
     private void ApplyPreferences()
@@ -154,10 +203,13 @@ public class MobileControls : MonoBehaviour
         if (safeRoot.gameObject.activeSelf != visible)
             safeRoot.gameObject.SetActive(visible);
 
+        UpdateSpecialButton();
+
         if (!visible)
         {
             interactQueued = false;
             dropQueued = false;
+            specialQueued = false;
             attackBufferedUntil = -1f;
         }
 

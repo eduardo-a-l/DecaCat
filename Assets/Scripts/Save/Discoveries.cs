@@ -5,6 +5,7 @@ public static class Discoveries
     public const string ItemKind = "item";
     public const string EnemyKind = "enemy";
     public const string BossKind = "boss";
+    public const string PowerKind = "power";
 
     public static bool Add(string kind, string id, string displayName = null)
     {
@@ -51,6 +52,9 @@ public static class Discoveries
     {
         if (kind == BossKind)
             return "Boss";
+
+        if (kind == PowerKind)
+            return "Power";
 
         return kind == EnemyKind ? "Enemy" : "Item";
     }
