@@ -14,8 +14,14 @@ public class AchievementToast : MonoBehaviour
     private static readonly Color PanelColor = new Color(0.06f, 0.06f, 0.08f, 0.95f);
     private static readonly Color DescriptionColor = new Color(1f, 1f, 1f, 0.7f);
 
-    private static readonly Queue<AchievementDefinition> Pending =
-        new Queue<AchievementDefinition>();
+    private class ToastInfo
+    {
+        public string Header;
+        public string Title;
+        public string Description;
+    }
+
+    private static readonly Queue<ToastInfo> Pending = new Queue<ToastInfo>();
 
     private static AchievementToast active;
 
@@ -31,7 +37,17 @@ public class AchievementToast : MonoBehaviour
 
     public static void Show(AchievementDefinition achievement)
     {
-        Pending.Enqueue(achievement);
+        Show("ACHIEVEMENT UNLOCKED", achievement.Title, achievement.Description);
+    }
+
+    public static void Show(string header, string title, string description)
+    {
+        Pending.Enqueue(new ToastInfo
+        {
+            Header = header,
+            Title = title,
+            Description = description
+        });
 
         if (active == null)
             ShowNext();
@@ -42,17 +58,17 @@ public class AchievementToast : MonoBehaviour
         if (Pending.Count == 0)
             return;
 
-        AchievementDefinition achievement = Pending.Dequeue();
+        ToastInfo info = Pending.Dequeue();
 
         GameObject root = UIFactory.CreateOverlayCanvas("AchievementToast", 150);
 
         AchievementToast toast = root.AddComponent<AchievementToast>();
-        toast.Build(achievement);
+        toast.Build(info);
 
         active = toast;
     }
 
-    private void Build(AchievementDefinition achievement)
+    private void Build(ToastInfo info)
     {
         panel = UIFactory.CreateRect(
             transform, "Panel", new Vector2(0f, HiddenY), PanelSize
@@ -65,17 +81,17 @@ public class AchievementToast : MonoBehaviour
         UIFactory.AddOutline(panel, PanelSize, 4f, GoldColor);
 
         UIFactory.CreateText(
-            panel, "Header", "ACHIEVEMENT UNLOCKED", 26f, GoldColor,
+            panel, "Header", info.Header, 26f, GoldColor,
             new Vector2(0f, 48f), new Vector2(780f, 36f)
         );
 
         UIFactory.CreateText(
-            panel, "Title", achievement.Title, 46f, Color.white,
+            panel, "Title", info.Title, 46f, Color.white,
             new Vector2(0f, 6f), new Vector2(780f, 60f)
         );
 
         UIFactory.CreateText(
-            panel, "Description", achievement.Description, 28f,
+            panel, "Description", info.Description, 28f,
             DescriptionColor, new Vector2(0f, -44f), new Vector2(780f, 40f)
         );
     }

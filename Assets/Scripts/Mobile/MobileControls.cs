@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MobileControls : MonoBehaviour
@@ -15,6 +16,10 @@ public class MobileControls : MonoBehaviour
     private RectTransform safeRoot;
     private VirtualStick moveStick;
     private VirtualStick aimStick;
+    private readonly List<RectTransform> controls = new List<RectTransform>();
+    private CanvasGroup controlsGroup;
+    private float appliedScale = -1f;
+    private float appliedOpacity = -1f;
     private Rect lastSafeArea;
     private float attackBufferedUntil = -1f;
     private bool interactQueued;
@@ -84,6 +89,8 @@ public class MobileControls : MonoBehaviour
         safeRoot.offsetMin = Vector2.zero;
         safeRoot.offsetMax = Vector2.zero;
 
+        controlsGroup = safeObject.AddComponent<CanvasGroup>();
+
         moveStick = VirtualStick.Create(
             safeRoot, "MoveStick", new Vector2(0f, 0f),
             new Vector2(StickMargin, StickMargin),
@@ -109,6 +116,27 @@ public class MobileControls : MonoBehaviour
             new Vector2(-776f, 130f), ButtonDiameter,
             () => dropQueued = true
         );
+
+        foreach (Transform child in safeRoot)
+            controls.Add((RectTransform)child);
+    }
+
+    private void ApplyPreferences()
+    {
+        float scale = GameSettings.TouchScale;
+        float opacity = GameSettings.TouchOpacity;
+
+        if (Mathf.Approximately(scale, appliedScale) &&
+            Mathf.Approximately(opacity, appliedOpacity))
+            return;
+
+        appliedScale = scale;
+        appliedOpacity = opacity;
+
+        controlsGroup.alpha = opacity;
+
+        foreach (RectTransform control in controls)
+            control.localScale = Vector3.one * scale;
     }
 
     private void Start()
@@ -134,6 +162,7 @@ public class MobileControls : MonoBehaviour
         }
 
         ApplySafeArea();
+        ApplyPreferences();
     }
 
     private void OnFlick(Vector2 direction)

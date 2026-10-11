@@ -10,10 +10,16 @@ public class SettingsData
     public float sfxVolume = 1f;
     public bool fullscreen = true;
     public bool showDamageNumbers = true;
+    public float touchScale = 1f;
+    public float touchOpacity = 1f;
 }
 
 public static class GameSettings
 {
+    public const float MinTouchScale = 0.7f;
+    public const float MaxTouchScale = 1.4f;
+    public const float MinTouchOpacity = 0.25f;
+
     private static SettingsData data;
 
     public static float MasterVolume
@@ -38,6 +44,18 @@ public static class GameSettings
     {
         get { return Data.fullscreen; }
         set { Data.fullscreen = value; }
+    }
+
+    public static float TouchScale
+    {
+        get { return Mathf.Clamp(Data.touchScale, MinTouchScale, MaxTouchScale); }
+        set { Data.touchScale = Mathf.Clamp(value, MinTouchScale, MaxTouchScale); }
+    }
+
+    public static float TouchOpacity
+    {
+        get { return Mathf.Clamp(Data.touchOpacity, MinTouchOpacity, 1f); }
+        set { Data.touchOpacity = Mathf.Clamp(value, MinTouchOpacity, 1f); }
     }
 
     public static bool ShowDamageNumbers
