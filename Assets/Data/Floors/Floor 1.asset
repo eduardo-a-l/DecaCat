@@ -15,7 +15,7 @@ MonoBehaviour:
   minRooms: 14
   maxRooms: 20
   loopChance: 0.65
-  minPowerRooms: 2
+  minPowerRooms: 1
   maxPowerRooms: 3
   startLayouts:
   - {fileID: 11400000, guid: 0c743f62ade44c7b8c7eb8935edc7b67, type: 2}
