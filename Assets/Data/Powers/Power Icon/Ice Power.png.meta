@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: afd8aec81131dce408e807818676870b
+guid: 13f064cb5478f374990be7ace6d65adb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1873187256904553782
-    second: Ice Power_0
+      213: 8467120115558283214
+    second: Ice Power 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Ice Power_0
+      name: Ice Power 1_0
       rect:
         serializedVersion: 2
-        x: 1
-        y: 1
-        width: 68
-        height: 57
+        x: 0
+        y: 0
+        width: 50
+        height: 39
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6359595b2e5eef910800000000000000
-      internalID: 1873187256904553782
+      spriteID: ec77a6662e0418570800000000000000
+      internalID: 8467120115558283214
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Ice Power_0: 1873187256904553782
+      Ice Power 1_0: 8467120115558283214
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

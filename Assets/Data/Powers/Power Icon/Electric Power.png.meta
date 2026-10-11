@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: fcf4b2fcd3d25be45af41381e957211e
+guid: 4d427324fcb124d42b289f30c1e454ec
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2155070164262084617
-    second: Electric Power_0
+      213: 4197577190373681944
+    second: Electric Power 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Electric Power_0
+      name: Electric Power 1_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 2
-        width: 41
-        height: 53
+        x: 0
+        y: 0
+        width: 24
+        height: 37
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 90062e675e858ed10800000000000000
-      internalID: 2155070164262084617
+      spriteID: 81b6185073ac04a30800000000000000
+      internalID: 4197577190373681944
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Electric Power_0: 2155070164262084617
+      Electric Power 1_0: 4197577190373681944
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

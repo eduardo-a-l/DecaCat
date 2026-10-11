@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e29d8139018eac64cb14afb1503072c7
+guid: b8bebe8bee62a5d44951f459a449fb8d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -5539112930399030129
-    second: Cloud Power_0
+      213: -3537284685608248971
+    second: Cloud Power 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,13 +126,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Cloud Power_0
+      name: Cloud Power 1_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 65
-        height: 48
+        width: 46
+        height: 28
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: f84fac4232e1123b0800000000000000
-      internalID: -5539112930399030129
+      spriteID: 57914ecd15a09eec0800000000000000
+      internalID: -3537284685608248971
       vertices: []
       indices: 
       edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Cloud Power_0: -5539112930399030129
+      Cloud Power 1_0: -3537284685608248971
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
