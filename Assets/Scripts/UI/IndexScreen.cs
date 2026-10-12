@@ -428,6 +428,18 @@ public class IndexScreen : MonoBehaviour
             "Reach " + item.AttackRange.ToString("0.##")
         };
 
+        if (item.IsRanged)
+        {
+            stats.RemoveAt(stats.Count - 1);
+            stats.Add("Ranged, " + item.ShotsPerDurability + " shots per durability");
+        }
+
+        if (item.Bounces > 0)
+            stats.Add("Bounces off walls up to " + item.Bounces + " times");
+
+        if (item.AimLock)
+            stats.Add("Slightly locks onto enemies");
+
         if (item.HitsMultipleTargets)
             stats.Add("Hits every enemy in the swing");
 

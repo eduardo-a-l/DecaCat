@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ebf8d504faf1d44927da6213440cb3, type: 3}
+  m_Name: Water Gun
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Water Gun
+  description: 'Squirts a stream of water at range. Slow to refill but each point of durability gives two shots.'
+  itemSprite: {fileID: -1450369628205712009, guid: afc8dd7664419e14b8c6f4d12636d291, type: 3}
+  maxDurability: 10
+  damage: 10
+  cooldown: 1
+  attackRange: 0.8
+  attackRadius: 0.5
+  swingAngle: 100
+  swingDuration: 0.2
+  hitsMultipleTargets: 0
+  knockback: 0
+  swingEffectSprite: {fileID: 0}
+  swingEffectColor: {r: 1, g: 1, b: 1, a: 0.9}
+  isRanged: 1
+  projectileSpeed: 11
+  projectileLifetime: 1.4
+  projectileSize: {x: 0.32, y: 0.32}
+  projectileColor: {r: 0.3, g: 0.7, b: 1, a: 1}
+  shotsPerDurability: 2
+  bounces: 0
+  aimLock: 0

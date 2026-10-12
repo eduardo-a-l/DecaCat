@@ -21,6 +21,7 @@ public class Room : MonoBehaviour
     public Collider2D ObstacleCollider { get; private set; }
     public IReadOnlyList<Enemy> Enemies => enemies;
     private readonly List<PowerAltar> altars = new List<PowerAltar>();
+    private readonly List<Vector2Int> floorPoints = new List<Vector2Int>();
     private FloorEncounter encounter;
     private RoomLayout layout;
     private Transform gridTransform;
@@ -286,6 +287,28 @@ public class Room : MonoBehaviour
         return tilemapObject.GetComponent<Tilemap>();
     }
 
+    public Vector2 GetRandomFloorPoint()
+    {
+        if (floorPoints.Count == 0)
+        {
+            for (int y = 1; y < layout.Height - 1; y++)
+            {
+                for (int x = 1; x < layout.Width - 1; x++)
+                {
+                    if (layout.GetCell(x, y) == '.')
+                        floorPoints.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+
+        if (floorPoints.Count == 0)
+            return transform.position;
+
+        Vector2Int cell = floorPoints[UnityEngine.Random.Range(0, floorPoints.Count)];
+
+        return transform.TransformPoint(CellToLocal(cell));
+    }
+
     public bool IsObstacleAt(Vector2 worldPosition)
     {
         int mask = PhysicsLayers.ObstacleMask;
@@ -538,10 +561,28 @@ public class Room : MonoBehaviour
             encounter != null ? encounter.Scaling : EnemyScaling.None;
 
         Transform enemyRoot = null;
+        Enemy groupPrefab = null;
+        int groupLeft = 0;
 
         foreach (Vector2Int cell in spawnCells)
         {
-            Enemy prefab = ChooseEnemy();
+            Enemy prefab;
+
+            if (groupLeft > 0 && groupPrefab != null)
+            {
+                prefab = groupPrefab;
+                groupLeft--;
+            }
+            else
+            {
+                prefab = ChooseEnemy();
+                groupPrefab = prefab;
+                groupLeft = 0;
+
+                if (prefab != null && prefab.GroupSize > 1 &&
+                    UnityEngine.Random.value < 0.75f)
+                    groupLeft = prefab.GroupSize - 1;
+            }
 
             if (prefab == null)
                 continue;

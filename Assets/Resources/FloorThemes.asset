@@ -21,11 +21,11 @@ MonoBehaviour:
       unlockFloor: 1
     - prefab: {fileID: 7120071188240761046, guid: 0147b3b8394c44b0921454944db62ba9, type: 3}
       unlockFloor: 1
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 8230071188240761006, guid: 3821abe8667643d698b2250711902cfa, type: 3}
       unlockFloor: 2
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 8230071188240762006, guid: 3417663a5ce240b09f7216c84972e7ba, type: 3}
       unlockFloor: 3
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 8230071188240763006, guid: 7587b85498864a28a32346b22da3cf33, type: 3}
       unlockFloor: 4
     bosses:
     - {fileID: 8120071188240761045, guid: 4ac52256a5474bdea70520c4328051d7, type: 3}
@@ -35,7 +35,7 @@ MonoBehaviour:
     floorTint: {r: 1, g: 0.92, b: 0.55, a: 1}
     wallTint: {r: 1, g: 0.92, b: 0.55, a: 1}
     enemies:
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 8230071188240764006, guid: 1e4ed9a2f31d4960894c1e3be52eb11f, type: 3}
       unlockFloor: 1
     - prefab: {fileID: 0}
       unlockFloor: 1

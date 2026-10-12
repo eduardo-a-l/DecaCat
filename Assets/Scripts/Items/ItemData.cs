@@ -25,6 +25,16 @@ public class ItemData : ScriptableObject
     [SerializeField] private Sprite swingEffectSprite;
     [SerializeField] private Color swingEffectColor = new Color(1f, 1f, 1f, 0.9f);
 
+    [Header("Ranged weapons")]
+    [SerializeField] private bool isRanged;
+    [SerializeField] private float projectileSpeed = 12f;
+    [SerializeField] private float projectileLifetime = 1.5f;
+    [SerializeField] private Vector2 projectileSize = new Vector2(0.3f, 0.3f);
+    [SerializeField] private Color projectileColor = Color.white;
+    [SerializeField] private int shotsPerDurability = 1;
+    [SerializeField] private int bounces;
+    [SerializeField] private bool aimLock;
+
     public string ItemName => itemName;
     public Sprite ItemSprite => itemSprite;
     public int MaxDurability => maxDurability;
@@ -40,4 +50,12 @@ public class ItemData : ScriptableObject
     public float Knockback => knockback;
     public Sprite SwingEffectSprite => swingEffectSprite;
     public Color SwingEffectColor => swingEffectColor;
+    public bool IsRanged => isRanged;
+    public float ProjectileSpeed => projectileSpeed;
+    public float ProjectileLifetime => projectileLifetime;
+    public Vector2 ProjectileSize => projectileSize;
+    public Color ProjectileColor => projectileColor;
+    public int ShotsPerDurability => Mathf.Max(1, shotsPerDurability);
+    public int Bounces => bounces;
+    public bool AimLock => aimLock;
 }

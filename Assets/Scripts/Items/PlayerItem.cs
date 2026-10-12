@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class PlayerItem : MonoBehaviour
 {
+    private int shotsFired;
+
     [SerializeField] private ItemData startingItem;
     [SerializeField] private ItemPickup droppedItemPrefab;
 
@@ -142,6 +144,7 @@ public class PlayerItem : MonoBehaviour
             return;
 
         currentItem = item;
+        shotsFired = 0;
 
         Discoveries.Add(Discoveries.ItemKind, item.ItemName, item.ItemName);
 
@@ -153,6 +156,21 @@ public class PlayerItem : MonoBehaviour
 
         Debug.Log("Equipped: " + item.ItemName +
                   " (" + currentDurability + " uses)");
+    }
+
+    public bool UseShot()
+    {
+        if (currentItem == null || currentDurability <= 0)
+            return false;
+
+        shotsFired++;
+
+        if (shotsFired < currentItem.ShotsPerDurability)
+            return true;
+
+        shotsFired = 0;
+
+        return UseItem();
     }
 
     public bool UseItem()

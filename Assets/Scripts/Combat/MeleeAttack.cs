@@ -105,6 +105,12 @@ public class MeleeAttack : MonoBehaviour
             direction.y, direction.x
         ) * Mathf.Rad2Deg;
 
+        if (item.IsRanged)
+        {
+            FireRanged(item, power, direction, angle);
+            return;
+        }
+
         if (swingCoroutine != null)
             StopCoroutine(swingCoroutine);
 
@@ -153,6 +159,81 @@ public class MeleeAttack : MonoBehaviour
 
         if (spendDurability)
             playerItem.UseItem();
+    }
+
+    private void FireRanged(
+        ItemData item, PlayerPower power, Vector2 direction, float angle)
+    {
+        int damage = power != null ? power.ModifyDamage(item.Damage) : item.Damage;
+
+        AttackContext context = new AttackContext
+        {
+            Origin = transform.position,
+            Direction = direction,
+            Angle = angle,
+            BaseDamage = item.Damage,
+            Damage = damage
+        };
+
+        ProjectileSettings shot = new ProjectileSettings
+        {
+            Direction = direction,
+            Speed = item.ProjectileSpeed,
+            Damage = damage,
+            Radius = Mathf.Max(item.ProjectileSize.x, item.ProjectileSize.y) * 0.5f,
+            Size = item.ProjectileSize,
+            Lifetime = item.ProjectileLifetime,
+            Color = item.ProjectileColor,
+            Bounces = item.Bounces,
+            OnEnemyHit = enemy =>
+            {
+                if (power != null)
+                    power.OnHit(context, enemy);
+            }
+        };
+
+        if (item.AimLock)
+        {
+            Enemy locked = FindLockTarget(transform.position, direction);
+
+            if (locked != null)
+            {
+                shot.Homing = true;
+                shot.LockTarget = locked;
+                shot.HomingTurn = 3f;
+            }
+        }
+
+        PowerProjectile.Spawn((Vector2)transform.position + direction * 0.6f, shot);
+
+        if (power != null)
+            power.OnAttackEnded(context, 0);
+
+        playerItem.UseShot();
+    }
+
+    private static Enemy FindLockTarget(Vector2 origin, Vector2 direction)
+    {
+        Enemy best = null;
+        float bestAngle = 25f;
+
+        foreach (Enemy enemy in PowerFx.GetRoomEnemies())
+        {
+            Vector2 toEnemy = (Vector2)enemy.transform.position - origin;
+
+            if (toEnemy.magnitude > 12f)
+                continue;
+
+            float angle = Vector2.Angle(direction, toEnemy);
+
+            if (angle < bestAngle)
+            {
+                bestAngle = angle;
+                best = enemy;
+            }
+        }
+
+        return best;
     }
 
     private void Punch()

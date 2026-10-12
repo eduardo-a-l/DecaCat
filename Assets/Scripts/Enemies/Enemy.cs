@@ -62,6 +62,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     public bool IsImmobilized => freezeTimer > 0f || stunTimer > 0f;
     public float ObstacleClimb01 => obstacleClimb;
     public virtual bool CanWalkOverObstacles => IsBoss;
+    public virtual int GroupSize => 1;
     public virtual DamageElement AttackElement => DamageElement.None;
 
     public bool CostsDurability => true;
@@ -504,6 +505,10 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     {
     }
 
+    protected virtual void HandleHitPlayer(PlayerHealth player)
+    {
+    }
+
     protected virtual void HandleContact(Collision2D collision)
     {
         if (isDead || IsImmobilized)
@@ -515,6 +520,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         if (player != null)
         {
             player.TakeDamage(contactDamage, AttackElement);
+            HandleHitPlayer(player);
             return;
         }
 

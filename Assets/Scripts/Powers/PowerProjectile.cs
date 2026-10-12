@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,6 +22,10 @@ public class ProjectileSettings
     public bool Amplifiable;
     public bool Amplified;
     public Enemy Ignore;
+    public int Bounces;
+    public Enemy LockTarget;
+    public float HomingTurn = 9f;
+    public Action<Enemy> OnEnemyHit;
 
     public ProjectileSettings Clone()
     {
@@ -40,6 +45,7 @@ public class PowerProjectile : MonoBehaviour
     private Vector2 velocity;
     private float age;
     private float nextRetarget;
+    private int bouncesLeft;
     private Enemy homingTarget;
 
     public ProjectileSettings Settings => settings;
@@ -57,6 +63,8 @@ public class PowerProjectile : MonoBehaviour
         PowerProjectile projectile = renderer.gameObject.AddComponent<PowerProjectile>();
         projectile.settings = settings;
         projectile.velocity = settings.Direction.normalized * settings.Speed;
+        projectile.bouncesLeft = settings.Bounces;
+        projectile.homingTarget = settings.LockTarget;
         projectile.Face();
 
         return projectile;
@@ -108,6 +116,9 @@ public class PowerProjectile : MonoBehaviour
 
             enemy.TakeDamage(settings.Damage);
 
+            if (settings.OnEnemyHit != null)
+                settings.OnEnemyHit(enemy);
+
             if (settings.Knockback > 0f)
                 enemy.Push(position - velocity.normalized * 0.5f, settings.Knockback);
 
@@ -132,6 +143,27 @@ public class PowerProjectile : MonoBehaviour
 
         if (mask == 0 || Physics2D.OverlapCircle(position, settings.Radius * 0.7f, mask) == null)
             return;
+
+        if (bouncesLeft > 0)
+        {
+            bouncesLeft--;
+
+            float travel = velocity.magnitude * Time.deltaTime;
+            Vector2 previous = position - velocity * Time.deltaTime;
+
+            RaycastHit2D hit = Physics2D.CircleCast(
+                previous, settings.Radius * 0.7f, velocity.normalized,
+                travel * 2f, mask
+            );
+
+            Vector2 normal = hit.collider != null ? hit.normal : -velocity.normalized;
+
+            velocity = Vector2.Reflect(velocity, normal);
+            transform.position = previous;
+            Face();
+
+            return;
+        }
 
         Split(position, -velocity.normalized, null);
         Destroy(gameObject);
@@ -172,7 +204,9 @@ public class PowerProjectile : MonoBehaviour
 
     private void Steer(float step)
     {
-        if (Time.time >= nextRetarget)
+        if (settings.LockTarget != null && settings.LockTarget.CurrentHealth > 0)
+            homingTarget = settings.LockTarget;
+        else if (Time.time >= nextRetarget)
         {
             nextRetarget = Time.time + RetargetInterval;
 
@@ -188,7 +222,7 @@ public class PowerProjectile : MonoBehaviour
             ((Vector2)homingTarget.transform.position - (Vector2)transform.position)
             .normalized * settings.Speed;
 
-        velocity = Vector2.MoveTowards(velocity, desired, settings.Speed * 9f * step);
+        velocity = Vector2.MoveTowards(velocity, desired, settings.Speed * settings.HomingTurn * step);
     }
 
     private void Face()
