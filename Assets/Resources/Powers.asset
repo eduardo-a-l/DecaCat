@@ -15,7 +15,7 @@ MonoBehaviour:
   powers:
   - type: 0
     displayName: Ice Power
-    icon: {fileID: 1873187256904553782, guid: afd8aec81131dce408e807818676870b, type: 3}
+    icon: {fileID: 8467120115558283214, guid: 13f064cb5478f374990be7ace6d65adb, type: 3}
     playerSprite: {fileID: 3704502696723664069, guid: ee33b8427e4e53948868819c6e9078bc, type: 3}
     accent: {r: 0.55, g: 0.85, b: 1, a: 1}
     passive: 'Enemies you hit are slowed for 5 seconds, with a 10% chance of freezing them in place for 10 seconds. 80% chance to evade ice attacks.'
@@ -23,7 +23,7 @@ MonoBehaviour:
     negative: 'Your speed is cut by 50%.'
   - type: 1
     displayName: Fire Power
-    icon: {fileID: 9158069545400490995, guid: 18a08b831ccfbf24280f96bd6dabbb33, type: 3}
+    icon: {fileID: -5757420161773779218, guid: c03085cf935f4a340bbcf18ad33b2d78, type: 3}
     playerSprite: {fileID: 7767431460072092978, guid: dcd66ef5290446640ad7cb3057f27d13, type: 3}
     accent: {r: 1, g: 0.45, b: 0.2, a: 1}
     passive: 'You leave a trail of fire that lasts 5 seconds. Enemies that step on it burn for 2 seconds, taking 1 damage every second. All your attacks deal 20% more damage. 80% chance to evade fire attacks.'
@@ -31,7 +31,7 @@ MonoBehaviour:
     negative: 'Enemies killed while burning explode in a small burst that damages everything nearby, including you.'
   - type: 2
     displayName: Cloud Power
-    icon: {fileID: -5539112930399030129, guid: e29d8139018eac64cb14afb1503072c7, type: 3}
+    icon: {fileID: -3537284685608248971, guid: b8bebe8bee62a5d44951f459a449fb8d, type: 3}
     playerSprite: {fileID: 627801884037311512, guid: cd3362aba71d81f458bbe5b5100dbf51, type: 3}
     accent: {r: 0.9, g: 0.9, b: 0.95, a: 1}
     passive: 'A fog around you slows nearby enemies. Every attack knocks enemies back.'
@@ -39,7 +39,7 @@ MonoBehaviour:
     negative: 'Dropping a weapon makes it lose half of its durability.'
   - type: 3
     displayName: Leaf Power
-    icon: {fileID: -4703069846889883192, guid: bd8a684fc6888ae47a4158b301ee1d20, type: 3}
+    icon: {fileID: 6281246302079624109, guid: ae3aff4575731a5439856326a81d304d, type: 3}
     playerSprite: {fileID: 3725837656178886585, guid: 6e98879e9c8f42d4a9292e85e6f54236, type: 3}
     accent: {r: 0.35, g: 0.8, b: 0.3, a: 1}
     passive: 'Moving builds a swirling ring of up to 4 floating razor leaves around you. They damage enemies that touch them and break on contact.'
@@ -47,7 +47,7 @@ MonoBehaviour:
     negative: 'You deal 50% less damage.'
   - type: 4
     displayName: Ghost Power
-    icon: {fileID: 3235656779695580413, guid: e8c8ac44f8c779241a65640473f5dc78, type: 3}
+    icon: {fileID: 1333219987120373581, guid: 13b5e88138e913e448fe31215fcab0df, type: 3}
     playerSprite: {fileID: 484727422052415027, guid: 540ad09e8cd786f43867d964746e486a, type: 3}
     accent: {r: 0.75, g: 0.75, b: 0.85, a: 1}
     passive: 'You can move through the walls inside a room, but not through the room borders.'
@@ -55,7 +55,7 @@ MonoBehaviour:
     negative: 'After you leave a wall, your main attack is locked for 1.5 seconds.'
   - type: 5
     displayName: Water Power
-    icon: {fileID: -7616463522953889481, guid: 6ba0644f4e5a3ff40b818bb891461813, type: 3}
+    icon: {fileID: -1658648467437705823, guid: b614ea591e1620e4d84dda307ad0c320, type: 3}
     playerSprite: {fileID: 5147866115859380170, guid: 03f2bc8b46b9ffd4db841725e203f06c, type: 3}
     accent: {r: 0.2, g: 0.8, b: 0.85, a: 1}
     passive: 'Each successful basic attack builds energy. At 4 stacks, your next attack unleashes a sweeping tidal wave that knocks enemies back, pierces obstacles and hits several enemies.'
@@ -63,7 +63,7 @@ MonoBehaviour:
     negative: 'Taking damage stops you from using your special for 10 seconds.'
   - type: 6
     displayName: Electric Power
-    icon: {fileID: 2155070164262084617, guid: fcf4b2fcd3d25be45af41381e957211e, type: 3}
+    icon: {fileID: 4197577190373681944, guid: 4d427324fcb124d42b289f30c1e454ec, type: 3}
     playerSprite: {fileID: 5405297293540544648, guid: 553bfe25f43e64540b6e351a28d3e318, type: 3}
     accent: {r: 1, g: 0.9, b: 0.25, a: 1}
     passive: 'Moving builds energy, making your next attack stronger and giving it a chance to stun the enemy. Your attack cooldown is cut by 50%.'
@@ -71,7 +71,7 @@ MonoBehaviour:
     negative: 'Every enemy in the room moves faster.'
   - type: 7
     displayName: Bunny Power
-    icon: {fileID: -8921142967358206505, guid: 9378dc6c61323d64c902b90a9955e40a, type: 3}
+    icon: {fileID: 6191477837923151509, guid: 883603c8891ac964eb527d7f2b4b5703, type: 3}
     playerSprite: {fileID: 3536412033779261668, guid: bd6471badbccaf846b034700c3f2d8f3, type: 3}
     accent: {r: 1, g: 1, b: 1, a: 1}
     passive: 'A shield surrounds you and blocks any damage from enemies. When an enemy hits it, it breaks for 30 seconds.'
@@ -79,7 +79,7 @@ MonoBehaviour:
     negative: 'You are not a cat :('
   - type: 8
     displayName: Crystal Power
-    icon: {fileID: 5657358617200700111, guid: 1886febbd06ac7f44bf4b28154ed857c, type: 3}
+    icon: {fileID: -591224641111942205, guid: 47ccd6685a07e2e4ebd4d1086f758813, type: 3}
     playerSprite: {fileID: 2531208049316094303, guid: b658b79bdd2894347b42ce5fa86ffe78, type: 3}
     accent: {r: 0.9, g: 0.55, b: 0.95, a: 1}
     passive: 'Attacking shoots a crystal projectile that splits into 2 auto-homing light beams when it hits an enemy or a wall.'
