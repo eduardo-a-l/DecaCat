@@ -277,6 +277,11 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         tauntTimer = seconds;
     }
 
+    public void SetSpawnGrace(float seconds)
+    {
+        BeginGrace(seconds, false);
+    }
+
     protected void BeginGrace(float seconds, bool ghostCollider)
     {
         if (isDead || seconds <= 0f)

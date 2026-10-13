@@ -9,7 +9,7 @@ public class DevFloorTool : MonoBehaviour
     public const bool Enabled = true;
 
     private const float WindowWidth = 320f;
-    private const float WindowHeight = 452f;
+    private const float WindowHeight = 490f;
     private const float Margin = 12f;
     private const float RowHeight = 28f;
     private const float RowStep = 33f;
@@ -26,6 +26,8 @@ public class DevFloorTool : MonoBehaviour
     private string floorText = "1";
     private int itemIndex;
     private int powerIndex;
+    private int enemyIndex;
+    private List<Enemy> enemyPrefabs = new List<Enemy>();
     private List<ItemData> items = new List<ItemData>();
     private PowerType[] powers;
     private string status = string.Empty;
@@ -96,6 +98,11 @@ public class DevFloorTool : MonoBehaviour
         powers = (PowerType[])Enum.GetValues(typeof(PowerType));
         itemIndex = Mathf.Clamp(itemIndex, 0, Mathf.Max(0, items.Count - 1));
         powerIndex = Mathf.Clamp(powerIndex, 0, Mathf.Max(0, powers.Length - 1));
+
+        FloorThemeCatalog catalog = FloorThemeCatalog.Instance;
+
+        enemyPrefabs = catalog != null ? catalog.GetAllEnemies() : new List<Enemy>();
+        enemyIndex = Mathf.Clamp(enemyIndex, 0, Mathf.Max(0, enemyPrefabs.Count - 1));
         status = string.Empty;
 
         Time.timeScale = 0f;
@@ -182,6 +189,27 @@ public class DevFloorTool : MonoBehaviour
 
         PlayerPower.Instance.Acquire(powers[powerIndex]);
         status = "Power " + powers[powerIndex];
+    }
+
+    private void SpawnEnemy()
+    {
+        RoomManager manager = FindFirstObjectByType<RoomManager>();
+        PlayerHealth player = FindFirstObjectByType<PlayerHealth>();
+
+        if (manager == null || manager.CurrentRoom == null || player == null || enemyPrefabs.Count == 0)
+        {
+            status = "No room to spawn in";
+            return;
+        }
+
+        Enemy prefab = enemyPrefabs[enemyIndex];
+        Room room = manager.CurrentRoom;
+        Vector3 position = player.transform.position + new Vector3(3f, 0f, 0f);
+
+        Enemy enemy = Enemy.Spawn(prefab, position, room.transform, EnemyScaling.None);
+
+        room.AddEnemy(enemy);
+        status = "Spawned " + prefab.name;
     }
 
     private void ChangeHearts(int delta)
@@ -335,6 +363,21 @@ public class DevFloorTool : MonoBehaviour
 
         if (GUI.Button(new Rect(x + width - 78f, y, 78f, RowHeight), "Power"))
             GivePower();
+
+        y += RowStep;
+
+        string enemyName = enemyPrefabs.Count > 0 ? enemyPrefabs[enemyIndex].name : "none";
+
+        if (GUI.Button(new Rect(x, y, 34f, RowHeight), "<"))
+            enemyIndex = Cycle(enemyIndex, -1, enemyPrefabs.Count);
+
+        GUI.Label(new Rect(x + 40f, y + 4f, width - 160f, 22f), enemyName);
+
+        if (GUI.Button(new Rect(x + width - 118f, y, 34f, RowHeight), ">"))
+            enemyIndex = Cycle(enemyIndex, 1, enemyPrefabs.Count);
+
+        if (GUI.Button(new Rect(x + width - 78f, y, 78f, RowHeight), "Spawn"))
+            SpawnEnemy();
 
         y += RowStep + 4f;
 

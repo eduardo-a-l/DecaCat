@@ -37,17 +37,17 @@ MonoBehaviour:
     enemies:
     - prefab: {fileID: 8230071188240764006, guid: 1e4ed9a2f31d4960894c1e3be52eb11f, type: 3}
       unlockFloor: 1
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 6866950211870143006, guid: f79c1295b5644fbc81e9d8b1d130f7a4, type: 3}
       unlockFloor: 1
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 7341421758759297006, guid: 4bc58572931245ba857a00c845030b0e, type: 3}
       unlockFloor: 2
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 4468323613226962006, guid: 9cfe299ab9464e57962d92b019f620b8, type: 3}
       unlockFloor: 3
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 8056770967803467006, guid: 0b6bdb3c7721424bba50f73f04bd9090, type: 3}
       unlockFloor: 4
     bosses:
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 6884174632986577006, guid: 41567ead4913404a83d196dc247eab0e, type: 3}
+    - {fileID: 4839303237961857006, guid: b768dff15f0b4d41b2395118c1ab038a, type: 3}
     - {fileID: 0}
   - displayName: Orange
     floorTint: {r: 1, g: 0.7, b: 0.4, a: 1}

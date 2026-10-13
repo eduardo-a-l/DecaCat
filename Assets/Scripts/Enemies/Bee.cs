@@ -65,6 +65,11 @@ public class Bee : Enemy
     {
         BecomeAggressive();
 
+        AngerRoom(room);
+    }
+
+    public static void AngerRoom(Room room)
+    {
         if (room == null)
             return;
 
@@ -77,7 +82,7 @@ public class Bee : Enemy
         }
     }
 
-    private void BecomeAggressive()
+    public void BecomeAggressive()
     {
         if (aggressive)
             return;
