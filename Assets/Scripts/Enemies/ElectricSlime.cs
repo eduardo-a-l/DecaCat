@@ -4,6 +4,8 @@ public class ElectricSlime : Enemy
 {
     private const float MoveSpeed = 2.2f;
     private const float KnockbackDistance = 2.4f;
+    private const float SplitGraceSeconds = 0.9f;
+    private const float SplitSpacing = 0.75f;
 
     private static int pendingStack;
 
@@ -41,7 +43,9 @@ public class ElectricSlime : Enemy
     {
         base.Awake();
 
-        stack = pendingStack > 0 ? pendingStack : 4;
+        bool isSplitChild = pendingStack > 0;
+
+        stack = isSplitChild ? pendingStack : 4;
         pendingStack = 0;
 
         maxHealth = ScaleHealth(5);
@@ -50,6 +54,9 @@ public class ElectricSlime : Enemy
         moveSpeed = ScaleSpeed(MoveSpeed);
 
         ApplyStackVisual();
+
+        if (isSplitChild)
+            BeginGrace(SplitGraceSeconds, true);
     }
 
     protected override void HandleHitPlayer(PlayerHealth player)
@@ -76,7 +83,7 @@ public class ElectricSlime : Enemy
         {
             pendingStack = stack / 2;
 
-            Vector2 offset = new Vector2(i == 0 ? -0.5f : 0.5f, 0f);
+            Vector2 offset = new Vector2(i == 0 ? -SplitSpacing : SplitSpacing, 0f);
 
             ElectricSlime child = Spawn(
                 this, (Vector2)transform.position + offset, transform.parent, Scaling

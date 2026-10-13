@@ -14,7 +14,10 @@ public class Mushroom : Enemy
     [SerializeField] private Sprite bigSprite;
 
     private int size;
+    private const float WindupSeconds = 0.6f;
+
     private float shootTimer;
+    private float windupTimer;
 
     public override int GroupSize => 3;
 
@@ -75,6 +78,16 @@ public class Mushroom : Enemy
         if (IsImmobilized)
             return;
 
+        if (windupTimer > 0f)
+        {
+            windupTimer -= Time.fixedDeltaTime;
+
+            if (windupTimer <= 0f)
+                Shoot();
+
+            return;
+        }
+
         shootTimer -= Time.fixedDeltaTime;
 
         if (shootTimer > 0f)
@@ -87,10 +100,21 @@ public class Mushroom : Enemy
         if (target == null)
             return;
 
-        Vector2 toTarget = (Vector2)target.position - Body.position;
-
-        if (toTarget.magnitude > ShootRange)
+        if (((Vector2)target.position - Body.position).magnitude > ShootRange)
             return;
+
+        windupTimer = WindupSeconds;
+        PlayTelegraph(WindupSeconds, new Color(0.75f, 1f, 0.35f, 1f), 0.3f);
+    }
+
+    private void Shoot()
+    {
+        Transform target = GetTarget();
+
+        if (target == null)
+            return;
+
+        Vector2 toTarget = (Vector2)target.position - Body.position;
 
         EnemyProjectile.Spawn(
             Body.position, toTarget, ProjectileSpeed * SpeedMultiplier,

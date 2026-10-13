@@ -4,8 +4,16 @@ using UnityEngine.UI;
 
 public class HealthDisplay : MonoBehaviour
 {
-    private const int HeartsPerRow = 6;
-    private const float RowGap = 10f;
+    private const float LeftEdge = 46f;
+    private const float TopEdge = -53f;
+    private const float BandHeight = 100f;
+    private const float RowGap = 6f;
+    private const float ColumnGapRatio = 0.21f;
+    private const float MaxHeartSize = 100f;
+    private const float MinHeartSize = 22f;
+    private const float FloorLabelHalfWidth = 350f;
+    private const float RightMargin = 30f;
+    private const float MinBandWidth = 260f;
 
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private Image[] hearts;
@@ -14,9 +22,8 @@ public class HealthDisplay : MonoBehaviour
     [SerializeField] private Sprite emptyHeart;
 
     private readonly List<Image> slots = new List<Image>();
-    private Vector2 origin;
-    private Vector2 columnStep = new Vector2(120f, 0f);
-    private Vector2 rowStep = new Vector2(0f, -110f);
+    private int laidOutCount = -1;
+    private float laidOutWidth = -1f;
 
     private void Awake()
     {
@@ -27,18 +34,6 @@ public class HealthDisplay : MonoBehaviour
         {
             if (heart != null)
                 slots.Add(heart);
-        }
-
-        if (slots.Count == 0)
-            return;
-
-        origin = slots[0].rectTransform.anchoredPosition;
-        rowStep = new Vector2(0f, -(slots[0].rectTransform.sizeDelta.y + RowGap));
-
-        if (slots.Count > 1)
-        {
-            columnStep =
-                slots[1].rectTransform.anchoredPosition - origin;
         }
     }
 
@@ -51,6 +46,16 @@ public class HealthDisplay : MonoBehaviour
 
         while (slots.Count < max)
             AddHeart();
+
+        float bandWidth = GetBandWidth();
+
+        if (max != laidOutCount || !Mathf.Approximately(bandWidth, laidOutWidth))
+        {
+            Layout(max, bandWidth);
+
+            laidOutCount = max;
+            laidOutWidth = bandWidth;
+        }
 
         for (int i = 0; i < slots.Count; i++)
         {
@@ -65,22 +70,73 @@ public class HealthDisplay : MonoBehaviour
         }
     }
 
+    private float GetBandWidth()
+    {
+        RectTransform parent = slots[0].rectTransform.parent as RectTransform;
+
+        if (parent == null || parent.rect.width <= 1f)
+            return MinBandWidth;
+
+        float width = parent.rect.width * 0.5f - FloorLabelHalfWidth - RightMargin - LeftEdge;
+
+        return Mathf.Max(MinBandWidth, width);
+    }
+
     private void AddHeart()
     {
         Image template = slots[0];
         Image copy = Instantiate(template, template.transform.parent);
 
         copy.name = "Heart" + (slots.Count + 1);
-        copy.rectTransform.anchoredPosition = GetPosition(slots.Count);
 
         slots.Add(copy);
+
+        laidOutCount = -1;
     }
 
-    private Vector2 GetPosition(int index)
+    private void Layout(int count, float bandWidth)
     {
-        int column = index % HeartsPerRow;
-        int row = index / HeartsPerRow;
+        int rows = 1;
+        float size = MaxHeartSize;
 
-        return origin + columnStep * column + rowStep * row;
+        for (; rows <= count; rows++)
+        {
+            size = Mathf.Min(
+                MaxHeartSize,
+                (BandHeight - RowGap * (rows - 1)) / rows
+            );
+
+            size = Mathf.Max(MinHeartSize, size);
+
+            int columns = Mathf.CeilToInt((float)count / rows);
+            float pitch = size * (1f + ColumnGapRatio);
+
+            if (columns * pitch - size * ColumnGapRatio <= bandWidth)
+                break;
+        }
+
+        rows = Mathf.Min(rows, count);
+
+        int perRow = Mathf.CeilToInt((float)count / rows);
+        float columnPitch = size * (1f + ColumnGapRatio);
+        float rowPitch = size + RowGap;
+
+        for (int i = 0; i < slots.Count; i++)
+        {
+            RectTransform rect = slots[i].rectTransform;
+
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(size, size);
+
+            int column = i % perRow;
+            int row = i / perRow;
+
+            rect.anchoredPosition = new Vector2(
+                LeftEdge + size * 0.5f + column * columnPitch,
+                TopEdge - size * 0.5f - row * rowPitch
+            );
+        }
     }
 }

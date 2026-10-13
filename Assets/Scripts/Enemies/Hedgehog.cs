@@ -11,7 +11,7 @@ public class Hedgehog : Enemy
 
     private const float Speed = 5.5f;
     private const float ShootChance = 0.45f;
-    private const float AimSeconds = 0.45f;
+    private const float AimSeconds = 0.7f;
     private const float SpikeSpeed = 6f;
     private const float SpikeSpread = 22f;
 
@@ -91,6 +91,8 @@ public class Hedgehog : Enemy
         {
             mode = Mode.Aiming;
             timer = AimSeconds;
+
+            PlayTelegraph(AimSeconds, new Color(1f, 0.3f, 0.25f, 1f), 0.3f);
             return;
         }
 

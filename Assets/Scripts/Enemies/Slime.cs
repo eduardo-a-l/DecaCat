@@ -4,6 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(CircleCollider2D))]
 public class Slime : Enemy
 {
+    private const float MergeGraceSeconds = 0.8f;
+
     [SerializeField] private SlimeData data;
 
     private SpriteRenderer spriteRenderer;
@@ -86,6 +88,9 @@ public class Slime : Enemy
         Body.linearVelocity = Vector2.zero;
 
         ApplyStage(data.Big, true, combinedHealth);
+
+        BeginGrace(MergeGraceSeconds, false);
+        PlayTelegraph(0.4f, new Color(0.7f, 1f, 0.6f, 1f), 0.25f);
 
         GameStats.Add(StatType.SlimeMerges);
     }

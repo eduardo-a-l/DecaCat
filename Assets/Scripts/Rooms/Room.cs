@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 public class Room : MonoBehaviour
 {
     private const float EntryDepth = 1f;
+    private const float OpeningClearance = 4.5f;
     private const int FloorSortingOrder = -10;
     private const int WallSortingOrder = -5;
     private const int BarrierSortingOrder = -2;
@@ -626,10 +627,48 @@ public class Room : MonoBehaviour
         }
     }
 
+    private List<Vector2Int> FilterAwayFromOpenings(List<Vector2Int> cells)
+    {
+        List<Vector2> openings = new List<Vector2>();
+
+        foreach (RoomSide side in Enum.GetValues(typeof(RoomSide)))
+        {
+            if (layout.GetPassageCells(side).Count > 0)
+                openings.Add(layout.GetPassageLocalCenter(side));
+        }
+
+        if (openings.Count == 0)
+            return cells;
+
+        List<Vector2Int> result = new List<Vector2Int>();
+
+        foreach (Vector2Int cell in cells)
+        {
+            Vector2 local = CellToLocal(cell);
+            bool tooClose = false;
+
+            foreach (Vector2 opening in openings)
+            {
+                if (Vector2.Distance(local, opening) < OpeningClearance)
+                {
+                    tooClose = true;
+                    break;
+                }
+            }
+
+            if (!tooClose)
+                result.Add(cell);
+        }
+
+        return result.Count > 0 ? result : cells;
+    }
+
     private void SpawnEnemies(List<Vector2Int> spawnCells)
     {
         if (spawnCells.Count == 0)
             return;
+
+        spawnCells = FilterAwayFromOpenings(spawnCells);
 
         EnemyScaling scaling =
             encounter != null ? encounter.Scaling : EnemyScaling.None;

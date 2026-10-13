@@ -54,6 +54,12 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     private float burnTick;
     private int burnDamage = 1;
     private readonly List<DotEffect> dots = new List<DotEffect>();
+    private float harmlessTimer;
+    private bool colliderGhosted;
+    private float telegraphAmount;
+    private Color telegraphColor = Color.white;
+    private Coroutine telegraphRoutine;
+    private Vector3 telegraphBaseScale;
     private float tauntTimer;
     private float obstacleClimb;
     private Transform tauntTarget;
@@ -71,6 +77,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     public event System.Action<Enemy> Died;
 
     public bool IsBurning => burnTimer > 0f;
+    public bool IsHarmless => harmlessTimer > 0f;
     public bool IsImmobilized => freezeTimer > 0f || stunTimer > 0f;
     public float ObstacleClimb01 => obstacleClimb;
     public virtual bool CanWalkOverObstacles => IsBoss;
@@ -270,6 +277,70 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         tauntTimer = seconds;
     }
 
+    protected void BeginGrace(float seconds, bool ghostCollider)
+    {
+        if (isDead || seconds <= 0f)
+            return;
+
+        harmlessTimer = Mathf.Max(harmlessTimer, seconds);
+
+        if (ghostCollider && bodyCollider != null)
+        {
+            bodyCollider.enabled = false;
+            colliderGhosted = true;
+        }
+    }
+
+    private void EndGrace()
+    {
+        harmlessTimer = 0f;
+
+        if (colliderGhosted && bodyCollider != null)
+            bodyCollider.enabled = true;
+
+        colliderGhosted = false;
+    }
+
+    public void PlayTelegraph(float seconds, Color color, float swell = 0.2f)
+    {
+        if (isDead || seconds <= 0f || !gameObject.activeInHierarchy)
+            return;
+
+        if (telegraphRoutine != null)
+        {
+            StopCoroutine(telegraphRoutine);
+            transform.localScale = telegraphBaseScale;
+        }
+
+        telegraphRoutine = StartCoroutine(TelegraphRoutine(seconds, color, swell));
+    }
+
+    private IEnumerator TelegraphRoutine(float seconds, Color color, float swell)
+    {
+        telegraphBaseScale = transform.localScale;
+        telegraphColor = color;
+
+        float elapsed = 0f;
+
+        while (elapsed < seconds)
+        {
+            elapsed += Time.deltaTime;
+
+            float progress = Mathf.Clamp01(elapsed / seconds);
+            float wobble = Mathf.Sin(elapsed * 40f) * 0.04f * progress;
+            float blink = 0.5f + 0.5f * Mathf.Sin(elapsed * 30f);
+
+            transform.localScale = telegraphBaseScale * (1f + swell * progress + wobble);
+            telegraphAmount = Mathf.Lerp(0.3f, 1f, progress) * blink;
+
+            yield return null;
+        }
+
+        transform.localScale = telegraphBaseScale;
+        telegraphAmount = 0f;
+        telegraphRoutine = null;
+    }
+
     private float StatusDurationScale => IsBoss ? BossStatusScale : 1f;
 
     protected bool UpdateStatus()
@@ -291,6 +362,14 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 
         if (stunTimer > 0f)
             stunTimer -= step;
+
+        if (harmlessTimer > 0f)
+        {
+            harmlessTimer -= step;
+
+            if (harmlessTimer <= 0f)
+                EndGrace();
+        }
 
         if (tauntTimer > 0f)
         {
@@ -410,6 +489,20 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
             any = true;
         }
 
+        if (harmlessTimer > 0f)
+        {
+            tint *= new Color(1f, 1f, 1f, 0.45f + 0.25f * Mathf.Sin(Time.time * 30f));
+            any = true;
+        }
+
+        if (telegraphAmount > 0f)
+        {
+            Color warning = new Color(telegraphColor.r, telegraphColor.g, telegraphColor.b, tint.a);
+
+            tint = Color.Lerp(tint, warning, telegraphAmount * 0.75f);
+            any = true;
+        }
+
         if (any)
         {
             if (!tinted)
@@ -434,6 +527,12 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 
         if (UpdateStatus())
             return;
+
+        if (colliderGhosted)
+        {
+            body.linearVelocity = Vector2.zero;
+            return;
+        }
 
         if (knockbackTimer > 0f)
         {
@@ -598,7 +697,7 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
 
     protected virtual void HandleContact(Collision2D collision)
     {
-        if (isDead || IsImmobilized)
+        if (isDead || IsImmobilized || harmlessTimer > 0f)
             return;
 
         PlayerHealth player =

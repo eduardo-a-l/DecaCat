@@ -52,6 +52,23 @@ public class MeleeAttack : MonoBehaviour
         inputReader = GetComponent<PlayerInputReader>();
     }
 
+    private void OnEnable()
+    {
+        if (playerItem != null)
+            playerItem.ItemChanged += OnItemChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (playerItem != null)
+            playerItem.ItemChanged -= OnItemChanged;
+    }
+
+    private void OnItemChanged()
+    {
+        nextAttackTime = Mathf.Min(nextAttackTime, Time.time);
+    }
+
     private void Update()
     {
         if (inputReader == null ||

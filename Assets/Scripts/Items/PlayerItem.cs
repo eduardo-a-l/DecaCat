@@ -16,6 +16,8 @@ public class PlayerItem : MonoBehaviour
     private readonly HashSet<ItemPickup> nearbyPickups =
         new HashSet<ItemPickup>();
 
+    public event System.Action ItemChanged;
+
     public ItemData CurrentItem => currentItem;
     public int CurrentDurability => currentDurability;
 
@@ -156,6 +158,14 @@ public class PlayerItem : MonoBehaviour
 
         Debug.Log("Equipped: " + item.ItemName +
                   " (" + currentDurability + " uses)");
+
+        NotifyItemChanged();
+    }
+
+    private void NotifyItemChanged()
+    {
+        if (ItemChanged != null)
+            ItemChanged();
     }
 
     public bool UseShot()
@@ -190,6 +200,8 @@ public class PlayerItem : MonoBehaviour
             GameStats.Add(StatType.WeaponsBroken);
             currentItem = null;
             currentDurability = 0;
+
+            NotifyItemChanged();
         }
 
         return true;
@@ -224,8 +236,11 @@ public class PlayerItem : MonoBehaviour
         currentItem = null;
         currentDurability = 0;
 
+        NotifyItemChanged();
+
         return true;
     }
+
     public void DropItem()
     {
         DropCurrentItem();

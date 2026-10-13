@@ -172,4 +172,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 257bab9a06e6453193530e57c02a67af, type: 2}
   - {fileID: 11400000, guid: cdf4d3edd5554b48a3498d81c69128ff, type: 2}
   - {fileID: 11400000, guid: de8ad55e83f545b18ddd50ca5328f0fb, type: 2}
+  - {fileID: 11400000, guid: ce8321022efd4b869c93e90d2a1f6fa5, type: 2}
+  - {fileID: 11400000, guid: 1ce1dd0daa4b4f5e871beb44d72939e2, type: 2}
+  - {fileID: 11400000, guid: f9b848acc2ec4df8a6a8c27c82f718fb, type: 2}
   pickupPrefab: {fileID: 5646304530710650892, guid: 2a787b2ace47d0949a82c8b699b92bb9, type: 3}

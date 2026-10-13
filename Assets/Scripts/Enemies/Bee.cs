@@ -10,7 +10,10 @@ public class Bee : Enemy
     private float radius;
     private float angle;
     private float angularSpeed;
+    private const float AlertSeconds = 0.45f;
+
     private bool aggressive;
+    private float alertTimer;
 
     public override bool CanWalkOverObstacles => true;
 
@@ -60,7 +63,7 @@ public class Bee : Enemy
 
     private void Anger()
     {
-        aggressive = true;
+        BecomeAggressive();
 
         if (room == null)
             return;
@@ -70,14 +73,32 @@ public class Bee : Enemy
             Bee bee = enemy as Bee;
 
             if (bee != null)
-                bee.aggressive = true;
+                bee.BecomeAggressive();
         }
+    }
+
+    private void BecomeAggressive()
+    {
+        if (aggressive)
+            return;
+
+        aggressive = true;
+        alertTimer = AlertSeconds;
+
+        PlayTelegraph(AlertSeconds, new Color(1f, 0.3f, 0.25f, 1f), 0.3f);
     }
 
     protected override void MoveTowardsTarget()
     {
         if (aggressive)
         {
+            if (alertTimer > 0f)
+            {
+                alertTimer -= Time.fixedDeltaTime;
+                Body.linearVelocity = Vector2.zero;
+                return;
+            }
+
             Transform target = GetTarget();
 
             if (target != null)
