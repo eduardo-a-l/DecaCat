@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ebf8d504faf1d44927da6213440cb3, type: 3}
+  m_Name: Lollipop
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Lollipop
+  description: 'A sticky melee weapon that leaves a sticky spot on the floor, slowing enemies that walk over it.'
+  itemSprite: {fileID: -2826489388888799575, guid: 485322316905323498f6cfb4779f43e0, type: 3}
+  maxDurability: 10
+  damage: 5
+  cooldown: 0.25
+  attackRange: 0.25
+  attackRadius: 0.55
+  swingAngle: 80
+  swingDuration: 0.1
+  hitsMultipleTargets: 0
+  knockback: 0
+  swingEffectSprite: {fileID: 0}
+  swingEffectColor: {r: 1, g: 1, b: 1, a: 0.9}
+  isRanged: 0
+  projectileSpeed: 12
+  projectileLifetime: 1.5
+  projectileSize: {x: 0.3, y: 0.3}
+  projectileColor: {r: 1, g: 1, b: 1, a: 1}
+  shotsPerDurability: 1
+  bounces: 0
+  aimLock: 0
+  behaviour: 3
+  potionEffect: 0
+  areaRadius: 0.7
+  effectSeconds: 6
+  effectDamage: 0
+  slowFactor: 0.5
+  projectileCount: 5
+  coneAngle: 70
+  coneRange: 5
+  forceDistance: 3
+  hitDotSeconds: 0
+  hitDotDamage: 0

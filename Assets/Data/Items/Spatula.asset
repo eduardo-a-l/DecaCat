@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ebf8d504faf1d44927da6213440cb3, type: 3}
+  m_Name: Spatula
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: Spatula
+  description: 'A wide swing that hits every enemy in front of you and reflects enemy projectiles if timed correctly.'
+  itemSprite: {fileID: 1077668379277583625, guid: 1789c64b51e14cf4985f9e7e0b8e3f98, type: 3}
+  maxDurability: 10
+  damage: 15
+  cooldown: 1
+  attackRange: 0.9
+  attackRadius: 0.65
+  swingAngle: 150
+  swingDuration: 0.18
+  hitsMultipleTargets: 1
+  knockback: 0
+  swingEffectSprite: {fileID: 0}
+  swingEffectColor: {r: 1, g: 1, b: 1, a: 0.9}
+  isRanged: 0
+  projectileSpeed: 12
+  projectileLifetime: 1.5
+  projectileSize: {x: 0.3, y: 0.3}
+  projectileColor: {r: 1, g: 1, b: 1, a: 1}
+  shotsPerDurability: 1
+  bounces: 0
+  aimLock: 0
+  behaviour: 6
+  potionEffect: 0
+  areaRadius: 2
+  effectSeconds: 0
+  effectDamage: 0
+  slowFactor: 0.5
+  projectileCount: 5
+  coneAngle: 150
+  coneRange: 1.9
+  forceDistance: 3
+  hitDotSeconds: 0
+  hitDotDamage: 0

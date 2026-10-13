@@ -47,6 +47,9 @@ public class GameManager : MonoBehaviour
 
         CurrentFloor = Mathf.Max(1, SaveSession.Data.floor);
 
+        if (playerHealth != null)
+            playerHealth.SetBonusHealth(PermanentUpgrades.BonusHearts);
+
         ApplySavedLoadout();
 
         if (playerHealth != null)

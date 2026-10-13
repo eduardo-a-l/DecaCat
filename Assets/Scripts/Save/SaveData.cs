@@ -29,6 +29,9 @@ public class SaveData
     public List<StatEntry> stats = new List<StatEntry>();
     public List<string> usedWeapons = new List<string>();
     public List<string> unlockedAchievements = new List<string>();
+    public int bonusHearts;
+    public int damageUpgrades;
+    public List<int> upgradeFloorsChosen = new List<int>();
 
     public int GetStat(StatType type)
     {

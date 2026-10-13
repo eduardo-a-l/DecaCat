@@ -1,5 +1,24 @@
 using UnityEngine;
 
+public enum WeaponBehaviour
+{
+    Standard,
+    Potion,
+    Fan,
+    Lollipop,
+    Magnet,
+    MagicWand,
+    Spatula
+}
+
+public enum PotionEffect
+{
+    Damage,
+    Slow,
+    Poison,
+    Fire
+}
+
 [CreateAssetMenu(fileName = "New Item", menuName = "DecaCat/Item")]
 public class ItemData : ScriptableObject
 {
@@ -35,6 +54,20 @@ public class ItemData : ScriptableObject
     [SerializeField] private int bounces;
     [SerializeField] private bool aimLock;
 
+    [Header("Special weapons")]
+    [SerializeField] private WeaponBehaviour behaviour;
+    [SerializeField] private PotionEffect potionEffect;
+    [SerializeField] private float areaRadius = 2f;
+    [SerializeField] private float effectSeconds;
+    [SerializeField] private int effectDamage;
+    [SerializeField] private float slowFactor = 0.5f;
+    [SerializeField] private int projectileCount = 5;
+    [SerializeField] private float coneAngle = 70f;
+    [SerializeField] private float coneRange = 5f;
+    [SerializeField] private float forceDistance = 3f;
+    [SerializeField] private float hitDotSeconds;
+    [SerializeField] private int hitDotDamage;
+
     public string ItemName => itemName;
     public Sprite ItemSprite => itemSprite;
     public int MaxDurability => maxDurability;
@@ -58,4 +91,16 @@ public class ItemData : ScriptableObject
     public int ShotsPerDurability => Mathf.Max(1, shotsPerDurability);
     public int Bounces => bounces;
     public bool AimLock => aimLock;
+    public WeaponBehaviour Behaviour => behaviour;
+    public PotionEffect PotionEffect => potionEffect;
+    public float AreaRadius => areaRadius;
+    public float EffectSeconds => effectSeconds;
+    public int EffectDamage => effectDamage;
+    public float SlowFactor => slowFactor;
+    public int ProjectileCount => Mathf.Max(1, projectileCount);
+    public float ConeAngle => coneAngle;
+    public float ConeRange => coneRange;
+    public float ForceDistance => forceDistance;
+    public float HitDotSeconds => hitDotSeconds;
+    public int HitDotDamage => hitDotDamage;
 }

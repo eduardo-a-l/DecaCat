@@ -201,10 +201,18 @@ public class PlayerPower : MonoBehaviour
 
     public int ModifyDamage(int baseDamage)
     {
-        if (behaviour == null || baseDamage <= 0)
+        if (baseDamage <= 0)
             return baseDamage;
 
-        float total = baseDamage * behaviour.DamageMultiplier + damageCarry;
+        float multiplier = PermanentUpgrades.DamageMultiplier;
+
+        if (behaviour != null)
+            multiplier *= behaviour.DamageMultiplier;
+
+        if (behaviour == null && PermanentUpgrades.DamageStacks == 0)
+            return baseDamage;
+
+        float total = baseDamage * multiplier + damageCarry;
         int result = Mathf.FloorToInt(total);
 
         damageCarry = total - result;
@@ -326,6 +334,25 @@ public class PlayerPower : MonoBehaviour
     {
         if (altar == null || altar.Taken)
             return;
+
+        if (altar.IsUpgrade)
+        {
+            PermanentUpgradeType upgrade = altar.Upgrade;
+
+            nearbyAltars.Remove(altar);
+            altar.Take();
+
+            PowerHud.Hide(altar);
+
+            PermanentUpgrades.Apply(upgrade);
+
+            ZoneEffect.Spawn(
+                Position, 1.4f, PermanentUpgrades.GetAccent(upgrade),
+                0.5f, true, 0.2f, 6
+            );
+
+            return;
+        }
 
         PowerType type = altar.PowerType;
 

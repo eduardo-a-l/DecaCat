@@ -123,6 +123,7 @@ public class Room : MonoBehaviour
         SpawnEnemies(spawnCells);
         SpawnCrates(crateCells);
         SpawnAltars(altarCells);
+        SpawnUpgradeAltars();
     }
 
     public void Activate()
@@ -454,6 +455,69 @@ public class Room : MonoBehaviour
         }
     }
 
+    private void SpawnUpgradeAltars()
+    {
+        if (Type != RoomType.Start || encounter == null || !SaveSession.IsActive)
+            return;
+
+        int floor = encounter.Floor;
+
+        if (!PermanentUpgrades.IsUpgradeFloor(floor) ||
+            PermanentUpgrades.IsChosenFor(floor))
+            return;
+
+        Transform altarRoot = new GameObject("UpgradeAltars").transform;
+        altarRoot.SetParent(transform, false);
+
+        Vector2Int[] targets =
+        {
+            new Vector2Int(layout.Width / 2 - 4, layout.Height / 2),
+            new Vector2Int(layout.Width / 2 + 3, layout.Height / 2)
+        };
+
+        PermanentUpgradeType[] types =
+        {
+            PermanentUpgradeType.MaxHeart,
+            PermanentUpgradeType.Damage
+        };
+
+        for (int i = 0; i < types.Length; i++)
+        {
+            Vector2Int cell = FindOpenCell(targets[i]);
+            Vector3 position = transform.TransformPoint(CellToLocal(cell));
+
+            altars.Add(
+                PowerAltar.SpawnUpgrade(position, altarRoot, types[i], OnAltarTaken)
+            );
+        }
+    }
+
+    private Vector2Int FindOpenCell(Vector2Int target)
+    {
+        for (int distance = 0; distance <= 6; distance++)
+        {
+            for (int dy = -distance; dy <= distance; dy++)
+            {
+                for (int dx = -distance; dx <= distance; dx++)
+                {
+                    if (Mathf.Max(Mathf.Abs(dx), Mathf.Abs(dy)) != distance)
+                        continue;
+
+                    int x = target.x + dx;
+                    int y = target.y + dy;
+
+                    if (x < 1 || y < 1 || x > layout.Width - 2 || y > layout.Height - 2)
+                        continue;
+
+                    if (layout.GetCell(x, y) == '.')
+                        return new Vector2Int(x, y);
+                }
+            }
+        }
+
+        return target;
+    }
+
     private void OnAltarTaken(PowerAltar taken)
     {
         foreach (PowerAltar other in altars)
@@ -464,6 +528,16 @@ public class Room : MonoBehaviour
 
         if (!SaveSession.IsActive)
             return;
+
+        if (taken.IsUpgrade)
+        {
+            List<int> chosen = SaveSession.Data.upgradeFloorsChosen;
+
+            if (!chosen.Contains(encounter.Floor))
+                chosen.Add(encounter.Floor);
+
+            return;
+        }
 
         List<string> list = SaveSession.Data.takenAltarRooms;
         string key = GetAltarKey();
@@ -481,7 +555,7 @@ public class Room : MonoBehaviour
     {
         foreach (PowerAltar altar in altars)
         {
-            if (altar != null && !altar.Taken)
+            if (altar != null && !altar.Taken && !altar.IsUpgrade)
             {
                 Discoveries.Add(
                     Discoveries.PowerKind, altar.PowerType.ToString(),

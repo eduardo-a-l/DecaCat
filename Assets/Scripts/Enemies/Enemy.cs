@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -26,6 +27,15 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     private static readonly Color BurnTint = new Color(1f, 0.55f, 0.25f, 1f);
     private static readonly Color StunTint = new Color(1f, 1f, 0.4f, 1f);
 
+    private sealed class DotEffect
+    {
+        public string Id;
+        public int TicksLeft;
+        public float Timer;
+        public int Damage;
+        public Color Tint;
+    }
+
     private static Sprite placeholderSprite;
     private static EnemyScaling pendingScaling = EnemyScaling.None;
 
@@ -42,6 +52,8 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     private float stunTimer;
     private float burnTimer;
     private float burnTick;
+    private int burnDamage = 1;
+    private readonly List<DotEffect> dots = new List<DotEffect>();
     private float tauntTimer;
     private float obstacleClimb;
     private Transform tauntTarget;
@@ -203,15 +215,50 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         stunTimer = Mathf.Max(stunTimer, seconds * StatusDurationScale);
     }
 
-    public void Burn(float seconds)
+    public void Burn(float seconds, int damagePerSecond = 1)
     {
         if (isDead || seconds <= 0f)
             return;
 
         if (burnTimer <= 0f)
+        {
             burnTick = BurnTickSeconds;
+            burnDamage = Mathf.Max(1, damagePerSecond);
+        }
+        else
+        {
+            burnDamage = Mathf.Max(burnDamage, damagePerSecond);
+        }
 
         burnTimer = Mathf.Max(burnTimer, seconds);
+    }
+
+    public void ApplyDot(string id, float seconds, int damagePerSecond, Color tint)
+    {
+        if (isDead || seconds <= 0f || damagePerSecond <= 0)
+            return;
+
+        int ticks = Mathf.Max(1, Mathf.CeilToInt(seconds));
+
+        foreach (DotEffect dot in dots)
+        {
+            if (dot.Id != id)
+                continue;
+
+            dot.TicksLeft = Mathf.Max(dot.TicksLeft, ticks);
+            dot.Damage = Mathf.Max(dot.Damage, damagePerSecond);
+
+            return;
+        }
+
+        dots.Add(new DotEffect
+        {
+            Id = id,
+            TicksLeft = ticks,
+            Timer = BurnTickSeconds,
+            Damage = damagePerSecond,
+            Tint = tint
+        });
     }
 
     public void Taunt(Transform decoy, float seconds)
@@ -261,12 +308,18 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
             if (burnTick <= 0f)
             {
                 burnTick += BurnTickSeconds;
-                TakeDamage(1);
+                TakeDamage(burnDamage);
 
                 if (isDead)
                     return true;
             }
+
+            if (burnTimer <= 0f)
+                burnDamage = 1;
         }
+
+        if (UpdateDots(step))
+            return true;
 
         UpdateTint();
 
@@ -276,6 +329,34 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         body.linearVelocity = Vector2.zero;
 
         return true;
+    }
+
+    private bool UpdateDots(float step)
+    {
+        for (int i = dots.Count - 1; i >= 0; i--)
+        {
+            DotEffect dot = dots[i];
+
+            dot.Timer -= step;
+
+            if (dot.Timer > 0f)
+                continue;
+
+            dot.Timer += BurnTickSeconds;
+            dot.TicksLeft--;
+
+            int damage = dot.Damage;
+
+            if (dot.TicksLeft <= 0)
+                dots.RemoveAt(i);
+
+            TakeDamage(damage);
+
+            if (isDead)
+                return true;
+        }
+
+        return false;
     }
 
     private void UpdateObstacleClimb(float step)
@@ -320,6 +401,12 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         if (stunTimer > 0f)
         {
             tint *= StunTint;
+            any = true;
+        }
+
+        foreach (DotEffect dot in dots)
+        {
+            tint *= dot.Tint;
             any = true;
         }
 

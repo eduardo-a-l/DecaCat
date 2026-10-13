@@ -420,19 +420,25 @@ public class IndexScreen : MonoBehaviour
 
     private static string[] GetItemStats(ItemData item)
     {
-        List<string> stats = new List<string>
-        {
-            "Damage " + item.Damage,
-            "Cooldown " + item.Cooldown.ToString("0.##") + "s",
-            "Durability " + item.MaxDurability,
-            "Reach " + item.AttackRange.ToString("0.##")
-        };
+        List<string> stats = new List<string>();
+
+        if (item.Damage > 0)
+            stats.Add("Damage " + item.Damage);
+
+        stats.Add("Cooldown " + item.Cooldown.ToString("0.##") + "s");
+        stats.Add("Durability " + item.MaxDurability);
+
+        bool noReach =
+            item.IsRanged ||
+            item.Behaviour == WeaponBehaviour.Fan ||
+            item.Behaviour == WeaponBehaviour.Magnet;
 
         if (item.IsRanged)
-        {
-            stats.RemoveAt(stats.Count - 1);
             stats.Add("Ranged, " + item.ShotsPerDurability + " shots per durability");
-        }
+        else if (!noReach)
+            stats.Add("Reach " + item.AttackRange.ToString("0.##"));
+
+        AddBehaviourStats(item, stats);
 
         if (item.Bounces > 0)
             stats.Add("Bounces off walls up to " + item.Bounces + " times");
@@ -446,7 +452,68 @@ public class IndexScreen : MonoBehaviour
         if (item.Knockback > 0f)
             stats.Add("Knocks enemies back");
 
+        if (item.HitDotSeconds > 0f && item.HitDotDamage > 0)
+        {
+            stats.Add(
+                "Sticks to enemies, " + item.HitDotDamage + " damage every second for " +
+                item.HitDotSeconds.ToString("0.##") + "s"
+            );
+        }
+
         return stats.ToArray();
+    }
+
+    private static void AddBehaviourStats(ItemData item, List<string> stats)
+    {
+        switch (item.Behaviour)
+        {
+            case WeaponBehaviour.Potion:
+                stats.Add("Thrown, area effect");
+
+                if (item.PotionEffect == PotionEffect.Slow)
+                {
+                    stats.Add(
+                        "Enemies get " + Mathf.RoundToInt((1f - item.SlowFactor) * 100f) +
+                        "% less speed for " + item.EffectSeconds.ToString("0.##") + "s"
+                    );
+                }
+                else if (item.PotionEffect == PotionEffect.Poison)
+                {
+                    stats.Add(
+                        "Poison for " + item.EffectSeconds.ToString("0.##") + "s, " +
+                        item.EffectDamage + " damage every second"
+                    );
+                }
+                else if (item.PotionEffect == PotionEffect.Fire)
+                {
+                    stats.Add(
+                        "Burning for " + item.EffectSeconds.ToString("0.##") + "s, " +
+                        item.EffectDamage + " damage every second"
+                    );
+                }
+
+                break;
+
+            case WeaponBehaviour.Fan:
+                stats.Add("Blows enemies and projectiles away in a cone");
+                break;
+
+            case WeaponBehaviour.Magnet:
+                stats.Add("Pulls nearby enemies toward you");
+                break;
+
+            case WeaponBehaviour.MagicWand:
+                stats.Add("Fires " + item.ProjectileCount + " slow homing projectiles");
+                break;
+
+            case WeaponBehaviour.Lollipop:
+                stats.Add("Leaves a sticky spot that slows enemies");
+                break;
+
+            case WeaponBehaviour.Spatula:
+                stats.Add("Reflects enemy projectiles");
+                break;
+        }
     }
 
     private static List<Entry> BuildEnemyEntries(SaveData data, bool bosses)

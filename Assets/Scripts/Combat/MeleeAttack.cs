@@ -105,6 +105,9 @@ public class MeleeAttack : MonoBehaviour
             direction.y, direction.x
         ) * Mathf.Rad2Deg;
 
+        if (SpecialWeapons.TryUse(item, playerItem, power, transform.position, direction, angle))
+            return;
+
         if (item.IsRanged)
         {
             FireRanged(item, power, direction, angle);
@@ -157,6 +160,9 @@ public class MeleeAttack : MonoBehaviour
         if (power != null)
             power.OnAttackEnded(context, targets.Count);
 
+        if (SpecialWeapons.AfterSwing(item, transform.position, direction))
+            spendDurability = true;
+
         if (spendDurability)
             playerItem.UseItem();
     }
@@ -189,6 +195,8 @@ public class MeleeAttack : MonoBehaviour
             {
                 if (power != null)
                     power.OnHit(context, enemy);
+
+                SpecialWeapons.ApplySuction(item, enemy);
             }
         };
 

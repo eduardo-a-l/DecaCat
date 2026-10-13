@@ -7,6 +7,8 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float invulnerabilityDuration = 1.5f;
 
     private int currentHealth;
+    private int bonusHealth;
+    private bool awoken;
     private bool isInvulnerable;
     private float invulnerableUntil;
     private SpriteRenderer spriteRenderer;
@@ -17,12 +19,30 @@ public class PlayerHealth : MonoBehaviour
     public bool IsDead => currentHealth <= 0;
     public bool IsInvulnerable => isInvulnerable || Time.time < invulnerableUntil;
     public int CurrentHealth => currentHealth;
-    public int MaxHealth => maxHealth;
+    public int MaxHealth => maxHealth + bonusHealth;
 
     private void Awake()
     {
-        currentHealth = maxHealth;
+        currentHealth = MaxHealth;
+        awoken = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void SetBonusHealth(int bonus)
+    {
+        bonus = Mathf.Max(0, bonus);
+
+        int gained = bonus - bonusHealth;
+
+        bonusHealth = bonus;
+
+        if (!awoken)
+            return;
+
+        if (gained > 0 && currentHealth > 0)
+            currentHealth += gained;
+
+        currentHealth = Mathf.Min(MaxHealth, currentHealth);
     }
 
     public void TakeDamage(int damage, DamageElement element)
@@ -40,10 +60,10 @@ public class PlayerHealth : MonoBehaviour
 
     public bool Heal(int amount)
     {
-        if (currentHealth <= 0 || currentHealth >= maxHealth || amount <= 0)
+        if (currentHealth <= 0 || currentHealth >= MaxHealth || amount <= 0)
             return false;
 
-        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        currentHealth = Mathf.Min(MaxHealth, currentHealth + amount);
 
         return true;
     }
@@ -66,7 +86,7 @@ public class PlayerHealth : MonoBehaviour
 
         currentHealth = Mathf.Max(0, currentHealth - damage);
 
-        Debug.Log("Player health: " + currentHealth + "/" + maxHealth);
+        Debug.Log("Player health: " + currentHealth + "/" + MaxHealth);
 
         Damaged?.Invoke();
 
@@ -85,7 +105,7 @@ public class PlayerHealth : MonoBehaviour
 
         isInvulnerable = false;
         invulnerableUntil = 0f;
-        currentHealth = maxHealth;
+        currentHealth = MaxHealth;
 
         if (spriteRenderer != null)
         {

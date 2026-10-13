@@ -7,6 +7,8 @@ public class EnemyProjectile : MonoBehaviour
     private float radius;
     private float lifetime;
     private DamageElement element;
+    private bool reflected;
+    private SpriteRenderer spriteRenderer;
 
     public static EnemyProjectile Spawn(
         Vector2 position, Vector2 direction, float speed, int damage,
@@ -23,8 +25,26 @@ public class EnemyProjectile : MonoBehaviour
         projectile.radius = size * 0.4f;
         projectile.lifetime = 6f;
         projectile.element = element;
+        projectile.spriteRenderer = renderer;
 
         return projectile;
+    }
+
+    public void Redirect(Vector2 direction, float speedMultiplier, bool becomeAlly)
+    {
+        if (direction.sqrMagnitude < 0.0001f)
+            return;
+
+        velocity = direction.normalized * velocity.magnitude * speedMultiplier;
+        lifetime = Mathf.Max(lifetime, 3f);
+
+        if (!becomeAlly || reflected)
+            return;
+
+        reflected = true;
+
+        if (spriteRenderer != null)
+            spriteRenderer.color = new Color(0.55f, 1f, 1f, 1f);
     }
 
     private void Update()
@@ -45,6 +65,20 @@ public class EnemyProjectile : MonoBehaviour
 
         foreach (Collider2D hit in Physics2D.OverlapCircleAll(position, radius))
         {
+            if (reflected)
+            {
+                Enemy enemy = hit.GetComponentInParent<Enemy>();
+
+                if (enemy != null && enemy.CurrentHealth > 0)
+                {
+                    enemy.TakeDamage(Mathf.Max(1, damage));
+                    Destroy(gameObject);
+                    return;
+                }
+
+                continue;
+            }
+
             PlayerHealth player = hit.GetComponentInParent<PlayerHealth>();
 
             if (player != null)
