@@ -35,6 +35,18 @@ public class Room : MonoBehaviour
     public Vector2Int GridPosition { get; private set; }
     public RoomLayout Layout => layout;
     public Vector3 Center => transform.position;
+
+    public Rect PlayBounds
+    {
+        get
+        {
+            Vector3 center = transform.position;
+            float width = Mathf.Max(2f, layout.Width - 2f);
+            float height = Mathf.Max(2f, layout.Height - 2f);
+
+            return new Rect(center.x - width * 0.5f, center.y - height * 0.5f, width, height);
+        }
+    }
     public Vector2 Size => new Vector2(layout.Width, layout.Height);
     public IReadOnlyList<RoomSide> ConnectedSides => linkedSides;
     public RoomType Type { get; private set; }

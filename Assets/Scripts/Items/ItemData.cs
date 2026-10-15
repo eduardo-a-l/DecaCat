@@ -67,6 +67,7 @@ public class ItemData : ScriptableObject
     [SerializeField] private float forceDistance = 3f;
     [SerializeField] private float hitDotSeconds;
     [SerializeField] private int hitDotDamage;
+    [SerializeField] private Sprite projectileSprite;
 
     public string ItemName => itemName;
     public Sprite ItemSprite => itemSprite;
@@ -103,4 +104,5 @@ public class ItemData : ScriptableObject
     public float ForceDistance => forceDistance;
     public float HitDotSeconds => hitDotSeconds;
     public int HitDotDamage => hitDotDamage;
+    public Sprite ProjectileSprite => projectileSprite;
 }

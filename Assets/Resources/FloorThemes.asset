@@ -53,20 +53,20 @@ MonoBehaviour:
     floorTint: {r: 1, g: 0.7, b: 0.4, a: 1}
     wallTint: {r: 1, g: 0.7, b: 0.4, a: 1}
     enemies:
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 5559030542939625006, guid: 31a57baf3fc14906a145d2d9285567af, type: 3}
       unlockFloor: 1
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 5300961470926506006, guid: de2e9376f08f41e094ecf5d17f3efde6, type: 3}
       unlockFloor: 1
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 8620167898984231006, guid: 7370d1ed63e84412b1cabdf2fe50a515, type: 3}
       unlockFloor: 2
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 4265050281852205006, guid: e4b98c9f9c184e80a880196812e37cc6, type: 3}
       unlockFloor: 3
-    - prefab: {fileID: 0}
+    - prefab: {fileID: 7710998818325753006, guid: b964c4688a10493e9ec7c6d2c89d00a2, type: 3}
       unlockFloor: 4
     bosses:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 1415650395055983006, guid: cc7290c68f524c239cc0934bf08a774b, type: 3}
+    - {fileID: 8585940687887353006, guid: f4f8a33e12f04156ad4771c3c38da437, type: 3}
+    - {fileID: 4538060879548168006, guid: ea31cb951a434627bea5211cf6e899c2, type: 3}
   - displayName: Red
     floorTint: {r: 1, g: 0.5, b: 0.5, a: 1}
     wallTint: {r: 1, g: 0.5, b: 0.5, a: 1}

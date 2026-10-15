@@ -29,8 +29,8 @@ MonoBehaviour:
   isRanged: 1
   projectileSpeed: 4.5
   projectileLifetime: 5
-  projectileSize: {x: 0.35, y: 0.35}
-  projectileColor: {r: 0.8, g: 0.45, b: 1, a: 1}
+  projectileSize: {x: 0.45, y: 0.45}
+  projectileColor: {r: 1, g: 1, b: 1, a: 1}
   shotsPerDurability: 1
   bounces: 0
   aimLock: 0
@@ -46,3 +46,4 @@ MonoBehaviour:
   forceDistance: 3
   hitDotSeconds: 0
   hitDotDamage: 0
+  projectileSprite: {fileID: 5805889521280854182, guid: 6df46d29e509185408b83364cc89ac6b, type: 3}

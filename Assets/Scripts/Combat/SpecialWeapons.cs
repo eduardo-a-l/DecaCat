@@ -219,6 +219,7 @@ public static class SpecialWeapons
                 Size = item.ProjectileSize,
                 Lifetime = item.ProjectileLifetime,
                 Color = item.ProjectileColor,
+                Sprite = item.ProjectileSprite,
                 Homing = true,
                 HomingTurn = WandHomingTurn,
                 OnEnemyHit = enemy =>

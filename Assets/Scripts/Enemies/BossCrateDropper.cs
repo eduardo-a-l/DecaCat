@@ -14,7 +14,9 @@ public class BossCrateDropper
 
     private float timer;
 
-    public void Tick(float step, float interval, int count, Crate prefab, Room room)
+    public void Tick(
+        float step, float interval, int count, Crate prefab, Room room,
+        bool bottomOnly = false)
     {
         timer += step;
 
@@ -23,10 +25,10 @@ public class BossCrateDropper
 
         timer = 0f;
 
-        Drop(count, prefab, room);
+        Drop(count, prefab, room, bottomOnly);
     }
 
-    private void Drop(int count, Crate prefab, Room room)
+    private void Drop(int count, Crate prefab, Room room, bool bottomOnly)
     {
         if (room == null)
             return;
@@ -38,6 +40,9 @@ public class BossCrateDropper
             return;
 
         List<Vector3> corners = room.GetCornerPositions();
+
+        if (bottomOnly)
+            corners.RemoveAll(corner => corner.y >= room.Center.y);
 
         for (int i = corners.Count - 1; i > 0; i--)
         {
