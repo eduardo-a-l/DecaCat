@@ -33,8 +33,10 @@ public class Ghost : Enemy
         ActiveGhosts.Add(this);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
+
         ActiveGhosts.Remove(this);
     }
 

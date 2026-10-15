@@ -21,8 +21,8 @@ public class BeeQueen : Enemy
 
     [Header("Bee summons")]
     [SerializeField] private Bee beePrefab;
-    [SerializeField] private float summonInterval = 7f;
-    [SerializeField] private float firstSummonDelay = 3f;
+    [SerializeField] private float summonInterval = 14f;
+    [SerializeField] private float firstSummonDelay = 7f;
     [SerializeField] private int beesPerSummon = 3;
     [SerializeField] private int maxBees = 10;
     [SerializeField] private float summonDelay = 1f;
