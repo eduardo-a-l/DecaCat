@@ -16,8 +16,8 @@ MonoBehaviour:
   description: 'Slow to fire but hits hard, and its darts slightly steer toward the enemy you aim at.'
   itemSprite: {fileID: 8608051274101128957, guid: 74c0dd0ad9ec96949a4cd54853f6e7b2, type: 3}
   maxDurability: 10
-  damage: 15
-  cooldown: 2
+  damage: 12
+  cooldown: 2.25
   attackRange: 0.8
   attackRadius: 0.5
   swingAngle: 100

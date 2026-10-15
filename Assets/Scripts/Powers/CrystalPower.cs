@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CrystalPower : PowerBehaviour
 {
-    private const float HeatPerAttack = 14f;
+    private const float HeatPerAttack = 15f;
     private const float CoolPerSecond = 22f;
     private const float OverheatAt = 70f;
     private const float ClearAt = 25f;
@@ -13,7 +13,7 @@ public class CrystalPower : PowerBehaviour
     private float heat;
     private bool overheated;
 
-    public override float SpecialCooldown => 12f;
+    public override float SpecialCooldown => 14f;
     public override bool CanAttack => !overheated;
 
     public override void Tick(float step)
@@ -76,7 +76,7 @@ public class CrystalPower : PowerBehaviour
             Color = Definition.Accent,
             Sprite = PowerFx.Square,
             SplitCount = 2,
-            SplitDamage = Mathf.Max(1, attack.BaseDamage / 3),
+            SplitDamage = Mathf.Max(1, attack.BaseDamage / 4),
             Amplifiable = true
         };
 
