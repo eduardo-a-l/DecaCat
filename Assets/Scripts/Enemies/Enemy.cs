@@ -650,6 +650,26 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         );
     }
 
+    protected void RestoreCleanVisuals()
+    {
+        if (flashRenderer != null)
+        {
+            flashRenderer.enabled = true;
+
+            if (tinted)
+            {
+                flashRenderer.color = untintedColor;
+                tinted = false;
+            }
+        }
+
+        if (colliderGhosted && bodyCollider != null)
+            bodyCollider.enabled = true;
+
+        if (telegraphRoutine != null)
+            transform.localScale = telegraphBaseScale;
+    }
+
     protected virtual void OnDisable()
     {
         if (flashRoutine != null)

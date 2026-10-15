@@ -79,6 +79,8 @@ public class ElectricSlime : Enemy
     {
         Room room = GetComponentInParent<Room>();
 
+        RestoreCleanVisuals();
+
         for (int i = 0; i < 2; i++)
         {
             pendingStack = stack / 2;
