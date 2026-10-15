@@ -234,7 +234,7 @@ public class MechaCat : Enemy
                 EnemyProjectile.Spawn(
                     Body.position, direction, SpiralSpeed,
                     ScaleDamage(1), ProjectileSize, SpiralColor
-                );
+                ).PassThroughObstacles();
             }
 
             spiralAngle += SpiralStep;
@@ -251,7 +251,7 @@ public class MechaCat : Enemy
                 EnemyProjectile.Spawn(
                     Body.position, direction, DiagonalSpeed,
                     ScaleDamage(1), ProjectileSize, DiagonalColor
-                );
+                ).PassThroughObstacles();
             }
         }
 

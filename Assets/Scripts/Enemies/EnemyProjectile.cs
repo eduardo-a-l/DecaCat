@@ -8,6 +8,7 @@ public class EnemyProjectile : MonoBehaviour
     private float lifetime;
     private DamageElement element;
     private bool reflected;
+    private bool ignoreObstacles;
     private SpriteRenderer spriteRenderer;
 
     public static EnemyProjectile Spawn(
@@ -28,6 +29,13 @@ public class EnemyProjectile : MonoBehaviour
         projectile.spriteRenderer = renderer;
 
         return projectile;
+    }
+
+    public EnemyProjectile PassThroughObstacles()
+    {
+        ignoreObstacles = true;
+
+        return this;
     }
 
     public void Redirect(Vector2 direction, float speedMultiplier, bool becomeAlly)
@@ -62,6 +70,12 @@ public class EnemyProjectile : MonoBehaviour
         Vector2 position = (Vector2)transform.position + velocity * step;
 
         transform.position = position;
+
+        if (PowerFx.IsOutsideRoom(position))
+        {
+            Destroy(gameObject);
+            return;
+        }
 
         foreach (Collider2D hit in Physics2D.OverlapCircleAll(position, radius))
         {
@@ -98,7 +112,7 @@ public class EnemyProjectile : MonoBehaviour
             }
         }
 
-        int mask = PhysicsLayers.WallMask;
+        int mask = ignoreObstacles ? PhysicsLayers.BorderMask : PhysicsLayers.WallMask;
 
         if (mask != 0 && Physics2D.OverlapCircle(position, radius, mask) != null)
             Destroy(gameObject);

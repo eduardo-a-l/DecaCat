@@ -5,6 +5,7 @@ public class JellyfishQueen : Enemy
 {
     private enum Phase
     {
+        Warning,
         Firing,
         Holding,
         Resting
@@ -14,6 +15,7 @@ public class JellyfishQueen : Enemy
     private const float FollowSpeed = 5f;
     private const float FireSeconds = 4f;
     private const float HoldSeconds = 0.7f;
+    private const float WarningSeconds = 1f;
     private const float RestSeconds = 2.2f;
     private const float PairInterval = 0.1f;
     private const float ProjectileSpeed = 4.2f;
@@ -169,6 +171,17 @@ public class JellyfishQueen : Enemy
             case Phase.Resting:
                 if (timer <= 0f)
                 {
+                    phase = Phase.Warning;
+                    timer = WarningSeconds;
+
+                    PlayTelegraph(WarningSeconds, new Color(0.6f, 0.95f, 1f, 1f), 0.3f);
+                }
+
+                break;
+
+            case Phase.Warning:
+                if (timer <= 0f)
+                {
                     phase = Phase.Firing;
                     timer = FireSeconds;
                     pairTimer = 0f;
@@ -192,7 +205,7 @@ public class JellyfishQueen : Enemy
                 WaveProjectile.Spawn(
                     Body.position, Vector2.down, ProjectileSpeed, Amplitude,
                     Frequency, phaseShift, cosine, ScaleDamage(1),
-                    ProjectileSize, color, 12f
+                    ProjectileSize, color, 12f, true
                 )
             );
         }

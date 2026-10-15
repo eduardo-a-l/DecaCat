@@ -15,6 +15,9 @@ public class MagmaToad : Enemy
     private const float FireballSpeed = 5.5f;
     private const float FireballSize = 0.34f;
     private const float HopHeightScale = 0.35f;
+    private const float MaxHopSpeed = 12f;
+    private const float StuckDistanceFactor = 0.25f;
+    private const int StuckSteps = 3;
 
     private static readonly Color FireballColor = new Color(1f, 0.5f, 0.1f, 1f);
 
@@ -23,6 +26,9 @@ public class MagmaToad : Enemy
     private float timer;
     private float hopElapsed;
     private Vector2 hopTarget;
+    private Vector2 hopVelocity;
+    private Vector2 lastPosition;
+    private int stuckSteps;
     private Vector3 baseScale;
 
     protected override string DefaultDescription =>
@@ -109,6 +115,9 @@ public class MagmaToad : Enemy
         }
 
         hopElapsed = 0f;
+        stuckSteps = 0;
+        lastPosition = Body.position;
+        hopVelocity = Vector2.ClampMagnitude((hopTarget - Body.position) / HopSeconds, MaxHopSpeed);
         mode = Mode.Hopping;
 
         SetSpawnGrace(HopSeconds);
@@ -122,9 +131,19 @@ public class MagmaToad : Enemy
 
         transform.localScale = baseScale * (1f + HopHeightScale * Mathf.Sin(progress * Mathf.PI));
 
-        if (progress < 1f)
+        float moved = (Body.position - lastPosition).magnitude;
+        float expected = hopVelocity.magnitude * step;
+
+        lastPosition = Body.position;
+
+        if (expected > 0.0001f && moved < expected * StuckDistanceFactor)
+            stuckSteps++;
+        else
+            stuckSteps = 0;
+
+        if (progress < 1f && stuckSteps < StuckSteps)
         {
-            Body.linearVelocity = (hopTarget - Body.position) / Mathf.Max(0.05f, HopSeconds - hopElapsed + step);
+            Body.linearVelocity = hopVelocity;
             return;
         }
 

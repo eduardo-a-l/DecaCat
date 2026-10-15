@@ -44,6 +44,16 @@ public static class PowerFx
         }
     }
 
+    public static bool IsOutsideRoom(Vector2 position)
+    {
+        Room room = CurrentRoom;
+
+        if (room == null)
+            return false;
+
+        return !room.FullBounds.Contains(position);
+    }
+
     public static Transform EffectParent
     {
         get

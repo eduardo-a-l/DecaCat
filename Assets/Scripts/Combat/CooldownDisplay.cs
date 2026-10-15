@@ -6,6 +6,9 @@ public class CooldownDisplay : MonoBehaviour
     [SerializeField] private MeleeAttack meleeAttack;
     [SerializeField] private Image cooldownBar;
 
+    private static readonly Color ExhaustedColor = new Color(0.9f, 0.15f, 0.15f, 1f);
+
+    private Color normalColor = Color.white;
     private Texture2D generatedTexture;
     private Sprite generatedSprite;
 
@@ -28,6 +31,7 @@ public class CooldownDisplay : MonoBehaviour
                 cooldownBar.sprite = generatedSprite;
             }
 
+            normalColor = cooldownBar.color;
             cooldownBar.type = Image.Type.Filled;
             cooldownBar.fillMethod = Image.FillMethod.Horizontal;
             cooldownBar.fillOrigin = 0;
@@ -49,8 +53,12 @@ public class CooldownDisplay : MonoBehaviour
             return;
         }
 
+        bool exhausted = meleeAttack.CooldownExhausted;
+        float total = exhausted ? Mathf.Max(0.01f, meleeAttack.ExhaustTotal) : cooldown;
+
         cooldownBar.enabled = true;
-        cooldownBar.fillAmount = Mathf.Clamp01(remaining / cooldown);
+        cooldownBar.color = exhausted ? ExhaustedColor : normalColor;
+        cooldownBar.fillAmount = Mathf.Clamp01(remaining / total);
     }
 
     private void OnDestroy()

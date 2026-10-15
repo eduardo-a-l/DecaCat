@@ -4,6 +4,8 @@ public class Octopus : Enemy
 {
     private const float Speed = 2f;
     private const float ArriveDistance = 0.3f;
+    private const float MaxWalkSeconds = 6f;
+    private const float MaxStuckSeconds = 1.5f;
     private const float BurstInterval = 0.4f;
     private const int BurstsPerRun = 3;
     private const float RunPauseSeconds = 0.8f;
@@ -17,7 +19,11 @@ public class Octopus : Enemy
     private Vector2 home;
     private bool hasHome;
     private bool arrived;
-    private float timer = 0.5f;
+    private bool chasing;
+    private float walkTime;
+    private float stuckTime;
+    private float bestDistance = float.MaxValue;
+    private float timer = 0.6f;
     private float angle;
     private int burstsLeft = BurstsPerRun;
     private float rotation = 1f;
@@ -56,6 +62,17 @@ public class Octopus : Enemy
 
     protected override void MoveTowardsTarget()
     {
+        timer -= Time.fixedDeltaTime;
+
+        if (timer <= 0f)
+            FireBurst();
+
+        if (chasing)
+        {
+            base.MoveTowardsTarget();
+            return;
+        }
+
         if (!arrived)
         {
             WalkHome();
@@ -63,13 +80,6 @@ public class Octopus : Enemy
         }
 
         Body.linearVelocity = Vector2.zero;
-
-        timer -= Time.fixedDeltaTime;
-
-        if (timer > 0f)
-            return;
-
-        FireBurst();
     }
 
     private void WalkHome()
@@ -98,6 +108,26 @@ public class Octopus : Enemy
         {
             arrived = true;
             Body.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        float step = Time.fixedDeltaTime;
+
+        walkTime += step;
+
+        if (toHome.magnitude < bestDistance - 0.25f)
+        {
+            bestDistance = toHome.magnitude;
+            stuckTime = 0f;
+        }
+        else
+        {
+            stuckTime += step;
+        }
+
+        if (walkTime >= MaxWalkSeconds || stuckTime >= MaxStuckSeconds)
+        {
+            chasing = true;
             return;
         }
 

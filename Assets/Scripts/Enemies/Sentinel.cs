@@ -57,6 +57,9 @@ public class Sentinel : Enemy
     public override bool IsBoss => true;
     protected override bool CanBeKnockedBack => false;
 
+    private Transform VisualParent =>
+        transform.parent != null ? transform.parent : PowerFx.EffectParent;
+
     private Room CurrentRoom
     {
         get
@@ -99,13 +102,13 @@ public class Sentinel : Enemy
         {
             arms[i] = PowerFx.CreateSprite(
                 "Arm" + i, PowerFx.Square, ArmColor, transform.position,
-                new Vector2(ArmLength, ArmWidth), 2, PowerFx.EffectParent
+                new Vector2(ArmLength, ArmWidth), 2, VisualParent
             );
         }
 
         beam = PowerFx.CreateSprite(
             "ChargeBeam", PowerFx.Square, ChargeColor, transform.position,
-            new Vector2(1f, 0.1f), 3, PowerFx.EffectParent
+            new Vector2(1f, 0.1f), 3, VisualParent
         );
 
         beam.enabled = false;

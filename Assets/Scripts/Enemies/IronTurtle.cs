@@ -221,7 +221,7 @@ public class IronTurtle : Enemy
             EnemyProjectile.Spawn(
                 Body.position, direction, ProjectileSpeed,
                 ScaleDamage(1), ProjectileSize, ProjectileColor
-            );
+            ).PassThroughObstacles();
         }
 
         wavesLeft--;

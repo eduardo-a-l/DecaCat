@@ -54,6 +54,9 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
     private float burnTick;
     private int burnDamage = 1;
     private readonly List<DotEffect> dots = new List<DotEffect>();
+    private const float ContainmentMargin = 0.45f;
+
+    private Room containmentRoom;
     private float harmlessTimer;
     private bool colliderGhosted;
     private float telegraphAmount;
@@ -525,10 +528,45 @@ public abstract class Enemy : MonoBehaviour, IDamageable, IPushable
         }
     }
 
+    private void ClampToRoom()
+    {
+        if (containmentRoom == null)
+            containmentRoom = GetComponentInParent<Room>();
+
+        if (containmentRoom == null || body == null)
+            return;
+
+        Rect bounds = containmentRoom.FullBounds;
+
+        Vector2 position = body.position;
+        Vector2 clamped = new Vector2(
+            Mathf.Clamp(position.x, bounds.xMin + ContainmentMargin, bounds.xMax - ContainmentMargin),
+            Mathf.Clamp(position.y, bounds.yMin + ContainmentMargin, bounds.yMax - ContainmentMargin)
+        );
+
+        if ((clamped - position).sqrMagnitude < 0.00001f)
+            return;
+
+        body.position = clamped;
+        transform.position = clamped;
+
+        Vector2 velocity = body.linearVelocity;
+
+        if (!Mathf.Approximately(clamped.x, position.x))
+            velocity.x = 0f;
+
+        if (!Mathf.Approximately(clamped.y, position.y))
+            velocity.y = 0f;
+
+        body.linearVelocity = velocity;
+    }
+
     protected virtual void FixedUpdate()
     {
         if (isDead)
             return;
+
+        ClampToRoom();
 
         if (UpdateStatus())
             return;

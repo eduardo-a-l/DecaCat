@@ -56,7 +56,8 @@ public class Watcher : Enemy
 
         line = PowerFx.CreateSprite(
             "AimLine", PowerFx.Circle, new Color(1f, 0.2f, 0.2f, 0f),
-            transform.position, new Vector2(0.1f, LineWidth), 1, PowerFx.EffectParent
+            transform.position, new Vector2(0.1f, LineWidth), 1,
+            transform.parent != null ? transform.parent : PowerFx.EffectParent
         );
     }
 

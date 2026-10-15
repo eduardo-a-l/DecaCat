@@ -93,6 +93,12 @@ public class PowerProjectile : MonoBehaviour
         transform.position = position;
         Face();
 
+        if (PowerFx.IsOutsideRoom(position))
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         if (CheckEnemies(position))
             return;
 

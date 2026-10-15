@@ -26,6 +26,8 @@ public class MeleeAttack : MonoBehaviour
 
     private PlayerInputReader inputReader;
     private float nextAttackTime;
+    private bool exhausted;
+    private float exhaustTotal;
     private Coroutine swingCoroutine;
 
     public float CooldownRemaining
@@ -35,6 +37,10 @@ public class MeleeAttack : MonoBehaviour
             return Mathf.Max(0f, nextAttackTime - Time.time);
         }
     }
+
+    public bool CooldownExhausted => exhausted && CooldownRemaining > 0f;
+
+    public float ExhaustTotal => exhaustTotal;
 
     public float CurrentCooldown
     {
@@ -66,7 +72,10 @@ public class MeleeAttack : MonoBehaviour
 
     private void OnItemChanged()
     {
-        nextAttackTime = Mathf.Min(nextAttackTime, Time.time);
+        float remaining = CooldownRemaining;
+
+        exhausted = remaining > 0.05f;
+        exhaustTotal = remaining;
     }
 
     private void Update()
@@ -105,6 +114,7 @@ public class MeleeAttack : MonoBehaviour
 
         PlayerPower power = PlayerPower.Instance;
 
+        exhausted = false;
         nextAttackTime = Time.time + item.Cooldown *
             (power != null ? power.CooldownMultiplier : 1f);
 
@@ -265,6 +275,7 @@ public class MeleeAttack : MonoBehaviour
     {
         PlayerPower power = PlayerPower.Instance;
 
+        exhausted = false;
         nextAttackTime = Time.time + unarmedCooldown *
             (power != null ? power.CooldownMultiplier : 1f);
 

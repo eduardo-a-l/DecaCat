@@ -36,6 +36,19 @@ public class Room : MonoBehaviour
     public RoomLayout Layout => layout;
     public Vector3 Center => transform.position;
 
+    public Rect FullBounds
+    {
+        get
+        {
+            Vector3 center = transform.position;
+
+            return new Rect(
+                center.x - layout.Width * 0.5f, center.y - layout.Height * 0.5f,
+                layout.Width, layout.Height
+            );
+        }
+    }
+
     public Rect PlayBounds
     {
         get

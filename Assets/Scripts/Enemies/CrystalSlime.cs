@@ -121,6 +121,10 @@ public class CrystalSlime : Enemy
                     Body.linearVelocity = Vector2.zero;
 
                     PlayTelegraph(WindupSeconds, new Color(1f, 0.8f, 1f, 1f), 0.25f);
+                    GroundMarker.Spawn(
+                        Body.position, 2.4f, WindupSeconds,
+                        new Color(1f, 0.6f, 1f, 0.45f)
+                    );
                 }
 
                 break;
@@ -179,12 +183,15 @@ public class CrystalSlime : Enemy
             EnemyProjectile.Spawn(
                 Body.position, direction, ProjectileSpeed, ScaleDamage(1),
                 ProjectileSize, ProjectileColor
-            );
+            ).PassThroughObstacles();
         }
 
         waveOffset += step * 0.5f;
         wavesLeft--;
         timer = wavesLeft > 0 ? WaveInterval : RecoverSeconds;
+
+        if (wavesLeft > 0)
+            PlayTelegraph(WaveInterval, new Color(1f, 0.85f, 1f, 1f), 0.15f);
     }
 
     private void RaiseCrystals()

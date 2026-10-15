@@ -16,12 +16,13 @@ public class WaveProjectile : MonoBehaviour
     private float radius;
     private int damage;
     private bool free;
+    private bool passThrough;
     private Vector2 velocity;
 
     public static WaveProjectile Spawn(
         Vector2 origin, Vector2 direction, float speed, float amplitude,
         float frequency, float phase, bool cosine, int damage, float size,
-        Color color, float lifetime = 8f)
+        Color color, float lifetime = 8f, bool passThrough = false)
     {
         SpriteRenderer renderer = PowerFx.CreateSprite(
             "WaveProjectile", PowerFx.Circle, color, origin,
@@ -41,6 +42,7 @@ public class WaveProjectile : MonoBehaviour
         projectile.damage = damage;
         projectile.radius = size * 0.4f;
         projectile.lifetime = lifetime;
+        projectile.passThrough = passThrough;
 
         return projectile;
     }
@@ -83,7 +85,13 @@ public class WaveProjectile : MonoBehaviour
 
         transform.position = position;
 
-        int wallMask = PhysicsLayers.WallMask;
+        if (PowerFx.IsOutsideRoom(position))
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        int wallMask = passThrough ? PhysicsLayers.BorderMask : PhysicsLayers.WallMask;
 
         if (wallMask != 0 && Physics2D.OverlapCircle(position, radius, wallMask) != null)
         {

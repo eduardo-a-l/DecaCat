@@ -13,9 +13,12 @@ public class OctopusQueen : Enemy
 
     private const float Speed = 2.5f;
     private const float ArriveDistance = 0.3f;
+    private const float MaxSettleSeconds = 5f;
+    private const float MaxStuckSeconds = 1.5f;
     private const float WarningSeconds = 1f;
     private const float TentacleSeconds = 3.5f;
     private const float RestSeconds = 1.5f;
+    private const float FireWarningSeconds = 0.8f;
     private const float HiddenSeconds = 4f;
     private const float HiddenTentacleInterval = 1.4f;
     private const int TentaclesPerAttack = 4;
@@ -51,6 +54,10 @@ public class OctopusQueen : Enemy
     private Phase phase = Phase.Settling;
     private Vector2 home;
     private bool hasHome;
+    private bool settleStarted;
+    private float settleTime;
+    private float stuckTime;
+    private float bestDistance = float.MaxValue;
     private float timer;
     private float burstTimer;
     private float angle;
@@ -208,6 +215,21 @@ public class OctopusQueen : Enemy
 
     private void Settle()
     {
+        float step = Time.fixedDeltaTime;
+
+        if (!settleStarted)
+        {
+            settleStarted = true;
+            burstTimer = 1f;
+
+            PlayTelegraph(1f, new Color(1f, 0.7f, 1f, 1f), 0.2f);
+        }
+
+        burstTimer -= step;
+
+        if (burstTimer <= 0f)
+            FireBurst();
+
         if (!hasHome)
         {
             Room current = CurrentRoom;
@@ -228,6 +250,25 @@ public class OctopusQueen : Enemy
         Vector2 toHome = home - Body.position;
 
         if (toHome.magnitude <= ArriveDistance)
+        {
+            Body.linearVelocity = Vector2.zero;
+            BeginWarning();
+            return;
+        }
+
+        settleTime += step;
+
+        if (toHome.magnitude < bestDistance - 0.25f)
+        {
+            bestDistance = toHome.magnitude;
+            stuckTime = 0f;
+        }
+        else
+        {
+            stuckTime += step;
+        }
+
+        if (settleTime >= MaxSettleSeconds || stuckTime >= MaxStuckSeconds)
         {
             Body.linearVelocity = Vector2.zero;
             BeginWarning();
@@ -284,8 +325,10 @@ public class OctopusQueen : Enemy
 
         phase = Phase.Attacking;
         timer = TentacleSeconds;
-        burstTimer = 0.2f;
+        burstTimer = FireWarningSeconds;
         burstsLeft = BurstsPerRun;
+
+        PlayTelegraph(FireWarningSeconds, new Color(1f, 0.6f, 1f, 1f), 0.25f);
     }
 
     private void MarkAndRaise(int count, bool nearPlayer)
@@ -317,7 +360,7 @@ public class OctopusQueen : Enemy
             EnemyProjectile.Spawn(
                 Body.position, direction, ProjectileSpeed, ScaleDamage(1),
                 ProjectileSize, ProjectileColor
-            );
+            ).PassThroughObstacles();
         }
 
         angle += AngleStep * rotation;
@@ -350,18 +393,6 @@ public class OctopusQueen : Enemy
 
     private void Surface()
     {
-        Room current = CurrentRoom;
-
-        if (current != null)
-        {
-            home = (Vector2)current.Center + new Vector2(
-                Random.Range(-1.5f, 1.5f), Random.Range(-1f, 1f)
-            );
-
-            Body.position = home;
-            transform.position = home;
-        }
-
         if (bodyRenderer != null)
             bodyRenderer.enabled = true;
 
