@@ -46,9 +46,9 @@ MonoBehaviour:
     - prefab: {fileID: 8056770967803467006, guid: 0b6bdb3c7721424bba50f73f04bd9090, type: 3}
       unlockFloor: 4
     bosses:
-    - {fileID: 0}
-    - {fileID: 0}
-    - {fileID: 0}
+    - {fileID: 7450311954489724006, guid: f517c4b7d791464a8f5ae35be873c6a7, type: 3}
+    - {fileID: 2427983121305027006, guid: b743969f93854e26b38cacbe4ad9bffb, type: 3}
+    - {fileID: 1997479910574296006, guid: 797384dfcb1340f1bbd258c4092cdb48, type: 3}
   - displayName: Orange
     floorTint: {r: 1, g: 0.7, b: 0.4, a: 1}
     wallTint: {r: 1, g: 0.7, b: 0.4, a: 1}
