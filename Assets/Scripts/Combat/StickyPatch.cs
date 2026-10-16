@@ -21,7 +21,7 @@ public class StickyPatch : MonoBehaviour
     public static StickyPatch Spawn(
         Vector2 position, float radius, float lifetime, float slowFactor)
     {
-        active.RemoveAll(patch => patch == null);
+        active.RemoveAll(existingPatch => existingPatch == null);
 
         foreach (StickyPatch existing in active)
         {

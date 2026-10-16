@@ -74,8 +74,16 @@ public class MeleeAttack : MonoBehaviour
     {
         float remaining = CooldownRemaining;
 
-        exhausted = remaining > 0.05f;
-        exhaustTotal = remaining;
+        if (remaining <= 0.05f)
+        {
+            exhausted = false;
+            return;
+        }
+
+        if (!CooldownExhausted)
+            exhaustTotal = remaining;
+
+        exhausted = true;
     }
 
     private void Update()
